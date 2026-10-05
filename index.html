@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="러브어바웃 | 본식 스냅 · 웨딩 필름. 사랑에 관한 모든 순간을 기록합니다.">
-<meta property="og:title" content="Love About 러브어바웃">
+<meta name="description" content="러브어바웃 | 가성비 본식스냅 · 웨딩 필름. 사랑에 관한 모든 순간을 기록합니다.">
+<meta property="og:title" content="러브어바웃 - 가성비 본식스냅">
 <meta property="og:description" content="사랑에 관한 모든 순간을 기록합니다 · 본식 스냅 · 웨딩 필름">
 <meta property="og:image" content="/img/hero1.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#fcf8f5">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%23c08580'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
-<title>Love About 러브어바웃</title>
+<link rel="icon" href="/img/logo.png">
+<title>러브어바웃 Love About</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Gowun+Batang&family=IBM+Plex+Sans+KR:wght@300;400;500&display=swap">
@@ -82,10 +82,10 @@ section{scroll-margin-top:70px}
 .hero{position:relative;height:calc(100svh - 64px);min-height:520px;max-height:1000px;overflow:hidden;color:var(--on-photo)}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
 .slide.on{opacity:1}
-.slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 7s ease-out}
+.slide img{width:100%;height:100%;object-fit:cover;object-position:center 30%;transform:scale(1.06);transition:transform 7s ease-out}
 .slide.on img{transform:scale(1)}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,var(--veil))}
-.hero-in{position:absolute;inset:0;z-index:2;display:grid;place-content:center;justify-items:center;text-align:center;gap:18px;padding-inline:var(--gut)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(40,22,20,.62))}
+.hero-in{position:absolute;inset:0;z-index:2;display:grid;align-content:end;justify-content:center;justify-items:center;text-align:center;gap:14px;padding-inline:var(--gut);padding-bottom:84px}
 .hero-in .eyebrow{color:var(--on-photo);opacity:.9;margin:0}
 .hero h1{font-family:var(--en);font-style:italic;font-size:clamp(58px,11vw,140px);line-height:.95;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(60,30,30,.25)}
 .hero p{font-family:var(--ko-serif);font-size:clamp(15px,1.8vw,19px);margin-bottom:12px;text-shadow:0 1px 12px rgba(60,30,30,.3)}
@@ -266,7 +266,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="hero-in">
     <span class="eyebrow">For your most loving day</span>
     <h1>Love About</h1>
-    <p>사랑에 관한 모든 순간을 기록합니다</p>
+    <p>가성비 본식스냅 · 사랑에 관한 모든 순간을 기록합니다</p>
     <a href="#portfolio" class="btn photo">View Portfolio</a>
   </div>
   <div class="dots" id="dots"></div>
@@ -291,6 +291,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="head c">
       <span class="eyebrow">Portfolio</span>
       <h2 class="h-en">Moments of Love</h2>
+      <p class="soft">분당 W힐스컨벤션 본식 스냅</p>
     </div>
     <div class="filters" id="filters" role="group" aria-label="카테고리"></div>
     <div class="grid" id="grid"></div>
@@ -306,9 +307,9 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <p class="soft">그날의 목소리와 웃음까지, 움직이는 기록으로 남겨요.</p>
     </div>
     <div class="films">
-      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/hero2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>민준 &amp; 서연, 2026 Spring</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/w2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/s1.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Snap Film</small>야외 스냅 메이킹</span></a>
+      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>분당 W힐스컨벤션</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film3.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Recessional</small>행진 하이라이트</span></a>
     </div>
   </div>
 </section>
@@ -434,7 +435,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <div><h5>Contact</h5><ul><li>T. 010-0000-0000</li><li>E. hello@loveabout.kr</li><li>서울특별시 성동구 성수이로 00, 3층</li></ul></div>
       <div><h5>Follow</h5><ul><li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://pf.kakao.com/" target="_blank" rel="noopener">KakaoTalk 채널</a></li><li><a href="https://booking.naver.com/" target="_blank" rel="noopener">네이버 예약</a></li></ul></div>
     </div>
-    <div class="base"><span>상호 러브어바웃 · 대표 000 · 사업자등록번호 000-00-00000</span><span>© 2026 Love About</span></div>
+    <div class="base"><span>러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802</span><span>© 2026 LOVE ABOUT. All rights reserved.</span></div>
   </div>
 </footer>
 
@@ -445,9 +446,9 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 
 <script>
 const works=[
- ["봄날의 서약","Ceremony","w1"],["Quiet Morning","Snap","s1"],["신부대기실","Ceremony","p1"],
- ["Garden Vow","Ceremony","w2"],["해질녘","Snap","s2"],["Monochrome","Snap","p2"],
- ["White Hall","Ceremony","w3"],["첫 인사","Family","f1"],["가족 사진","Family","f2"],
+ ["신부대기실","신부대기실","w1"],["혼인서약","본식","s1"],["두 사람","신부대기실","p1"],
+ ["신부 입장","본식","w2"],["함께 입장","본식","s2"],["베일","신부대기실","p2"],
+ ["맞절","본식","w3"],["사회자 인사","본식","f1"],["행진","행진","f2"],
  ];
 const products=[
  {en:"Wedding Snap",ko:"본식 스냅",desc:"예식 당일 메인 작가 1인",price:"900,000",img:"prod1",items:["신부대기실 ~ 폐백까지","원본 전체 제공","보정본 70컷","온라인 갤러리 제공"]},
@@ -468,7 +469,7 @@ function restart(){clearInterval(timer);if(!matchMedia("(prefers-reduced-motion:
 go(0);restart();
 
 // portfolio
-const cats=["All","Ceremony","Snap","Family"],filters=$("#filters"),grid=$("#grid");
+const cats=["All","신부대기실","본식","행진"],filters=$("#filters"),grid=$("#grid");
 function draw(cat){grid.innerHTML="";works.filter(w=>cat==="All"||w[1]===cat).forEach(([t,c,f])=>{
   const b=document.createElement("button");b.className="tile";b.setAttribute("aria-label",`${t} 크게 보기`);
   b.innerHTML=`<figure style="margin:0"><img src="img/${f}.jpg" alt="${t}" loading="lazy"><figcaption><small>${c}</small>${t}</figcaption></figure>`;
