@@ -6,7 +6,7 @@
 <meta name="description" content="러브어바웃 | 가성비 본식스냅 · 웨딩 필름. 사랑에 관한 모든 순간을 기록합니다.">
 <meta property="og:title" content="러브어바웃 - 가성비 본식스냅">
 <meta property="og:description" content="사랑에 관한 모든 순간을 기록합니다 · 본식 스냅 · 웨딩 필름">
-<meta property="og:image" content="/img/hero1.jpg">
+<meta property="og:image" content="/1번/img/pf/w00/04.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#fcf8f5">
 <link rel="icon" href="/img/logo.png">
@@ -107,8 +107,11 @@ section{scroll-margin-top:70px}
 .filters{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 28px;margin-bottom:40px}
 .filters button{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);padding:6px 0;border-bottom:1px solid transparent}
 .filters button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:8px}}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid .album:first-child{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+.grid .album:first-child .cap b{font-size:24px}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr;gap:8px}.grid .album:first-child{grid-row:auto;aspect-ratio:4/3}}
+@media (max-width:640px){.grid{gap:8px}.album .cap{padding:14px 12px 10px}.album .cap b{font-size:14px}}
 .insta{display:flex;justify-content:center;margin-top:36px}
 .tile{aspect-ratio:1;position:relative;overflow:hidden;width:100%;padding:0;display:block;text-align:left}
 .tile img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
@@ -119,10 +122,27 @@ section{scroll-margin-top:70px}
 .tile:hover img{transform:scale(1.04)}
 .tile figcaption{position:absolute;inset:auto 0 0 0;padding:18px;color:#fff;background:linear-gradient(transparent,rgba(50,25,25,.5));display:grid;line-height:1.4}
 .tile small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.9}
-.box{position:fixed;inset:0;z-index:50;background:rgba(25,15,15,.92);display:grid;place-items:center;padding:40px 16px}
-.box img{max-height:82vh;width:auto}
-.box p{color:#fff;font-family:var(--en);font-style:italic;font-size:20px;margin-top:12px;text-align:center}
-.box .x{position:absolute;top:12px;right:16px;color:#fff;font-size:34px;font-weight:200;width:48px;height:48px}
+.album{aspect-ratio:4/5;position:relative;overflow:hidden;width:100%;padding:0;display:block;text-align:left;background:var(--bg-alt)}
+.album img{width:100%;height:100%;object-fit:cover;transition:transform .9s ease}
+.album:hover img,.album:focus-visible img{transform:scale(1.04)}
+.album .cap{position:absolute;inset:auto 0 0 0;padding:22px 20px 18px;color:#fff;background:linear-gradient(transparent,rgba(40,20,20,.62));display:grid;gap:2px;line-height:1.35}
+.album .cap small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.85}
+.album .cap b{font-weight:400;font-size:17px}
+.album .cnt{position:absolute;top:12px;right:12px;font-size:11px;letter-spacing:.12em;color:#fff;background:rgba(30,15,15,.45);padding:3px 9px;font-variant-numeric:tabular-nums}
+.box{position:fixed;inset:0;z-index:50;background:#140d0c;color:#fff;display:grid;grid-template-rows:auto 1fr auto;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.box-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px;gap:12px}
+.box-top h3{font-family:var(--en);font-style:italic;font-size:22px}
+.box-top span{font-size:12px;letter-spacing:.14em;opacity:.7;font-variant-numeric:tabular-nums}
+.box .x{color:#fff;font-size:34px;font-weight:200;width:44px;height:44px;line-height:1}
+.stage{position:relative;display:grid;place-items:center;min-height:0;padding:0 56px}
+.stage img{max-height:100%;max-width:100%;object-fit:contain;user-select:none}
+.nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:72px;color:#fff;font-size:34px;font-weight:200;opacity:.75}
+.nav-btn:hover{opacity:1}.nav-btn.prev{left:4px}.nav-btn.next{right:4px}
+.thumbs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 14px;scrollbar-width:thin}
+.thumbs button{flex:0 0 64px;height:64px;opacity:.45;transition:opacity .2s;padding:0}
+.thumbs button[aria-current="true"]{opacity:1;outline:1px solid #fff;outline-offset:2px}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+@media (max-width:640px){.stage{padding:0 8px}.nav-btn{width:36px}.thumbs button{flex-basis:52px;height:52px}}
 
 /* film */
 .films{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:12px}
@@ -260,9 +280,10 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 </header>
 
 <section class="hero" id="home" aria-label="메인">
-  <div class="slide on"><img src="img/hero1.jpg" alt=""></div>
-  <div class="slide"><img src="img/hero2.jpg" alt=""></div>
-  <div class="slide"><img src="img/hero3.jpg" alt=""></div>
+  <div class="slide on"><img src="1번/img/pf/w00/04.jpg" alt=""></div>
+  <div class="slide"><img src="1번/img/pf/w03/16.jpg" alt="" loading="lazy"></div>
+  <div class="slide"><img src="2번/img/pf/w06/02.jpg" alt="" loading="lazy"></div>
+  <div class="slide"><img src="2번/img/pf/w11/07.jpg" alt="" loading="lazy"></div>
   <div class="hero-in">
     <span class="eyebrow">For your most loving day</span>
     <h1>Love About</h1>
@@ -274,7 +295,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 
 <section class="band" id="about">
   <div class="wrap split">
-    <div class="frame"><img src="img/intro.jpg" alt="스튜디오 대표 이미지"></div>
+    <div class="frame"><img src="2번/img/pf/w07/04.jpg" alt="러브어바웃 본식 스냅" loading="lazy"></div>
     <div class="about-copy">
       <span class="eyebrow">About Love About</span>
       <h2 class="h-en">All about love,<br>all about you.</h2>
@@ -291,11 +312,11 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="head c">
       <span class="eyebrow">Portfolio</span>
       <h2 class="h-en">Moments of Love</h2>
-      <p class="soft">분당 W힐스컨벤션 본식 스냅</p>
+      <p class="soft">러브어바웃이 함께한 본식 13곳 · 사진 191장</p>
     </div>
     <div class="filters" id="filters" role="group" aria-label="카테고리"></div>
     <div class="grid" id="grid"></div>
-    <div class="insta"><a class="btn" href="https://instagram.com/" target="_blank" rel="noopener">Instagram @loveabout</a></div>
+    
   </div>
 </section>
 
@@ -307,9 +328,9 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <p class="soft">그날의 목소리와 웃음까지, 움직이는 기록으로 남겨요.</p>
     </div>
     <div class="films">
-      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>분당 W힐스컨벤션</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/film3.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Recessional</small>행진 하이라이트</span></a>
+      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="2번/img/pf/w10/27.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>평택 JNJ웨딩홀</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="1번/img/pf/w02/14.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="2번/img/pf/w09/05.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Recessional</small>행진 하이라이트</span></a>
     </div>
   </div>
 </section>
@@ -381,7 +402,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 </section>
 
 <section class="cta" aria-label="예약 안내">
-  <img src="img/cta.jpg" alt="">
+  <img src="1번/img/pf/w03/09.jpg" alt="" loading="lazy">
   <div class="wrap">
     <span class="eyebrow">Reservation</span>
     <h2 class="h-en">Tell us your love story</h2>
@@ -439,21 +460,18 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   </div>
 </footer>
 
-<div class="box" id="box" hidden role="dialog" aria-modal="true" aria-label="사진 크게 보기">
-  <button class="x" id="boxClose" aria-label="닫기">×</button>
-  <div><img id="boxImg" alt=""><p id="boxCap"></p></div>
+<div class="box" id="box" hidden role="dialog" aria-modal="true" aria-labelledby="boxTitle">
+  <div class="box-top"><div><h3 id="boxTitle"></h3><span id="boxCount"></span></div><button class="x" id="boxClose" aria-label="닫기">×</button></div>
+  <div class="stage" id="stage"><button class="nav-btn prev" id="prev" aria-label="이전 사진">‹</button><img id="boxImg" alt=""><button class="nav-btn next" id="next" aria-label="다음 사진">›</button></div>
+  <div class="thumbs" id="thumbs"></div>
 </div>
 
 <script>
-const works=[
- ["신부대기실","신부대기실","w1"],["혼인서약","본식","s1"],["두 사람","신부대기실","p1"],
- ["신부 입장","본식","w2"],["함께 입장","본식","s2"],["베일","신부대기실","p2"],
- ["맞절","본식","w3"],["사회자 인사","본식","f1"],["행진","행진","f2"],
- ];
+const albums=[{"id": "w00", "name": "분당 W힐스컨벤션", "region": "경기", "cover": "04.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w01", "name": "신도림 웨딩시티", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w02", "name": "노원 비엔티", "region": "서울", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg"]}, {"id": "w03", "name": "수원 노블레스웨딩홀", "region": "경기", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w04", "name": "채플앳청담", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg"]}, {"id": "w05", "name": "송파 올림픽파크텔", "region": "서울", "cover": "13.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg"]}, {"id": "w06", "name": "안양 빌라드지디", "region": "경기", "cover": "19.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w07", "name": "여의도 더파티움", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w08", "name": "반포 더컨벤션", "region": "서울", "cover": "09.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w09", "name": "부천 라비에벨", "region": "경기", "cover": "12.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg"]}, {"id": "w10", "name": "평택 JNJ웨딩홀", "region": "경기", "cover": "21.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "19.jpg", "20.jpg", "21.jpg", "22.jpg", "23.jpg", "24.jpg", "25.jpg", "26.jpg", "27.jpg", "29.jpg", "30.jpg"]}, {"id": "w11", "name": "강남 빌라드지디", "region": "서울", "cover": "07.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg"]}, {"id": "w12", "name": "강서 보타닉파크웨딩홀", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}];
 const products=[
- {en:"Wedding Snap",ko:"본식 스냅",desc:"예식 당일 메인 작가 1인",price:"900,000",img:"prod1",items:["신부대기실 ~ 폐백까지","원본 전체 제공","보정본 70컷","온라인 갤러리 제공"]},
- {en:"Snap & Film",ko:"본식 스냅 + 웨딩 필름",desc:"사진과 영상을 한 팀으로",price:"1,700,000",img:"prod2",best:true,items:["스냅 작가 1인 · 영상 감독 1인","보정본 70컷","하이라이트 필름 3–4분","본식 풀영상 제공"]},
- {en:"Wedding Film",ko:"웨딩 필름",desc:"예식 당일 영상 감독 1인",price:"1,000,000",img:"prod3",items:["하이라이트 필름 3–4분","본식 풀영상 제공","4K 촬영 · USB 전달","배경음악 선곡 가능"]}];
+ {en:"Wedding Snap",ko:"본식 스냅",desc:"예식 당일 메인 작가 1인",price:"900,000",img:"../1번/img/pf/w05/02",items:["신부대기실 ~ 폐백까지","원본 전체 제공","보정본 70컷","온라인 갤러리 제공"]},
+ {en:"Snap & Film",ko:"본식 스냅 + 웨딩 필름",desc:"사진과 영상을 한 팀으로",price:"1,700,000",img:"../2번/img/pf/w09/10",best:true,items:["스냅 작가 1인 · 영상 감독 1인","보정본 70컷","하이라이트 필름 3–4분","본식 풀영상 제공"]},
+ {en:"Wedding Film",ko:"웨딩 필름",desc:"예식 당일 영상 감독 1인",price:"1,000,000",img:"../2번/img/pf/w12/02",items:["하이라이트 필름 3–4분","본식 풀영상 제공","4K 촬영 · USB 전달","배경음악 선곡 가능"]}];
 const $=s=>document.querySelector(s);
 
 // menu
@@ -469,17 +487,28 @@ function restart(){clearInterval(timer);if(!matchMedia("(prefers-reduced-motion:
 go(0);restart();
 
 // portfolio
-const cats=["All","신부대기실","본식","행진"],filters=$("#filters"),grid=$("#grid");
-function draw(cat){grid.innerHTML="";works.filter(w=>cat==="All"||w[1]===cat).forEach(([t,c,f])=>{
-  const b=document.createElement("button");b.className="tile";b.setAttribute("aria-label",`${t} 크게 보기`);
-  b.innerHTML=`<figure style="margin:0"><img src="img/${f}.jpg" alt="${t}" loading="lazy"><figcaption><small>${c}</small>${t}</figcaption></figure>`;
-  b.onclick=()=>openBox(`img/${f}.jpg`,`${t} · ${c}`);grid.append(b)});
+const cats=["전체","서울","경기"],filters=$("#filters"),grid=$("#grid"),src=(a,f)=>`${+a.id.slice(1)<6?"1번":"2번"}/img/pf/${a.id}/${f}`;
+function draw(cat){grid.innerHTML="";albums.filter(a=>cat==="전체"||a.region===cat).forEach(a=>{
+  const b=document.createElement("button");b.className="album";b.setAttribute("aria-label",`${a.name} 앨범 열기, 사진 ${a.photos.length}장`);
+  b.innerHTML=`<img src="${src(a,a.cover)}" alt="" loading="lazy"><span class="cnt">${a.photos.length} PHOTOS</span><span class="cap"><small>${a.region}</small><b>${a.name}</b></span>`;
+  b.onclick=()=>openAlbum(a,0);grid.append(b)});
   [...filters.children].forEach(x=>x.setAttribute("aria-pressed",x.textContent===cat))}
-cats.forEach(c=>{const b=document.createElement("button");b.textContent=c;b.onclick=()=>draw(c);filters.append(b)});draw("All");
-const box=$("#box");
-function openBox(src,cap){$("#boxImg").src=src;$("#boxImg").alt=cap;$("#boxCap").textContent=cap;box.hidden=false;$("#boxClose").focus()}
-box.onclick=e=>{if(e.target===box||e.target.id==="boxClose")box.hidden=true};
-addEventListener("keydown",e=>{if(e.key==="Escape")box.hidden=true});
+cats.forEach(c=>{const b=document.createElement("button");b.textContent=c;b.onclick=()=>draw(c);filters.append(b)});draw("전체");
+const box=$("#box"),img=$("#boxImg"),thumbs=$("#thumbs");let alb=null,idx=0,opener=null;
+function openAlbum(a,i){alb=a;opener=document.activeElement;$("#boxTitle").textContent=a.name;
+  thumbs.innerHTML=a.photos.map((f,k)=>`<button data-k="${k}" aria-label="${k+1}번째 사진"><img src="${src(a,f)}" alt="" loading="lazy"></button>`).join("");
+  thumbs.querySelectorAll("button").forEach(t=>t.onclick=()=>show(+t.dataset.k));
+  box.hidden=false;document.body.style.overflow="hidden";show(i);$("#boxClose").focus()}
+function show(i){idx=(i+alb.photos.length)%alb.photos.length;img.src=src(alb,alb.photos[idx]);img.alt=`${alb.name} ${idx+1}번째 사진`;
+  $("#boxCount").textContent=`${idx+1} / ${alb.photos.length}`;
+  thumbs.querySelectorAll("button").forEach((t,k)=>{t.setAttribute("aria-current",k===idx);if(k===idx)t.scrollIntoView({block:"nearest",inline:"center"})});
+  [idx+1,idx-1].forEach(k=>{const n=alb.photos[(k+alb.photos.length)%alb.photos.length];new Image().src=src(alb,n)})}
+function closeBox(){box.hidden=true;document.body.style.overflow="";opener&&opener.focus()}
+$("#boxClose").onclick=closeBox;$("#prev").onclick=()=>show(idx-1);$("#next").onclick=()=>show(idx+1);
+$("#stage").onclick=e=>{if(e.target.id==="stage")closeBox()};
+addEventListener("keydown",e=>{if(box.hidden)return;if(e.key==="Escape")closeBox();if(e.key==="ArrowRight")show(idx+1);if(e.key==="ArrowLeft")show(idx-1)});
+let sx=null;$("#stage").addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
+$("#stage").addEventListener("touchend",e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)show(idx+(dx<0?1:-1));sx=null});
 
 // products
 const cards=$("#cards"),sel=$("#fprod");
