@@ -158,6 +158,10 @@ section{scroll-margin-top:70px}
 .ft small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.9}
 @media (max-width:760px){.films{grid-template-columns:1fr;grid-template-rows:none}.film.main{grid-row:auto;aspect-ratio:16/9}}
 
+.film-player{position:relative;aspect-ratio:16/9;max-width:100%;background:#000;box-shadow:0 20px 60px -30px rgba(40,20,20,.5)}
+.film-player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.film-more{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px 24px;margin-top:28px;font-size:13px;text-align:center}
+
 /* notice + quick cards */
 .notice-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px)}
 .notice-grid>*{min-width:0}
@@ -323,15 +327,12 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 <section class="band" id="film">
   <div class="wrap">
     <div class="head c">
-      <span class="eyebrow">Wedding Film</span>
-      <h2 class="h-en">Film</h2>
-      <p class="soft">그날의 목소리와 웃음까지, 움직이는 기록으로 남겨요.</p>
+      <span class="eyebrow">Love About Film</span>
+      <h2 class="h-en">Wedding DVD</h2>
+      <p class="soft">러브어바웃필름 유튜브의 본식 DVD를 모두 여기서 바로 볼 수 있어요. 새 영상도 자동으로 추가돼요.</p>
     </div>
-    <div class="films">
-      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="2번/img/pf/w10/27.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>평택 JNJ웨딩홀</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="1번/img/pf/w02/14.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
-      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="2번/img/pf/w09/05.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="ft"><small>Recessional</small>행진 하이라이트</span></a>
-    </div>
+    <div class="film-player"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UUa28Wzon3clIedIvmOIOYBw&rel=0" title="러브어바웃필름 영상 목록" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <p class="film-more"><span class="soft">오른쪽 위 목록 아이콘을 누르면 전체 영상을 골라 볼 수 있어요.</span><a class="btn" href="https://www.youtube.com/@러브어바웃필름/videos" target="_blank" rel="noopener">유튜브 채널에서 보기</a></p>
   </div>
 </section>
 
