@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="러브어바웃 | 본식 스냅 · 웨딩 필름. 사랑에 관한 모든 순간을 기록합니다.">
+<meta property="og:title" content="Love About 러브어바웃">
+<meta property="og:description" content="사랑에 관한 모든 순간을 기록합니다 · 본식 스냅 · 웨딩 필름">
+<meta property="og:image" content="/img/hero1.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#fcf8f5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%23c08580'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+<title>Love About 러브어바웃</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Gowun+Batang&family=IBM+Plex+Sans+KR:wght@300;400;500&display=swap">
+<style>
+/* Layout: one long scrolling studio page — photo-led hero, alternating blush bands, italic serif as the voice */
+:root{
+  --bg:#fcf8f5; --bg-alt:#f6ece7; --ink:#3b2f2d; --ink-soft:#86736e; --line:#ebdcd5;
+  --rose:#c08580; --on-photo:#fff; --veil:rgba(60,32,30,.38); --footer:#3b2f2d; --footer-ink:#d9c9c3;
+  --en:"Cormorant Garamond","Times New Roman",serif;
+  --ko-serif:"Gowun Batang","Nanum Myeongjo",serif;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --max:1200px; --gut:clamp(16px,4vw,40px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1f1817; --bg-alt:#2a2120; --ink:#f1e6e1; --ink-soft:#b39f99; --line:#3d3230;
+  --rose:#dca39d; --veil:rgba(25,12,12,.5); --footer:#141010; --footer-ink:#bfaea8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1f1817; --bg-alt:#2a2120; --ink:#f1e6e1; --ink-soft:#b39f99; --line:#3d3230;
+  --rose:#dca39d; --veil:rgba(25,12,12,.5); --footer:#141010; --footer-ink:#bfaea8; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:15px;line-height:1.8;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+h1,h2,h3,h4{margin:0;font-weight:300;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gut)}
+section{scroll-margin-top:70px}
+.band{padding-block:clamp(72px,10vw,130px)}
+.band.alt{background:var(--bg-alt)}
+
+.eyebrow{display:block;font-family:var(--en);font-style:italic;font-size:16px;letter-spacing:.08em;color:var(--rose);margin-bottom:10px}
+.h-en{font-family:var(--en);font-size:clamp(36px,5.4vw,60px);line-height:1.1}
+.h-ko{font-family:var(--ko-serif);font-size:clamp(19px,2.3vw,25px);line-height:1.7}
+.soft{color:var(--ink-soft)}
+.head{display:grid;gap:12px;margin-bottom:clamp(40px,6vw,64px)}
+.head.c{text-align:center;justify-items:center}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 30px;border:1px solid currentColor;font-size:12px;letter-spacing:.2em;text-transform:uppercase;transition:background .3s,color .3s,border-color .3s}
+.btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.fill{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.fill:hover{background:var(--rose);border-color:var(--rose)}
+.btn.photo{color:var(--on-photo)}
+.btn.photo:hover{background:var(--on-photo);color:#3b2f2d;border-color:var(--on-photo)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:var(--en);font-style:italic;font-size:27px;line-height:1;white-space:nowrap}
+.logo i{color:var(--rose);font-style:normal;margin:0 3px}
+.nav{display:flex;gap:clamp(14px,2.2vw,32px)}
+.nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:4px 0;border-bottom:1px solid transparent}
+.nav a:hover{border-color:currentColor}
+.burger{display:none;width:40px;height:40px;position:relative}
+.burger span{position:absolute;left:8px;right:8px;height:1px;background:currentColor;transition:.3s}
+.burger span:nth-child(1){top:14px}.burger span:nth-child(2){top:20px}.burger span:nth-child(3){top:26px}
+.burger[aria-expanded="true"] span:nth-child(1){top:20px;transform:rotate(45deg)}
+.burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] span:nth-child(3){top:20px;transform:rotate(-45deg)}
+.drawer{display:grid;gap:4px;padding:8px var(--gut) 24px;border-top:1px solid var(--line)}
+.drawer a{font-family:var(--en);font-size:28px;padding:6px 0}
+
+/* hero */
+.hero{position:relative;height:calc(100svh - 64px);min-height:520px;max-height:1000px;overflow:hidden;color:var(--on-photo)}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 7s ease-out}
+.slide.on img{transform:scale(1)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,var(--veil))}
+.hero-in{position:absolute;inset:0;z-index:2;display:grid;place-content:center;justify-items:center;text-align:center;gap:18px;padding-inline:var(--gut)}
+.hero-in .eyebrow{color:var(--on-photo);opacity:.9;margin:0}
+.hero h1{font-family:var(--en);font-style:italic;font-size:clamp(58px,11vw,140px);line-height:.95;letter-spacing:-.01em;text-shadow:0 2px 30px rgba(60,30,30,.25)}
+.hero p{font-family:var(--ko-serif);font-size:clamp(15px,1.8vw,19px);margin-bottom:12px;text-shadow:0 1px 12px rgba(60,30,30,.3)}
+.dots{position:absolute;z-index:3;left:50%;bottom:28px;transform:translateX(-50%);display:flex;gap:10px}
+.dots button{width:34px;height:12px;position:relative}
+.dots button::after{content:"";position:absolute;left:0;right:0;top:5px;height:2px;background:rgba(255,255,255,.45)}
+.dots button[aria-current="true"]::after{background:#fff}
+
+/* about */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,7vw,90px);align-items:center}
+.split > *{min-width:0}
+.frame{aspect-ratio:4/5;overflow:hidden;max-width:100%}
+.frame img{width:100%;height:100%;object-fit:cover}
+.about-copy{display:grid;gap:18px;max-width:34em}
+.about-copy .btn{justify-self:start;margin-top:14px}
+.sign{font-family:var(--en);font-style:italic;font-size:22px;color:var(--rose)}
+
+/* portfolio */
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 28px;margin-bottom:40px}
+.filters button{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);padding:6px 0;border-bottom:1px solid transparent}
+.filters button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:8px}}
+.insta{display:flex;justify-content:center;margin-top:36px}
+.tile{aspect-ratio:1;position:relative;overflow:hidden;width:100%;padding:0;display:block;text-align:left}
+.tile img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
+.tile figure{height:100%}
+.tile figcaption{opacity:0;transition:opacity .4s}
+.tile:hover figcaption,.tile:focus-visible figcaption{opacity:1}
+@media (hover:none){.tile figcaption{opacity:1}}
+.tile:hover img{transform:scale(1.04)}
+.tile figcaption{position:absolute;inset:auto 0 0 0;padding:18px;color:#fff;background:linear-gradient(transparent,rgba(50,25,25,.5));display:grid;line-height:1.4}
+.tile small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.9}
+.box{position:fixed;inset:0;z-index:50;background:rgba(25,15,15,.92);display:grid;place-items:center;padding:40px 16px}
+.box img{max-height:82vh;width:auto}
+.box p{color:#fff;font-family:var(--en);font-style:italic;font-size:20px;margin-top:12px;text-align:center}
+.box .x{position:absolute;top:12px;right:16px;color:#fff;font-size:34px;font-weight:200;width:48px;height:48px}
+
+/* film */
+.films{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:12px}
+.film{position:relative;overflow:hidden;aspect-ratio:16/9;color:#fff;display:block}
+.film.main{grid-row:1/3;aspect-ratio:auto;min-height:100%}
+.film img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.film:hover img{transform:scale(1.04)}
+.film::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(40,20,20,.55))}
+.play{position:absolute;z-index:2;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border:1px solid #fff;border-radius:50%}
+.film:not(.main) .play{width:44px;height:44px;margin:-22px 0 0 -22px}
+.play::after{content:"";position:absolute;left:54%;top:50%;transform:translate(-50%,-50%);border-left:12px solid #fff;border-top:8px solid transparent;border-bottom:8px solid transparent}
+.ft{position:absolute;z-index:2;left:18px;bottom:14px;display:grid;line-height:1.4}
+.ft small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.9}
+@media (max-width:760px){.films{grid-template-columns:1fr;grid-template-rows:none}.film.main{grid-row:auto;aspect-ratio:16/9}}
+
+/* notice + quick cards */
+.notice-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px)}
+.notice-grid>*{min-width:0}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.list li{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:baseline;padding:16px 2px;border-bottom:1px solid var(--line)}
+.list .tag{font-size:11px;letter-spacing:.12em;color:var(--rose);border:1px solid var(--rose);padding:0 8px}
+.list time{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q{border:1px solid var(--line);padding:26px 22px;display:grid;gap:4px;transition:background .3s,border-color .3s;background:var(--bg)}
+.q:hover{border-color:var(--rose)}
+.q b{font-family:var(--en);font-style:italic;font-weight:400;font-size:26px;line-height:1.2}
+.q span{font-size:13px;color:var(--ink-soft)}
+.q em{font-style:normal;color:var(--rose);font-size:18px;justify-self:end}
+@media (max-width:860px){.notice-grid{grid-template-columns:1fr}}
+
+/* products */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px}
+.card{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--bg)}
+.card.best{border-color:var(--rose)}
+.card .ph{aspect-ratio:4/3;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover}
+.card .body{display:flex;flex-direction:column;gap:6px;padding:28px 28px 32px;flex:1}
+.tagline{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-height:20px}
+.badge{font-size:10px;letter-spacing:.2em;color:var(--rose);border:1px solid var(--rose);padding:1px 9px}
+.card h3{font-family:var(--en);font-size:30px;line-height:1.15}
+.card .ko{font-size:14px;color:var(--ink-soft)}
+.price{font-family:var(--en);font-size:28px;margin-top:10px;font-variant-numeric:tabular-nums}
+.price small{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-left:4px}
+.card ul{list-style:none;margin:12px 0 24px;padding:16px 0 0;border-top:1px solid var(--line);flex:1}
+.card li{font-size:14px;color:var(--ink-soft);padding:3px 0}
+.card li::before{content:"♡";color:var(--rose);margin-right:10px;font-size:11px}
+.card .btn{align-self:stretch}
+.note{margin-top:28px;font-size:13px;color:var(--ink-soft);text-align:center}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;list-style:none;padding:0;margin:0;counter-reset:s}
+.steps li{border-top:1px solid var(--ink);padding-top:22px;counter-increment:s;min-width:0}
+.steps li::before{content:"0" counter(s);display:block;font-family:var(--en);font-size:40px;line-height:1;color:var(--rose);margin-bottom:12px}
+.steps h4{font-family:var(--sans);font-weight:500;font-size:15px;margin-bottom:6px}
+.steps p{font-size:14px;color:var(--ink-soft)}
+
+/* faq */
+.faq{max-width:780px;margin:0 auto;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 4px;display:flex;justify-content:space-between;gap:16px;font-weight:400}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:22px;font-weight:200;line-height:1;transition:transform .3s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 4px 22px;color:var(--ink-soft)}
+
+/* cta band */
+.cta{position:relative;color:var(--on-photo);text-align:center;overflow:hidden;padding-block:clamp(90px,13vw,150px)}
+.cta img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cta::after{content:"";position:absolute;inset:0;background:var(--veil)}
+.cta .wrap{position:relative;z-index:2;display:grid;justify-items:center;gap:14px}
+.cta .eyebrow{color:var(--on-photo);margin:0}
+.cta .h-ko{margin-bottom:18px}
+
+/* reservation */
+.contact{display:grid;grid-template-columns:1fr 1.3fr;gap:clamp(40px,7vw,90px)}
+.contact > *{min-width:0}
+.info{list-style:none;padding:0;margin:28px 0 0}
+.info li{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+.info span{font-family:var(--en);font-style:italic;color:var(--rose);font-size:16px}
+.info b{font-weight:400;overflow-wrap:anywhere}
+.copy{font-size:11px;letter-spacing:.12em;color:var(--ink-soft);border:1px solid var(--line);padding:3px 10px}
+.copy:hover{color:var(--ink);border-color:var(--ink)}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.links .btn{padding:11px 20px;font-size:11px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.f{display:grid;gap:6px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.f input,.f select,.f textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:9px 0;width:100%}
+.f textarea{min-height:110px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--ink)}
+.f select option{background:var(--bg);color:var(--ink)}
+form .btn{justify-self:start}
+.done{grid-column:1/-1;border:1px solid var(--rose);padding:20px;display:grid;gap:12px}
+.done pre{margin:0;white-space:pre-wrap;font-family:var(--sans);font-size:13px;color:var(--ink-soft);background:var(--bg-alt);padding:14px}
+.done .row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* footer */
+footer{background:var(--footer);color:var(--footer-ink);padding-block:64px 32px;font-size:13px}
+footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid color-mix(in srgb,var(--footer-ink) 20%,transparent)}
+footer .logo{color:#fff;display:inline-block;margin-bottom:14px}
+footer h5{margin:0 0 10px;font-family:var(--en);font-style:italic;font-weight:400;font-size:17px;color:#fff}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+footer a:hover{color:#fff}
+footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;opacity:.75;font-size:12px}
+
+@media (max-width:1020px){.nav{display:none}.burger{display:block}}
+@media (max-width:860px){
+  .nav{display:none}.burger{display:block}
+  .split,.contact{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  footer .cols{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .steps{grid-template-columns:1fr}
+  form{grid-template-columns:1fr}
+  .info li{grid-template-columns:72px 1fr auto}
+  .logo{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="#home" class="logo" aria-label="Love About 홈">Love<i>♡</i>About</a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">Film</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="메뉴" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="drawer" id="drawer" hidden aria-label="모바일 메뉴">
+    <a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">Film</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
+  </nav>
+</header>
+
+<section class="hero" id="home" aria-label="메인">
+  <div class="slide on"><img src="img/hero1.jpg" alt=""></div>
+  <div class="slide"><img src="img/hero2.jpg" alt=""></div>
+  <div class="slide"><img src="img/hero3.jpg" alt=""></div>
+  <div class="hero-in">
+    <span class="eyebrow">For your most loving day</span>
+    <h1>Love About</h1>
+    <p>사랑에 관한 모든 순간을 기록합니다</p>
+    <a href="#portfolio" class="btn photo">View Portfolio</a>
+  </div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<section class="band" id="about">
+  <div class="wrap split">
+    <div class="frame"><img src="img/intro.jpg" alt="스튜디오 대표 이미지"></div>
+    <div class="about-copy">
+      <span class="eyebrow">About Love About</span>
+      <h2 class="h-en">All about love,<br>all about you.</h2>
+      <p class="h-ko">사랑에 관한 모든 것을<br>가장 당신다운 모습으로.</p>
+      <p class="soft">러브어바웃은 본식 스냅과 웨딩 필름을 기록하는 팀이에요. 서로를 바라보는 눈빛, 부모님의 눈물, 친구들의 웃음까지 그날 사랑이 머문 장면을 놓치지 않아요.</p>
+      <p class="soft">정해진 포즈보다 그날의 공기를 담고, 부드러운 빛과 색으로 오래 꺼내 봐도 다정한 기록을 만들어요.</p>
+      <span class="sign">with love, Love About</span>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="portfolio">
+  <div class="wrap">
+    <div class="head c">
+      <span class="eyebrow">Portfolio</span>
+      <h2 class="h-en">Moments of Love</h2>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="카테고리"></div>
+    <div class="grid" id="grid"></div>
+    <div class="insta"><a class="btn" href="https://instagram.com/" target="_blank" rel="noopener">Instagram @loveabout</a></div>
+  </div>
+</section>
+
+<section class="band" id="film">
+  <div class="wrap">
+    <div class="head c">
+      <span class="eyebrow">Wedding Film</span>
+      <h2 class="h-en">Film</h2>
+      <p class="soft">그날의 목소리와 웃음까지, 움직이는 기록으로 남겨요.</p>
+    </div>
+    <div class="films">
+      <a class="film main" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/hero2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Highlight Film</small>민준 &amp; 서연, 2026 Spring</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/w2.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Ceremony</small>본식 하이라이트</span></a>
+      <a class="film" href="https://www.youtube.com/" target="_blank" rel="noopener"><img src="img/s1.jpg" alt=""><span class="play" aria-hidden="true"></span><span class="ft"><small>Snap Film</small>야외 스냅 메이킹</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="products">
+  <div class="wrap">
+    <div class="head c">
+      <span class="eyebrow">Products</span>
+      <h2 class="h-en">Pricing</h2>
+      <p class="soft">원하는 이야기에 맞는 촬영을 골라보세요.</p>
+    </div>
+    <div class="cards" id="cards"></div>
+    <p class="note">VAT 포함 · 수도권 외 지역은 출장비 별도 · 2인 작가 추가 +300,000</p>
+  </div>
+</section>
+
+<section class="band alt" id="guide">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Guide</span>
+      <h2 class="h-en">How it works</h2>
+    </div>
+    <ol class="steps">
+      <li><h4>예약 문의</h4><p>예식 날짜·시간·웨딩홀을 알려주시면 가능 여부를 바로 확인해 드려요.</p></li>
+      <li><h4>계약 · 예약금</h4><p>예약금 입금으로 일정이 확정돼요.</p></li>
+      <li><h4>사전 체크</h4><p>예식 2주 전, 식순과 꼭 남기고 싶은 장면을 함께 정리해요.</p></li>
+      <li><h4>본식 촬영</h4><p>신부대기실부터 폐백까지 함께해요.</p></li>
+      <li><h4>전달</h4><p>원본은 1주 안에, 보정본·필름은 6–8주 안에 받아보세요.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band" id="faq">
+  <div class="wrap">
+    <div class="head c">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="h-ko">자주 묻는 질문</h2>
+    </div>
+    <div class="faq">
+      <details><summary>예약금은 얼마인가요?</summary><p>상품 금액의 20%를 예약금으로 받고, 잔금은 촬영 당일 결제해요.</p></details>
+      <details><summary>날짜를 바꿀 수 있나요?</summary><p>촬영 7일 전까지 1회 무료로 변경할 수 있어요.</p></details>
+      <details><summary>지방 예식도 촬영하나요?</summary><p>전국 촬영이 가능해요. 수도권 외 지역은 출장비가 추가돼요.</p></details>
+      <details><summary>원본은 언제 받을 수 있나요?</summary><p>예식 후 1주 안에 온라인 갤러리로 보내드려요.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="notice">
+  <div class="wrap notice-grid">
+    <div>
+      <div class="head"><span class="eyebrow">News</span><h2 class="h-en">Notice</h2></div>
+      <ul class="list">
+        <li><span class="tag">공지</span><span>2027년 상반기 본식 예약 오픈</span><time>2026.10.01</time></li>
+        <li><span class="tag">이벤트</span><span>가을 예식 스냅+필름 얼리버드 혜택</span><time>2026.09.15</time></li>
+        <li><span class="tag">안내</span><span>추석 연휴 상담 휴무 안내</span><time>2026.09.08</time></li>
+        <li><span class="tag">안내</span><span>촬영 이용 약관 개정 안내</span><time>2026.08.20</time></li>
+      </ul>
+    </div>
+    <div>
+      <div class="head"><span class="eyebrow">Quick Menu</span><h2 class="h-en">Shortcuts</h2></div>
+      <div class="quick">
+        <a class="q" href="#products"><b>Pricing</b><span>상품 · 가격 보기</span><em>→</em></a>
+        <a class="q" href="#reservation"><b>Reservation</b><span>날짜 문의하기</span><em>→</em></a>
+        <a class="q" href="#guide"><b>Guide</b><span>진행 과정 · FAQ</span><em>→</em></a>
+        <a class="q" href="https://pf.kakao.com/" target="_blank" rel="noopener"><b>Contact</b><span>카카오톡 상담</span><em>↗</em></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" aria-label="예약 안내">
+  <img src="img/cta.jpg" alt="">
+  <div class="wrap">
+    <span class="eyebrow">Reservation</span>
+    <h2 class="h-en">Tell us your love story</h2>
+    <p class="h-ko">당신만의 이야기를 들려주세요</p>
+    <a href="#reservation" class="btn photo">예약 문의하기</a>
+  </div>
+</section>
+
+<section class="band" id="reservation">
+  <div class="wrap contact">
+    <div>
+      <span class="eyebrow">Contact</span>
+      <h2 class="h-ko">편하게 연락주세요</h2>
+      <ul class="info">
+        <li><span>Tel</span><b id="v-tel">010-0000-0000</b><button class="copy" data-copy="v-tel">복사</button></li>
+        <li><span>Email</span><b id="v-mail">hello@loveabout.kr</b><button class="copy" data-copy="v-mail">복사</button></li>
+        <li><span>Address</span><b id="v-addr">서울특별시 성동구 성수이로 00, 3층</b><button class="copy" data-copy="v-addr">복사</button></li>
+        <li><span>Hours</span><b>화–일 10:00 – 19:00 · 월요일 휴무</b><i></i></li>
+      </ul>
+      <div class="links">
+        <a class="btn fill" href="https://pf.kakao.com/" target="_blank" rel="noopener">카카오톡 상담</a>
+        <a class="btn" href="https://booking.naver.com/" target="_blank" rel="noopener">네이버 예약</a>
+        <a class="btn" href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <form id="form" novalidate>
+      <div class="f"><label for="fname">Name *</label><input id="fname" required placeholder="성함" autocomplete="name"></div>
+      <div class="f"><label for="fphone">Phone *</label><input id="fphone" type="tel" required placeholder="010-0000-0000" autocomplete="tel"></div>
+      <div class="f"><label for="fprod">Product</label><select id="fprod"></select></div>
+      <div class="f"><label for="fdate">Wedding Date</label><input id="fdate" type="date"></div>
+      <div class="f full"><label for="fhall">Wedding Hall · Time</label><input id="fhall" placeholder="예) 더채플앳청담 3층, 오후 1시"></div>
+      <div class="f full"><label for="fmsg">Message</label><textarea id="fmsg" placeholder="원하시는 분위기나 궁금한 점을 자유롭게 적어주세요."></textarea></div>
+      <p class="f full soft" id="ferr" style="font-size:13px">* 성함과 연락처는 꼭 적어주세요.</p>
+      <button type="submit" class="btn fill">문의 내용 정리하기</button>
+      <div class="done" id="done" hidden>
+        <p>문의 내용이 정리됐어요. 복사해서 카카오톡 채널로 보내주시면 24시간 안에 답장드릴게요.</p>
+        <pre id="summary"></pre>
+        <div class="row">
+          <button type="button" class="btn fill" id="copySummary">내용 복사</button>
+          <a class="btn" href="https://pf.kakao.com/" target="_blank" rel="noopener">카카오톡 열기</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><a href="#home" class="logo">Love<i>♡</i>About</a><p>사랑에 관한 모든 순간을 기록합니다</p></div>
+      <div><h5>Contact</h5><ul><li>T. 010-0000-0000</li><li>E. hello@loveabout.kr</li><li>서울특별시 성동구 성수이로 00, 3층</li></ul></div>
+      <div><h5>Follow</h5><ul><li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://pf.kakao.com/" target="_blank" rel="noopener">KakaoTalk 채널</a></li><li><a href="https://booking.naver.com/" target="_blank" rel="noopener">네이버 예약</a></li></ul></div>
+    </div>
+    <div class="base"><span>상호 러브어바웃 · 대표 000 · 사업자등록번호 000-00-00000</span><span>© 2026 Love About</span></div>
+  </div>
+</footer>
+
+<div class="box" id="box" hidden role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+  <button class="x" id="boxClose" aria-label="닫기">×</button>
+  <div><img id="boxImg" alt=""><p id="boxCap"></p></div>
+</div>
+
+<script>
+const works=[
+ ["봄날의 서약","Ceremony","w1"],["Quiet Morning","Snap","s1"],["신부대기실","Ceremony","p1"],
+ ["Garden Vow","Ceremony","w2"],["해질녘","Snap","s2"],["Monochrome","Snap","p2"],
+ ["White Hall","Ceremony","w3"],["첫 인사","Family","f1"],["가족 사진","Family","f2"],
+ ];
+const products=[
+ {en:"Wedding Snap",ko:"본식 스냅",desc:"예식 당일 메인 작가 1인",price:"900,000",img:"prod1",items:["신부대기실 ~ 폐백까지","원본 전체 제공","보정본 70컷","온라인 갤러리 제공"]},
+ {en:"Snap & Film",ko:"본식 스냅 + 웨딩 필름",desc:"사진과 영상을 한 팀으로",price:"1,700,000",img:"prod2",best:true,items:["스냅 작가 1인 · 영상 감독 1인","보정본 70컷","하이라이트 필름 3–4분","본식 풀영상 제공"]},
+ {en:"Wedding Film",ko:"웨딩 필름",desc:"예식 당일 영상 감독 1인",price:"1,000,000",img:"prod3",items:["하이라이트 필름 3–4분","본식 풀영상 제공","4K 촬영 · USB 전달","배경음악 선곡 가능"]}];
+const $=s=>document.querySelector(s);
+
+// menu
+const burger=$("#burger"),drawer=$("#drawer");
+burger.onclick=()=>{const o=burger.getAttribute("aria-expanded")!=="true";burger.setAttribute("aria-expanded",o);drawer.hidden=!o};
+drawer.querySelectorAll("a").forEach(a=>a.onclick=()=>{burger.setAttribute("aria-expanded","false");drawer.hidden=true});
+
+// hero
+const slides=[...document.querySelectorAll(".slide")],dots=$("#dots");let cur=0,timer;
+slides.forEach((_,i)=>{const b=document.createElement("button");b.setAttribute("aria-label",`${i+1}번째 사진`);b.onclick=()=>{go(i);restart()};dots.append(b)});
+function go(i){slides[cur].classList.remove("on");cur=i;slides[cur].classList.add("on");[...dots.children].forEach((d,k)=>d.setAttribute("aria-current",k===cur))}
+function restart(){clearInterval(timer);if(!matchMedia("(prefers-reduced-motion: reduce)").matches)timer=setInterval(()=>go((cur+1)%slides.length),6000)}
+go(0);restart();
+
+// portfolio
+const cats=["All","Ceremony","Snap","Family"],filters=$("#filters"),grid=$("#grid");
+function draw(cat){grid.innerHTML="";works.filter(w=>cat==="All"||w[1]===cat).forEach(([t,c,f])=>{
+  const b=document.createElement("button");b.className="tile";b.setAttribute("aria-label",`${t} 크게 보기`);
+  b.innerHTML=`<figure style="margin:0"><img src="img/${f}.jpg" alt="${t}" loading="lazy"><figcaption><small>${c}</small>${t}</figcaption></figure>`;
+  b.onclick=()=>openBox(`img/${f}.jpg`,`${t} · ${c}`);grid.append(b)});
+  [...filters.children].forEach(x=>x.setAttribute("aria-pressed",x.textContent===cat))}
+cats.forEach(c=>{const b=document.createElement("button");b.textContent=c;b.onclick=()=>draw(c);filters.append(b)});draw("All");
+const box=$("#box");
+function openBox(src,cap){$("#boxImg").src=src;$("#boxImg").alt=cap;$("#boxCap").textContent=cap;box.hidden=false;$("#boxClose").focus()}
+box.onclick=e=>{if(e.target===box||e.target.id==="boxClose")box.hidden=true};
+addEventListener("keydown",e=>{if(e.key==="Escape")box.hidden=true});
+
+// products
+const cards=$("#cards"),sel=$("#fprod");
+sel.innerHTML=`<option value="">선택해주세요</option>`+products.map(p=>`<option>${p.ko}</option>`).join("")+`<option>기타 / 상담 후 결정</option>`;
+products.forEach(p=>{const a=document.createElement("article");a.className="card"+(p.best?" best":"");
+ a.innerHTML=`<div class="ph"><img src="img/${p.img}.jpg" alt="${p.ko}" loading="lazy"></div><div class="body">
+ <div class="tagline"><span class="ko">${p.desc}</span>${p.best?'<span class="badge">BEST</span>':""}</div>
+ <h3>${p.en}</h3><span class="ko">${p.ko}</span><p class="price">₩ ${p.price}<small>부터</small></p>
+ <ul>${p.items.map(i=>`<li>${i}</li>`).join("")}</ul><a href="#reservation" class="btn">이 상품 문의하기</a></div>`;
+ a.querySelector(".btn").onclick=()=>{sel.value=p.ko};cards.append(a)});
+
+// copy helpers
+async function copyText(t,btn){const old=btn.textContent;try{await navigator.clipboard.writeText(t);btn.textContent="복사됨"}catch(e){btn.textContent="길게 눌러 복사"}setTimeout(()=>btn.textContent=old,1600)}
+document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(document.getElementById(b.dataset.copy).textContent,b));
+
+// form
+$("#form").addEventListener("submit",e=>{e.preventDefault();
+ const n=$("#fname").value.trim(),ph=$("#fphone").value.trim(),err=$("#ferr");
+ if(!n||!ph){err.textContent="성함과 연락처를 적어주세요.";err.style.color="var(--rose)";(n?$("#fphone"):$("#fname")).focus();return}
+ err.textContent="* 성함과 연락처는 꼭 적어주세요.";err.style.color="";
+ $("#summary").textContent=`[러브어바웃 촬영 문의]\n성함: ${n}\n연락처: ${ph}\n상품: ${sel.value||"미정"}\n예식일: ${$("#fdate").value||"미정"}\n예식장/시간: ${$("#fhall").value.trim()||"-"}\n내용: ${$("#fmsg").value.trim()||"-"}`;
+ $("#done").hidden=false;$("#done").scrollIntoView({block:"nearest"})});
+$("#copySummary").onclick=e=>copyText($("#summary").textContent,e.currentTarget);
+</script>
+</body>
+</html>
