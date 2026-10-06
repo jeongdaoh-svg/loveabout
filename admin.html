@@ -89,7 +89,7 @@ dt{color:var(--soft)}dd{margin:0;overflow-wrap:anywhere}
 .btbl .empty{text-align:center;color:var(--soft);padding:40px 0}
 .pager{display:flex;gap:4px;justify-content:center;margin-top:16px;flex-wrap:wrap}
 .pager button{min-width:34px;padding:6px 8px;border:1px solid var(--line);background:var(--bg);font:inherit;font-size:13px;cursor:pointer}
-.pager button[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pager button.nav{padding:6px 10px}.pager button[disabled]{opacity:.35;cursor:default}.pager button[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 mark{background:#f6dfd6;color:inherit;padding:0 1px}
 @media (max-width:820px){.btbl .c-who{display:none}.btbl .c-st{width:auto}}
 @media (max-width:820px){.bk{grid-template-columns:1fr}.bk .side{border-left:0;border-top:1px solid var(--line)}.prow,.prow.add{grid-template-columns:1fr}.prow .h{display:none}}
@@ -206,7 +206,7 @@ async function loadBookings(){try{const j=await api({action:"list"});const P=awa
  catch(x){$("#bkList").innerHTML=`<div class="empty">${esc(x.message)}</div>`}}
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
-let page=1,openId=null;const PER=15;
+let page=1,openId=null;const PER=20;
 const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><p class="bk-title">러브어바웃 예약글 작성 목록</p><dl>
@@ -237,8 +237,9 @@ function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=
  $("#bkList").innerHTML=slice.length?slice.map((b,i)=>{const no=list.length-((page-1)*PER+i);const prod=[withAdd(b.snapProduct,"스냅",b.addons),withAdd(b.dvdProduct,"영상",b.addons)].filter(Boolean).join(" / ");
   return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name">${hl(b.name,q)} 본식 예약 <span class="lk">🔒</span></td><td class="c-who">${hl(b.name,q)}</td><td class="c-date">${fmtD(b.createdAt)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?'<span class="st conf">예약확정</span>':""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="5">${detailHTML(b)}</td></tr>`:"")}).join("")
   :`<tr><td colspan="5" class="empty">${bookings.length?"검색 결과가 없어요.":"아직 접수된 예약이 없어요."}</td></tr>`;
- $("#pager").innerHTML=pages>1?Array.from({length:pages},(_,k)=>`<button type="button" data-p="${k+1}"${k+1===page?' aria-current="page"':""}>${k+1}</button>`).join(""):"";
- $$("#pager button").forEach(x=>x.onclick=()=>{page=+x.dataset.p;openId=null;renderBookings()});
+ {const bs=Math.floor((page-1)/10)*10+1,be=Math.min(pages,bs+9),nb=(p,l,dis,cls)=>`<button type="button" class="${cls||""}" data-p="${p}"${dis?" disabled":""}${p===page&&!cls?' aria-current="page"':""}>${l}</button>`;
+ $("#pager").innerHTML=pages>1?nb(1,"처음",page===1,"nav")+nb(Math.max(1,bs-10),"이전",bs===1,"nav")+Array.from({length:be-bs+1},(_,k)=>nb(bs+k,bs+k)).join("")+nb(Math.min(pages,bs+10),"다음",be===pages,"nav")+nb(pages,"끝",page===pages,"nav"):"";}
+ $$("#pager button:not([disabled])").forEach(x=>x.onclick=()=>{page=+x.dataset.p;openId=null;renderBookings();const t=$(".tbl-wrap");if(t)t.scrollIntoView({block:"start"})});
  $$("#bkList tr.row").forEach(tr=>{const t=async()=>{const id=+tr.dataset.id;if(openId===id){openId=null;renderBookings();return}
   const b=bookings.find(x=>x.id===id);if(b&&b.light){tr.style.opacity=".5";try{const j=await api({action:"get",id});const P=await loadContent().catch(()=>({}));Object.assign(b,fillPrice(j.item,P||{}),{light:false})}catch(x){tr.style.opacity="";$("#qInfo").textContent="글을 불러오지 못했어요: "+x.message;return}}
   openId=id;renderBookings()};tr.onclick=t;tr.onkeydown=e=>{if(e.key==="Enter")t()}});
