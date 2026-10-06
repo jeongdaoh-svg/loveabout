@@ -272,16 +272,15 @@ form .btn{justify-self:start}
 
 /* footer */
 footer{background:var(--footer);color:var(--footer-ink);padding-block:64px 32px;font-size:13px}
-footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid color-mix(in srgb,var(--footer-ink) 20%,transparent)}
+footer .cols{display:grid;grid-template-columns:1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid color-mix(in srgb,var(--footer-ink) 20%,transparent)}
 footer .logo{color:#fff;display:inline-block;margin-bottom:14px}
 footer h5{margin:0 0 10px;font-family:var(--en);font-style:italic;font-weight:400;font-size:17px;color:#fff}
 footer ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 footer a:hover{color:#fff}
 footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;opacity:.75;font-size:12px}
 
-@media (max-width:1020px){.nav{display:none}.burger{display:block}}
+@media (max-width:1020px){.top .wrap{height:auto;flex-wrap:wrap;gap:6px 20px;padding-block:12px}.nav{overflow-x:auto;scrollbar-width:none;gap:18px;max-width:100%}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;letter-spacing:.12em;font-size:11px}}
 @media (max-width:860px){
-  .nav{display:none}.burger{display:block}
   .split,.contact{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr 1fr}
   footer .cols{grid-template-columns:1fr}
@@ -300,13 +299,11 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
+      <a href="#home">Home</a><a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
     </nav>
-    <button class="burger" id="burger" aria-label="메뉴" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span></span></button>
+    
   </div>
-  <nav class="drawer" id="drawer" hidden aria-label="모바일 메뉴">
-    <a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
-  </nav>
+  
 </header>
 
 <section class="hero" id="home" data-tab="home" aria-label="메인">
@@ -325,7 +322,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 
 <section class="band" id="about" data-tab="home about">
   <div class="wrap split">
-    <div class="frame"><img src="2번/img/pf/w12/01.jpg" alt="부케 향을 맡는 신부"></div>
+    <div class="frame"><img src="intro-bride.webp" alt="창가에서 부케를 든 신부"></div>
     <div class="about-copy">
       <span class="eyebrow">About Love About</span>
       <h2 class="h-en">All about love,<br>all about you.</h2>
@@ -406,7 +403,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   </div>
 </section>
 
-<section class="band alt" id="notice" data-tab="home notice">
+<section class="band alt" id="notice" data-tab="notice">
   <div class="wrap notice-grid">
     <div>
       <div class="head"><span class="eyebrow">News</span><h2 class="h-en">Notice</h2></div>
@@ -429,7 +426,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   </div>
 </section>
 
-<section class="cta" data-tab="home about portfolio film products guide notice" aria-label="예약 안내">
+<section class="cta" data-tab="home" aria-label="예약 안내">
   <img src="1번/img/pf/w03/09.jpg" alt="" loading="lazy">
   <div class="wrap">
     <span class="eyebrow">Reservation</span>
@@ -481,9 +478,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <div class="cols">
       <div><a href="#home" class="logo">Love About</a><p>사랑에 관한 모든 순간을 기록합니다</p></div>
-      <div><h5>Contact</h5><ul><li>T. 010-0000-0000</li><li>E. hello@loveabout.kr</li><li>서울특별시 성동구 성수이로 00, 3층</li></ul></div>
-      <div><h5>Follow</h5><ul><li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://pf.kakao.com/" target="_blank" rel="noopener">KakaoTalk 채널</a></li><li><a href="https://booking.naver.com/" target="_blank" rel="noopener">네이버 예약</a></li></ul></div>
-    </div>
+      </div>
     <div class="base"><span>러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802</span><span>© 2026 LOVE ABOUT. All rights reserved.</span></div>
   </div>
 </footer>
@@ -498,14 +493,9 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 
 <script>
 const albums=[{"id": "w00", "name": "분당 W힐스컨벤션", "region": "경기", "cover": "04.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w01", "name": "신도림 웨딩시티", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w02", "name": "노원 비엔티", "region": "서울", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg"]}, {"id": "w03", "name": "수원 노블레스웨딩홀", "region": "경기", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w04", "name": "채플앳청담", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg"]}, {"id": "w05", "name": "송파 올림픽파크텔", "region": "서울", "cover": "13.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg"]}, {"id": "w06", "name": "안양 빌라드지디", "region": "경기", "cover": "19.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w07", "name": "여의도 더파티움", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w08", "name": "반포 더컨벤션", "region": "서울", "cover": "09.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w09", "name": "부천 라비에벨", "region": "경기", "cover": "12.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg"]}, {"id": "w10", "name": "평택 JNJ웨딩홀", "region": "경기", "cover": "21.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "19.jpg", "20.jpg", "21.jpg", "22.jpg", "23.jpg", "24.jpg", "25.jpg", "26.jpg", "27.jpg", "29.jpg", "30.jpg"]}, {"id": "w11", "name": "강남 빌라드지디", "region": "서울", "cover": "07.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg"]}, {"id": "w12", "name": "강서 보타닉파크웨딩홀", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}];
-const products={"snap": [{"ko": "데이터 상품", "en": "Data", "price": "450,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 40장"]}, {"ko": "베이직 상품", "en": "Basic", "price": "600,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 50장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "화보형 상품", "en": "Editorial", "price": "1,000,000", "items": ["2인 촬영 (메인 + 서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 60장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "서브스냅", "en": "Sub Snap", "price": "300,000", "items": ["1인 촬영 (서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 30장"]}], "dvd": [{"ko": "DVD 기록형", "en": "Record", "price": "330,000", "items": ["1인 1캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 원본 파트별 제공 (식전 · 식중 · 식후)"]}, {"ko": "DVD 기본형", "en": "Basic", "price": "400,000", "items": ["1인 2캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 원본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}, {"ko": "DVD 스탠다드형", "en": "Standard", "price": "700,000", "items": ["2인 3캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 원본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}]};
+const products={"snap": [{"ko": "데이터 상품", "en": "Data", "price": "450,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 40장"]}, {"ko": "베이직 상품", "en": "Basic", "price": "600,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 50장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "화보형 상품", "en": "Editorial", "price": "1,000,000", "items": ["2인 촬영 (메인 + 서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 60장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "서브스냅", "en": "Sub Snap", "price": "300,000", "items": ["1인 촬영 (서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 30장"]}], "dvd": [{"ko": "DVD 기록형", "en": "Record", "price": "330,000", "items": ["1인 1캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)"]}, {"ko": "DVD 기본형", "en": "Basic", "price": "400,000", "items": ["1인 2캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}, {"ko": "DVD 스탠다드형", "en": "Standard", "price": "700,000", "items": ["2인 3캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}]};
 const videos=[{"id": "yzfL0w6aW2k", "name": "문래 규수당", "len": "4:41"}, {"id": "7mdtZIQ0Yxg", "name": "강남 그랜드힐컨벤션", "len": "5:13"}, {"id": "Wt09XKhWXe4", "name": "용인 it컨벤션", "len": "5:06"}, {"id": "mmSHKNC4wEE", "name": "여의도 웨딩컨벤션", "len": "5:26"}, {"id": "8IRHv12DU0E", "name": "합정 웨딩시그니처", "len": "5:21"}, {"id": "bjuJuZ7n2Tw", "name": "양재 AT포레", "len": "5:14"}, {"id": "FTFfgk0hC5k", "name": "노원 비엔티", "len": "5:22"}, {"id": "HC1oc3MDHNI", "name": "부산w웨딩 국민연금", "len": "3:22"}, {"id": "nkFoHRxKzX8", "name": "강변 웨딩스퀘어", "len": "4:53"}, {"id": "BEv4NPszhdA", "name": "수원 마이어스", "len": "3:06"}, {"id": "oHX1qs4-k5I", "name": "잠실 더컨벤션", "len": "4:08"}, {"id": "S_SrUOhbuDE", "name": "신도림 더세인트", "len": "4:08"}, {"id": "VYtk0BkJnUw", "name": "반포 아펠가모", "len": "3:54"}, {"id": "73B0ZTxnYbM", "name": "대구 인터불고호텔(만촌)", "len": "4:06"}, {"id": "IW5IBO3unY8", "name": "여의도 더파티움", "len": "4:04"}, {"id": "RbZLRJ4kZQA", "name": "수원 리츠호텔", "len": "5:32"}, {"id": "_oVk2yqYz4M", "name": "강변 웨딩스퀘어", "len": "4:01"}, {"id": "71JG3xBxRJM", "name": "강남 노블발렌티", "len": "3:55"}, {"id": "wRAWDxLq5RU", "name": "대구 인터불고호텔", "len": "4:06"}, {"id": "g5sFM96WsCA", "name": "여의도 더파티움", "len": "4:04"}, {"id": "A2KEycPaZJs", "name": "광명 무역센터컨벤션", "len": "4:37"}, {"id": "Der8HN2S4Zc", "name": "수원 SY컨벤션", "len": "4:16"}, {"id": "DlcVQ8vW96I", "name": "건대 스타시티웨딩", "len": "3:46"}, {"id": "mJDA_obCCJM", "name": "원주 빌라드아모르", "len": "4:01"}, {"id": "U3InM5kGV4g", "name": "노원 테라리움", "len": "4:16"}, {"id": "MDas6ND7Lh0", "name": "건대 까사그랑데", "len": "3:39"}, {"id": "weZZesuDMFA", "name": "청주 더빈", "len": "4:01"}];
 const $=s=>document.querySelector(s);
-
-// menu
-const burger=$("#burger"),drawer=$("#drawer");
-burger.onclick=()=>{const o=burger.getAttribute("aria-expanded")!=="true";burger.setAttribute("aria-expanded",o);drawer.hidden=!o};
-drawer.querySelectorAll("a").forEach(a=>a.onclick=()=>{burger.setAttribute("aria-expanded","false");drawer.hidden=true});
 
 // hero
 const slides=[...document.querySelectorAll(".slide")],dots=$("#dots");let cur=0,timer;
@@ -571,7 +561,7 @@ $("#copySummary").onclick=e=>copyText($("#summary").textContent,e.currentTarget)
 const TABS=["home","about","portfolio","film","products","guide","notice","reservation"];
 function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
- document.querySelectorAll(".nav a,.drawer a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
+ document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
  window.scrollTo(0,0)}
 addEventListener("hashchange",route);route();
 </script>
