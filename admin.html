@@ -116,7 +116,7 @@ mark{background:#f6dfd6;color:inherit;padding:0 1px}
  <form class="bar" id="qForm" role="search"><input id="q" type="search" placeholder="예약자 · 배우자 이름 검색" aria-label="이름 검색"><button class="btn sm fill" type="submit">검색</button><select id="fStatus" aria-label="상태"><option value="">전체</option><option value="pending">접수</option><option value="confirmed">예약확정</option></select><button class="btn sm" id="reload" type="button">새로고침</button></form>
  <div class="chips" id="counts"></div>
  <p class="soft" id="qInfo"></p>
- <div class="tbl-wrap"><table class="btbl"><thead><tr><th class="c-no">번호</th><th>예약자</th><th>예식일</th><th class="c-hide">예식장</th><th class="c-hide">상품</th><th class="c-hide">작성일</th><th class="c-st">상태</th></tr></thead><tbody id="bkList"><tr><td colspan="7" class="empty">불러오는 중이에요.</td></tr></tbody></table></div>
+ <div class="tbl-wrap"><table class="btbl"><thead><tr><th class="c-no">번호</th><th>예약자</th><th>예식 날짜</th><th class="c-hide">예식장</th><th class="c-hide">상품</th><th class="c-hide">작성일</th><th class="c-st">상태</th></tr></thead><tbody id="bkList"><tr><td colspan="7" class="empty">불러오는 중이에요.</td></tr></tbody></table></div>
  <div class="pager" id="pager"></div>
 </section>
 
@@ -180,11 +180,13 @@ const fmtDT=iso=>iso?new Date(iso).toLocaleString("ko-KR",{timeZone:"Asia/Seoul"
 async function loadBookings(){try{const j=await api({action:"list"});bookings=j.items;STATUSES=j.statuses||STATUSES;
  renderBookings()}
  catch(x){$("#bkList").innerHTML=`<div class="empty">${esc(x.message)}</div>`}}
+const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
+const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 let page=1,openId=null;const PER=15;
 const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><dl>
-  ${r("예약자 연락처",b.phone)}${r("배우자",[b.spouseName,b.spousePhone].filter(Boolean).join(" / "))}${r("예식",b.weddingDate+" "+b.weddingTime)}${r("예식장",b.hall)}${r("본식 스냅",b.snapProduct)}${r("본식 DVD",b.dvdProduct)}${r("추가상품 선택",(b.addons||[]).length?b.addons.join(", "):"추가상품 없음")}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
+  ${r("예약자 연락처",b.phone)}${r("배우자",[b.spouseName,b.spousePhone].filter(Boolean).join(" / "))}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
   <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p></div>
   <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>
@@ -201,7 +203,7 @@ function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=
  $$("#counts .cnt").forEach(c=>c.onclick=()=>{const fs=$("#fStatus");fs.value=fs.value===c.dataset.f?"":c.dataset.f;page=1;openId=null;renderBookings()});
  $("#qInfo").textContent=q||f?`검색 결과 ${list.length}건`+(q?` · "${q}"`:"")+(f?` · ${$("#fStatus").selectedOptions[0].text}`:""):"";
  const pages=Math.max(1,Math.ceil(list.length/PER));if(page>pages)page=pages;const slice=list.slice((page-1)*PER,page*PER);
- $("#bkList").innerHTML=slice.length?slice.map((b,i)=>{const no=list.length-((page-1)*PER+i);const prod=[b.snapProduct,b.dvdProduct].filter(Boolean).join(" + ");
+ $("#bkList").innerHTML=slice.length?slice.map((b,i)=>{const no=list.length-((page-1)*PER+i);const prod=[withAdd(b.snapProduct,"스냅",b.addons),withAdd(b.dvdProduct,"영상",b.addons)].filter(Boolean).join(" / ");
   return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name"><b>${hl(b.name,q)}</b>${b.spouseName?`<small>배우자 ${hl(b.spouseName,q)}</small>`:""}</td><td>${esc(b.weddingDate)}</td><td class="c-hide">${esc(b.hall)}</td><td class="c-hide">${esc(prod)}</td><td class="c-hide">${fmtDT(b.createdAt).slice(0,12)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?'<span class="st conf">예약확정</span>':""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="7">${detailHTML(b)}</td></tr>`:"")}).join("")
   :`<tr><td colspan="7" class="empty">${bookings.length?"검색 결과가 없어요.":"아직 접수된 예약이 없어요."}</td></tr>`;
  $("#pager").innerHTML=pages>1?Array.from({length:pages},(_,k)=>`<button type="button" data-p="${k+1}"${k+1===page?' aria-current="page"':""}>${k+1}</button>`).join(""):"";

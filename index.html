@@ -613,8 +613,8 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <div class="f"><label for="fsphone">배우자 연락처</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
-        <div class="f"><label for="fdate">예식일 *</label><input id="fdate" type="date" required></div>
-        <div class="f"><label for="ftime">예식 시간 *</label><input id="ftime" required placeholder="예) 오후 1시 30분" maxlength="20"></div>
+        <div class="f"><label for="fdate">예식 날짜 *</label><input id="fdate" type="date" required></div>
+        <div class="f"><label for="ftime">예식 시작 시간 *</label><input id="ftime" type="time" step="600" required></div>
         <div class="f full"><label for="fhall">예식장 *</label><input id="fhall" required placeholder="예) 채플앳청담 3층 그랜드홀" maxlength="60"></div>
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
@@ -782,7 +782,8 @@ const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seou
 const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
 (()=>{try{const t=localStorage.getItem("la_admin");if(!t)return;const p=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));if(p.exp>Date.now())$("#adminGo").hidden=false}catch(e){}})();
 const stOf=x=>x.confirmed?["ok","예약확정"]:x.paid?["","입금확인"]:["no","예약 신청 완료"];
-const addonsTxt=x=>(x.addons||[]).length?x.addons.join("\n"):"추가상품 없음";
+const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
+const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
  const d={action:"lookup",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim(),password:$("#lkPw").value};
  if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)||!d.password){err.textContent="성함, 연락처(010-0000-0000), 비밀번호를 모두 적어주세요.";return}
@@ -791,8 +792,8 @@ $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$(
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
   $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
    ${sec("예약자 정보",row("예약자",x.name+" · "+x.phone)+row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" · ")))}
-   ${sec("예식 정보",row("예식일",x.weddingDate+" "+x.weddingTime)+row("예식장",x.hall))}
-   ${sec("선택 상품",row("본식 스냅",x.snapProduct)+row("본식 DVD",x.dvdProduct)+row("추가상품 선택",addonsTxt(x)))}
+   ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
+   ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
   </article>`).join("")+`<div class="mine-end"><button class="btn sm" type="button" id="lkClose">닫기</button></div>`;
   $("#lookup").hidden=true;$("#lkPw").value="";
@@ -812,7 +813,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
  if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
  if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
- if(!d.weddingTime)return bad("예식 시간을 적어주세요.",$("#ftime"));
+ if(!d.weddingTime)return bad("예식 시작 시간을 선택해 주세요.",$("#ftime"));
  if(!d.hall)return bad("예식장을 적어주세요.",$("#fhall"));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
