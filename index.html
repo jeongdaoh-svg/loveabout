@@ -327,7 +327,15 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .card li::before{content:"♡";color:var(--rose);margin-right:10px;font-size:11px}
 .card .btn{align-self:stretch}
 .consult-cta{text-align:center;margin-top:28px}
-.consult-steps{max-width:1040px;margin:0 auto 56px}.consult-steps .pg-title{margin-bottom:22px}
+.consult-steps{max-width:1100px;margin:0 auto 32px}.consult-steps .pg-title{margin-bottom:16px}
+#contact.band{padding-top:56px;padding-bottom:64px}#contact .head{margin-bottom:24px}
+#contact .steps{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+#contact .steps li{padding-top:14px}
+#contact .steps li::before{font-size:26px;margin-bottom:8px}
+#contact .steps h4{font-size:14px;margin-bottom:4px}
+#contact .steps p{font-size:13px;line-height:1.6;word-break:keep-all}
+#contact .consult-box{padding:26px 24px;gap:6px}
+@media (max-width:760px){#contact .steps{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px;scrollbar-width:none}#contact .steps::-webkit-scrollbar{display:none}#contact .steps li{flex:0 0 46%;scroll-snap-align:start}}
 .consult-box{max-width:520px;margin:0 auto;text-align:center;border:1px solid var(--line);background:var(--bg);padding:40px 28px;display:grid;gap:10px;justify-items:center}
 .consult-box .cb-t{font-family:var(--ko-serif);font-size:20px;margin:0}
 .consult-box .cb-s{font-size:14px;color:var(--ink-soft);margin:0 0 12px;word-break:keep-all}
@@ -519,7 +527,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <li><h4>예약 문의</h4><p>예식 날짜·시간·웨딩홀을 알려주시면 가능 여부를 바로 확인해 드려요.</p></li>
       <li><h4>계약 · 예약금</h4><p>예약금 입금으로 일정이 확정돼요.</p></li>
       <li><h4>사전 체크</h4><p>예식 2주 전, 식순과 꼭 남기고 싶은 장면을 함께 정리해요.</p></li>
-      <li><h4>본식 촬영</h4><p>신부대기실부터 폐백까지 함께해요.</p></li>
+      <li><h4>본식 촬영</h4><p>신부대기실부터 식 후 원판촬영까지 함께해요.</p></li>
       <li><h4>전달</h4><p>원본은 1주 안에, 보정본·필름은 6–8주 안에 받아보세요.</p></li>
     </ol></div>
     <div class="consult-box">
