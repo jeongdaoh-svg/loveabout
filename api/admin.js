@@ -28,10 +28,16 @@ module.exports = async (req, res) => {
     if (!user || !admins.some((x) => x.username === user)) return fail(res, 401, "로그인이 필요해요.");
 
     if (b.action === "list") {
-      const [rows] = await sql([["SELECT * FROM bookings ORDER BY created_at DESC, id DESC"]]);
-      const items = [];
-      for (const r of rows) items.push({ ...toFull(r), adminMemo: r.admin_memo, password: r.pw_enc ? await decrypt(r.pw_enc) : null });
+      // 목록은 가볍게: 게시판에 필요한 칸만 보내고, 글 내용은 열 때 따로 불러와요.
+      const [rows] = await sql([["SELECT id, created_at, name, paid, confirmed, imported FROM bookings ORDER BY created_at DESC, id DESC"]]);
+      const items = rows.map((r) => ({ id: Number(r.id), createdAt: r.created_at, name: r.name, paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1, imported: Number(r.imported) === 1, light: true }));
       return res.status(200).json({ items, statuses: STATUSES });
+    }
+    if (b.action === "get") {
+      const [rows] = await sql([["SELECT * FROM bookings WHERE id=?", [Number(b.id)]]]);
+      const r = rows[0];
+      if (!r) return fail(res, 404, "예약글을 찾을 수 없어요.");
+      return res.status(200).json({ item: { ...toFull(r), adminMemo: r.admin_memo, password: r.pw_enc ? await decrypt(r.pw_enc) : null } });
     }
     if (b.action === "update") {
       const id = Number(b.id); const f = b.fields || {};
