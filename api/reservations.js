@@ -27,7 +27,7 @@ function validate(b) {
   if (!PHONE.test(d.phone)) e.push("예약자 연락처를 010-0000-0000 형식으로 적어주세요.");
   if (d.spouse_phone && !PHONE.test(d.spouse_phone)) e.push("배우자 연락처를 010-0000-0000 형식으로 적어주세요.");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.wedding_date)) e.push("예식일을 선택해 주세요.");
-  if (!d.wedding_time) e.push("예식 시간을 적어주세요.");
+  if (!d.wedding_time) e.push("예식 시작 시간을 선택해 주세요.");
   if (!d.hall) e.push("예식장을 적어주세요.");
   if (!d.snap_product && !d.dvd_product) e.push("상품을 하나 이상 선택해 주세요.");
   if (d.receipt_type === "personal" && !PHONE.test(d.receipt_number)) e.push("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.");
