@@ -210,7 +210,7 @@ let page=1,openId=null;const PER=20;
 const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><p class="bk-title">러브어바웃 예약글 작성 목록</p><dl>
-  ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</dl>
+  ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("이메일",b.email)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</dl>
   <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p><p class="wrote">작성일 ${fmtDT(b.createdAt)}</p></div>
   <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
   <div class="pbox"><p class="pbox-h">결제 금액</p>${(b.priceItems||[]).length?`<ul class="pitems">${b.priceItems.map(i=>`<li><span>${esc(i.name)}</span><span>${money(i.price)||"0"}원</span></li>`).join("")}</ul>`:""}
@@ -270,10 +270,10 @@ $("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn
  btn.disabled=true;m.className="msg";m.textContent="파일 읽는 중…";
  try{let txt;if(/\.gz$/i.test(f.name))txt=await new Response(f.stream().pipeThrough(new DecompressionStream("gzip"))).text();else txt=await f.text();
   let d=JSON.parse(txt);if(Array.isArray(d)&&Array.isArray(d[0])&&typeof d[0][0]==="string"){const K=d[0];d=d[1].map(r=>Object.fromEntries(K.map((k,i)=>[k,r[i]])))}
-  let ins=0,sk=0,done=0;const parts=[];for(let i=0;i<d.length;i+=25)parts.push(d.slice(i,i+25));let next=0;
-  const worker=async()=>{while(next<parts.length){const p=parts[next++];let j;for(let t=0;t<3;t++){try{j=await api({action:"import",items:p});break}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,1500))}}ins+=j.inserted;sk+=j.skipped;done+=p.length;m.textContent=`옮기는 중… ${done} / ${d.length}`}};
+  let ins=0,sk=0,up=0,done=0;const parts=[];for(let i=0;i<d.length;i+=25)parts.push(d.slice(i,i+25));let next=0;
+  const worker=async()=>{while(next<parts.length){const p=parts[next++];let j;for(let t=0;t<3;t++){try{j=await api({action:"import",items:p});break}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,1500))}}ins+=j.inserted;sk+=j.skipped;up+=j.updated||0;done+=p.length;m.textContent=`옮기는 중… ${done} / ${d.length}`}};
   await Promise.all([worker(),worker(),worker(),worker()]);
-  m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${sk?` (이미 있던 ${sk}건은 건너뜀)`:""}.`;bookings=[];}
+  m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${up?` · 이미 있던 ${up}건은 이메일을 넣었어요`:""}${sk?` (${sk}건은 건너뜀)`:""}.`;bookings=[];}
  catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
 boot();
 </script>

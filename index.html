@@ -672,6 +672,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <div class="f"><label for="fphone">예약자 연락처 *</label><input id="fphone" class="ph" type="tel" inputmode="numeric" required placeholder="010-0000-0000" maxlength="13"></div>
         <div class="f"><label for="fsname">배우자 이름</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
         <div class="f"><label for="fsphone">배우자 연락처</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
+        <div class="f"><label for="femail">이메일 *</label><input id="femail" type="email" inputmode="email" required placeholder="예) love@naver.com" autocomplete="email" maxlength="80"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
         <div class="f"><label for="fdate">예식 날짜 *</label><input id="fdate" type="date" required></div>
@@ -864,7 +865,7 @@ let lkWho=null;
 function renderDetail(x){const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
  return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${badges(x)}</div>
    <p class="bk-title">러브어바웃 예약글 작성 목록</p>
-   ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone))}
+   ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone)+row("이메일",x.email))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
@@ -893,7 +894,7 @@ $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$(
  finally{btn.disabled=false;btn.textContent="내 예약글 찾기"}});
 $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
  const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
- const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),
+ const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),email:$("#femail").value.trim(),
   weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),
   priceTotal:[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0),
   priceItems:[...document.querySelectorAll('#step2 .picks input:checked')].filter(i=>i.value).map(i=>({name:i.name==="addon"?i.value.replace(/^(스냅|영상) · /,"$1 추가상품 · "):(i.name==="snap"?"본식 스냅 · ":"본식 DVD · ")+i.value,price:+i.dataset.price||0,k:i.name==="snap"?0:i.name==="dvd"?2:/^영상/.test(i.value)?3:1})).sort((p,q)=>p.k-q.k).map(({name,price})=>({name,price})),
@@ -904,6 +905,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(d.name.length<2)return bad("예약자 성함을 적어주세요.",$("#fname"));
  if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
  if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
  if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
  if(!d.weddingTime)return bad("예식 시작 시간을 선택해 주세요.",$("#ftime"));
  if(!d.hall)return bad("예식장을 적어주세요.",$("#fhall"));
