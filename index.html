@@ -211,6 +211,17 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
 .mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
 .mine-end{text-align:center;margin-top:8px}
+.ml-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 12px;font-size:14px}.ml-head p{margin:0}
+.ml{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.ml li{border-bottom:1px solid var(--line)}
+.ml-row{display:grid;grid-template-columns:32px 1fr auto 20px;gap:12px;align-items:center;width:100%;padding:14px 4px;background:none;border:0;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.ml-row:hover,.ml-row[aria-expanded="true"]{background:var(--bg-alt)}
+.ml-no{color:var(--ink-soft);font-size:13px;text-align:center}.ml-t{font-size:14.5px}.ml-t small{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.lock{font-size:12px;opacity:.6}
+.ml-pw{display:block;padding:4px 4px 16px 48px}.ml-pw[hidden]{display:none}.ml-pw p{font-size:13px;color:var(--ink-soft);margin:0 0 8px;word-break:keep-all}
+.ml-pw-row{display:flex;gap:8px}.ml-pw-row input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg-alt);border:1px solid var(--line);padding:10px 12px}
+.ml-pw .ferr:empty{display:none}
+@media (max-width:600px){.ml-pw{padding-left:4px}.ml-row{grid-template-columns:24px 1fr auto}.lock{display:none}}
 @media (max-width:600px){.mycheck{padding:28px 18px}.mine dl{grid-template-columns:84px 1fr}}
 .board{margin-top:48px}
 .board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
@@ -658,14 +669,14 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="head c"><span class="eyebrow">My Booking</span><h2 class="h-en">My Booking</h2></div>
     <div class="mycheck" id="mycheck">
       <div class="admin-go" id="adminGo" hidden><span>관리자 전용</span><a class="btn sm fill" href="/admin">예약글 게시판 보기</a></div>
-      <div class="mc-head"><p class="soft"><b>내 예약 확인</b><br>예약할 때 적은 성함, 연락처, 비밀번호를 입력하면 내 예약 내용과 진행 상태를 볼 수 있어요.</p></div>
+      <div class="mc-head"><p class="soft"><b>내 예약 확인</b><br>예약할 때 적은 이름과 연락처를 입력하면 내 예약글 목록이 나와요. 글을 누르고 비밀번호를 입력하면 내용을 볼 수 있어요.</p></div>
       <form class="mc-form" id="lookup" novalidate>
-        <label class="fld"><span>성함</span><input id="lkName" maxlength="20" autocomplete="name" placeholder="예약자 성함"></label>
-        <label class="fld"><span>연락처</span><input id="lkPhone" class="ph" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-0000-0000"></label>
-        <label class="fld"><span>비밀번호</span><input id="lkPw" type="password" maxlength="30" autocomplete="current-password" placeholder="예약할 때 정한 비밀번호"></label>
-        <button class="btn fill" type="submit" id="lkBtn">예약 확인하기</button>
+        <label class="fld"><span>예약자 이름</span><input id="lkName" maxlength="20" autocomplete="name" placeholder="예약자 이름"></label>
+        <label class="fld"><span>예약자 연락처</span><input id="lkPhone" class="ph" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-0000-0000"></label>
+        <button class="btn fill" type="submit" id="lkBtn">내 예약글 찾기</button>
         <p class="ferr" id="lkErr" role="alert"></p>
       </form>
+      <div id="myList" aria-live="polite"></div>
       <div id="myPosts" aria-live="polite"></div>
     </div>
   </div>
@@ -785,24 +796,37 @@ const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"�
 const stOf=x=>x.confirmed?["ok","예약확정"]:x.paid?["","입금확인"]:["no","예약 신청 완료"];
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
-$("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
- const d={action:"lookup",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim(),password:$("#lkPw").value};
- if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)||!d.password){err.textContent="성함, 연락처(010-0000-0000), 비밀번호를 모두 적어주세요.";return}
- btn.disabled=true;btn.textContent="확인하는 중…";
- try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.error);
-  const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
-  $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
+const lkPost=async d=>{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"잠시 후 다시 시도해 주세요.");return j};
+let lkWho=null;
+function renderDetail(x){const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
+ return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
    <p class="bk-title">러브어바웃 예약글 작성 목록</p>
    ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
-  </article>`).join("")+`<div class="mine-end"><button class="btn sm" type="button" id="lkClose">닫기</button></div>`;
-  $("#lookup").hidden=true;$("#lkPw").value="";
-  $("#lkClose").onclick=()=>{$("#myPosts").innerHTML="";$("#lookup").hidden=false;$("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})};
-  $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
- catch(x){err.textContent=x.message||"잠시 후 다시 시도해 주세요."}
- finally{btn.disabled=false;btn.textContent="예약 확인하기"}});
+  </article><div class="mine-end"><button class="btn sm" type="button" id="lkBack">목록으로</button></div>`}
+function renderList(items){const L=$("#myList");$("#myPosts").innerHTML="";
+ L.innerHTML=`<div class="ml-head"><p><b>${escH(lkWho.name)}</b>님의 예약글 ${items.length}건</p><button class="btn sm" type="button" id="lkReset">다시 찾기</button></div>
+  <ul class="ml">${items.map((x,i)=>`<li data-id="${x.id}"><button type="button" class="ml-row" aria-expanded="false"><span class="ml-no">${items.length-i}</span><span class="ml-t">본식 예약 문의<small>예식 ${escH(x.weddingDate)} · ${fmtDate(x.createdAt)} 작성</small></span><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span><span class="lock" aria-hidden="true">🔒</span></button>
+  <form class="ml-pw" hidden novalidate><p>이 글은 비밀글이에요. 예약할 때 정한 비밀번호를 입력해 주세요.</p><div class="ml-pw-row"><input type="password" maxlength="30" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호"><button class="btn sm fill" type="submit">확인</button></div><p class="ferr" role="alert"></p></form></li>`).join("")}</ul>`;
+ $("#lkReset").onclick=()=>{L.innerHTML="";$("#myPosts").innerHTML="";$("#lookup").hidden=false;$("#lkName").focus()};
+ L.querySelectorAll(".ml li").forEach(li=>{const btn=li.querySelector(".ml-row"),f=li.querySelector(".ml-pw"),inp=f.querySelector("input"),er=f.querySelector(".ferr");
+  btn.onclick=()=>{const open=f.hidden;L.querySelectorAll(".ml-pw").forEach(x=>x.hidden=true);L.querySelectorAll(".ml-row").forEach(x=>x.setAttribute("aria-expanded","false"));f.hidden=!open;btn.setAttribute("aria-expanded",String(open));if(open)inp.focus()};
+  f.onsubmit=async e=>{e.preventDefault();er.textContent="";if(!inp.value){er.textContent="비밀번호를 입력해 주세요.";return}
+   const sb=f.querySelector("button");sb.disabled=true;
+   try{const j=await lkPost({action:"lookup",id:+li.dataset.id,name:lkWho.name,phone:lkWho.phone,password:inp.value});inp.value="";
+    L.hidden=true;$("#myPosts").innerHTML=renderDetail(j.items[0]);
+    $("#lkBack").onclick=()=>{$("#myPosts").innerHTML="";L.hidden=false;$("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})};
+    $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
+   catch(x){er.textContent=x.message}finally{sb.disabled=false}}})}
+$("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
+ const d={action:"mine",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim()};
+ if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)){err.textContent="예약자 이름과 연락처(010-0000-0000)를 적어주세요.";return}
+ btn.disabled=true;btn.textContent="찾는 중…";
+ try{const j=await lkPost(d);lkWho={name:d.name,phone:d.phone};$("#lookup").hidden=true;$("#myList").hidden=false;renderList(j.items)}
+ catch(x){err.textContent=x.message}
+ finally{btn.disabled=false;btn.textContent="내 예약글 찾기"}});
 $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
  const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
  const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),
