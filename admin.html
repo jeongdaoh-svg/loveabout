@@ -267,7 +267,9 @@ $("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn
  btn.disabled=true;m.className="msg";m.textContent="파일 읽는 중…";
  try{let txt;if(/\.gz$/i.test(f.name))txt=await new Response(f.stream().pipeThrough(new DecompressionStream("gzip"))).text();else txt=await f.text();
   let d=JSON.parse(txt);if(Array.isArray(d)&&Array.isArray(d[0])&&typeof d[0][0]==="string"){const K=d[0];d=d[1].map(r=>Object.fromEntries(K.map((k,i)=>[k,r[i]])))}
-  let ins=0,sk=0;for(let i=0;i<d.length;i+=50){const j=await api({action:"import",items:d.slice(i,i+50)});ins+=j.inserted;sk+=j.skipped;m.textContent=`옮기는 중… ${Math.min(i+50,d.length)} / ${d.length}`}
+  let ins=0,sk=0,done=0;const parts=[];for(let i=0;i<d.length;i+=25)parts.push(d.slice(i,i+25));let next=0;
+  const worker=async()=>{while(next<parts.length){const p=parts[next++];let j;for(let t=0;t<3;t++){try{j=await api({action:"import",items:p});break}catch(e){if(t===2)throw e;await new Promise(r=>setTimeout(r,1500))}}ins+=j.inserted;sk+=j.skipped;done+=p.length;m.textContent=`옮기는 중… ${done} / ${d.length}`}};
+  await Promise.all([worker(),worker(),worker(),worker()]);
   m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${sk?` (이미 있던 ${sk}건은 건너뜀)`:""}.`;bookings=[];}
  catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
 boot();
