@@ -754,8 +754,8 @@ const fmtWon=n=>n.toLocaleString("ko-KR")+"원";
 const escA=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function renderPricing(){[["snap","#cards-snap"],["dvd","#cards-dvd"]].forEach(([k,el])=>{$(el).innerHTML="";(products[k]||[]).forEach(p=>{const a=document.createElement("article");a.className="card";
  a.innerHTML=`<div class="body"><span class="en">${escA(p.en)}</span><h3>${escA(p.ko)}</h3><p class="price">${escA(p.price)}<small>원</small></p>
- <ul>${(p.items||[]).map(i=>`<li>${escA(i)}</li>`).join("")}</ul><a href="#reservation" class="btn">이 상품 예약하기</a></div>`;
- a.querySelector(".btn").onclick=()=>{pending={k,v:p.ko};renderPicks()};$(el).append(a)})});
+ <ul>${(p.items||[]).map(i=>`<li>${escA(i)}</li>`).join("")}</ul></div>`;
+ $(el).append(a)})});
  const ad=products.addons||[];$("#addl").innerHTML=[["snap","스냅 추가상품"],["dvd","영상 추가상품"]].map(([g,t])=>{const l=ad.filter(p=>(p.group||"snap")===g);return l.length?`<div><h4>${t}</h4><ul>${l.map(p=>`<li><span>${escA(p.name)}${p.desc?`<small>${escA(p.desc)}</small>`:""}</span><b>${escA(p.price)}원</b></li>`).join("")}</ul></div>`:""}).join("")}
 let pending=null;
 function renderPicks(){
