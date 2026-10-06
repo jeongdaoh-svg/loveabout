@@ -153,6 +153,13 @@ mark{background:#f6dfd6;color:inherit;padding:0 1px}
   <p class="msg" id="aMsg" role="status"></p>
   <button class="btn fill" type="submit">비밀번호 바꾸기</button>
  </form>
+ <div class="card" style="max-width:420px;display:grid;gap:10px;margin-top:20px">
+  <p style="margin:0;font-weight:500">이전 홈페이지 예약글 가져오기</p>
+  <p class="soft" style="margin:0;font-size:13px">정리된 예약글 파일(.json.gz)을 고르면 예약 관리로 옮겨져요. 같은 글은 두 번 들어가지 않아요.</p>
+  <input type="file" id="impFile" accept=".gz,.json,application/gzip,application/json">
+  <button class="btn fill" type="button" id="impBtn">가져오기 시작</button>
+  <p class="msg" id="impMsg" role="status"></p>
+ </div>
 </section>
 </main>
 
@@ -256,6 +263,13 @@ $("#saveProducts").onclick=()=>{collect();const bad=["snap","dvd"].some(k=>conte
 $("#saveTerms").onclick=()=>{content.terms={notice:$("#tNotice").value,privacy:$("#tPrivacy").value};save($("#tMsg"))};
 $("#pwForm").onsubmit=async e=>{e.preventDefault();const m=$("#aMsg");if($("#npw").value!==$("#npw2").value){m.className="msg err";m.textContent="비밀번호 확인이 일치하지 않아요.";return}
  try{await api({action:"changePassword",newPassword:$("#npw").value});m.className="msg ok";m.textContent="비밀번호를 바꿨어요.";$("#npw").value=$("#npw2").value=""}catch(x){m.className="msg err";m.textContent=x.message}};
+$("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn=$("#impBtn");if(!f){m.className="msg err";m.textContent="파일을 먼저 골라주세요.";return}
+ btn.disabled=true;m.className="msg";m.textContent="파일 읽는 중…";
+ try{let txt;if(/\.gz$/i.test(f.name))txt=await new Response(f.stream().pipeThrough(new DecompressionStream("gzip"))).text();else txt=await f.text();
+  let d=JSON.parse(txt);if(Array.isArray(d)&&Array.isArray(d[0])&&typeof d[0][0]==="string"){const K=d[0];d=d[1].map(r=>Object.fromEntries(K.map((k,i)=>[k,r[i]])))}
+  let ins=0,sk=0;for(let i=0;i<d.length;i+=50){const j=await api({action:"import",items:d.slice(i,i+50)});ins+=j.inserted;sk+=j.skipped;m.textContent=`옮기는 중… ${Math.min(i+50,d.length)} / ${d.length}`}
+  m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${sk?` (이미 있던 ${sk}건은 건너뜀)`:""}.`;bookings=[];}
+ catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
 boot();
 </script>
 </body>
