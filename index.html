@@ -812,7 +812,16 @@ const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"�
 const won0=n=>(Number(n)||0).toLocaleString("ko-KR")+"원";
 const depLabel=x=>x.snapProduct&&x.dvdProduct?"스냅+DVD 예약금":x.dvdProduct?"DVD 예약금":"스냅 예약금";
 const depAmt=x=>x.deposit||200000*((x.snapProduct?1:0)+(x.dvdProduct?1:0));
-function payHTML(x){const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-dep);const it=x.priceItems||[];
+function deriveItems(x,P){const won=v=>{const n=parseInt(String(v||"").replace(/[^\d]/g,""),10);return isNaN(n)?0:n};const out=[];
+ const f=(list,name)=>(list||[]).find(p=>p.ko===name);
+ const s=f(P.snap,x.snapProduct);if(x.snapProduct)out.push({name:"본식 스냅 · "+x.snapProduct,price:s?won(s.price):0});
+ const ad=(x.addons||[]).map(v=>{const m=/^(스냅|영상) · (.*)$/.exec(v);if(!m)return{g:"snap",name:v,label:v};return{g:m[1]==="스냅"?"snap":"dvd",name:m[2],label:m[1]+" 추가상품 · "+m[2]}});
+ ad.filter(a=>a.g==="snap").forEach(a=>{const p=(P.addons||[]).find(q=>(q.group||"snap")==="snap"&&q.name===a.name);out.push({name:a.label,price:p?won(p.price):0})});
+ const d=f(P.dvd,x.dvdProduct);if(x.dvdProduct)out.push({name:"본식 DVD · "+x.dvdProduct,price:d?won(d.price):0});
+ ad.filter(a=>a.g==="dvd").forEach(a=>{const p=(P.addons||[]).find(q=>q.group==="dvd"&&q.name===a.name);out.push({name:a.label,price:p?won(p.price):0})});
+ return out}
+function fillPrice(x,P){if(!(x.priceItems||[]).length)x.priceItems=deriveItems(x,P);if(!x.priceTotal)x.priceTotal=x.priceItems.reduce((s,i)=>s+(+i.price||0),0);return x}
+function payHTML(x){fillPrice(x,products);const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-dep);const it=x.priceItems||[];
  return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
 const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
