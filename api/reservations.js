@@ -1,10 +1,9 @@
 // 예약 게시판 API
-// GET                         → 목록 (이름은 가리고, 연락처·내용은 보내지 않아요)
+// (공개 목록 없음 — 관리자 화면에서만 열람)
 // POST {action:"create",...}   → 예약글 작성
 // POST {action:"lookup",name,phone,password} → 본인 글 조회
 const { sql, ensure, hashPw, checkPw, clip, mask, PHONE, BIZ, body, fail } = require("./_db.js");
 
-const toPublic = (r) => ({ id: Number(r.id), createdAt: r.created_at, name: mask(r.name), status: r.status });
 const toFull = (r) => ({
   id: Number(r.id), createdAt: r.created_at, updatedAt: r.updated_at, status: r.status,
   name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
@@ -43,11 +42,8 @@ module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   try {
     await ensure();
-    if (req.method === "GET") {
-      const [rows] = await sql([["SELECT id, created_at, name, status FROM bookings ORDER BY created_at DESC, id DESC LIMIT 300"]]);
-      return res.status(200).json({ items: rows.map(toPublic) });
-    }
-    if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return fail(res, 405, "지원하지 않는 요청이에요."); }
+    // 예약 목록은 관리자 화면(/api/admin)에서만 볼 수 있어요.
+    if (req.method !== "POST") { res.setHeader("Allow", "POST"); return fail(res, 405, "지원하지 않는 요청이에요."); }
     const b = body(req);
     if (b.website) return res.status(200).json({ ok: true });
     if (b.action === "lookup") {
