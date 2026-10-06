@@ -327,10 +327,11 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .card li::before{content:"♡";color:var(--rose);margin-right:10px;font-size:11px}
 .card .btn{align-self:stretch}
 .consult-cta{text-align:center;margin-top:28px}
+.consult-steps{max-width:1040px;margin:0 auto 56px}.consult-steps .pg-title{margin-bottom:22px}
 .consult-box{max-width:520px;margin:0 auto;text-align:center;border:1px solid var(--line);background:var(--bg);padding:40px 28px;display:grid;gap:10px;justify-items:center}
 .consult-box .cb-t{font-family:var(--ko-serif);font-size:20px;margin:0}
 .consult-box .cb-s{font-size:14px;color:var(--ink-soft);margin:0 0 12px;word-break:keep-all}
-.btn.kakao{background:#FEE500;color:#191919;border-color:#FEE500;letter-spacing:.08em}.btn.kakao:hover{background:#f5d900;border-color:#f5d900;color:#191919}
+.btn.kakao{background:transparent;color:var(--ink);border-color:currentColor}.btn.kakao:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .note{margin-top:28px;font-size:13px;color:var(--ink-soft);text-align:center}
 
 .pgroup{display:grid;gap:22px;margin-bottom:56px}
@@ -506,17 +507,25 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">DVD</span>본식 DVD</h3><div class="cards c3" id="cards-dvd"></div></div>
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">Options</span>추가상품</h3><div class="addl" id="addl"></div></div>
     <p class="note">모든 상품은 신부대기실부터 본식까지 촬영해요. 일정과 옵션은 편하게 문의해 주세요.</p>
-    <div class="consult-cta"><a class="btn fill kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
+    <div class="consult-cta"><a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
   </div>
 </section>
 
 <section class="band alt" id="contact" data-tab="contact">
   <div class="wrap">
     <div class="head c"><span class="eyebrow">Contact</span><h2 class="h-en">상담하기</h2><p class="soft">날짜 가능 여부, 견적, 상품 구성 등 궁금한 점은 카카오채널로 편하게 물어봐 주세요.</p></div>
+    <div class="consult-steps"><h3 class="pg-title"><span class="eyebrow">How it works</span>예약 진행 절차</h3>
+    <ol class="steps">
+      <li><h4>예약 문의</h4><p>예식 날짜·시간·웨딩홀을 알려주시면 가능 여부를 바로 확인해 드려요.</p></li>
+      <li><h4>계약 · 예약금</h4><p>예약금 입금으로 일정이 확정돼요.</p></li>
+      <li><h4>사전 체크</h4><p>예식 2주 전, 식순과 꼭 남기고 싶은 장면을 함께 정리해요.</p></li>
+      <li><h4>본식 촬영</h4><p>신부대기실부터 폐백까지 함께해요.</p></li>
+      <li><h4>전달</h4><p>원본은 1주 안에, 보정본·필름은 6–8주 안에 받아보세요.</p></li>
+    </ol></div>
     <div class="consult-box">
       <p class="cb-t">러브어바웃 카카오채널</p>
       <p class="cb-s">카카오톡에서 ‘러브어바웃’을 검색하거나 아래 버튼을 눌러 채팅을 시작하세요.</p>
-      <a class="btn fill kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a>
+      <a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a>
     </div>
   </div>
 </section>
