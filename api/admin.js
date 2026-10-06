@@ -56,22 +56,23 @@ module.exports = async (req, res) => {
     }
     if (b.action === "import") {
       // 이전 홈페이지 예약글 옮기기 (같은 legacyNo는 한 번만 들어가요)
-      const items = Array.isArray(b.items) ? b.items.slice(0, 300) : [];
+      const items = Array.isArray(b.items) ? b.items.slice(0, 100) : [];
       if (!items.length) return fail(res, 400, "옮길 글이 없어요.");
       const nos = items.map((x) => Number(x.legacyNo) || 0).filter(Boolean);
       const [have] = await sql([["SELECT legacy_no FROM bookings WHERE legacy_no IN (" + nos.map(() => "?").join(",") + ")", nos]]);
       const seen = new Set(have.map((r) => Number(r.legacy_no)));
-      const pw = String(b.password || "1234"), ph = hashPw(pw), pe = await encrypt(pw);
+      const items2 = items.slice(0, 100);
       const st = [];
-      for (const x of items) {
+      for (const x of items2) {
         const no = Number(x.legacyNo) || 0;
         if (!no || seen.has(no)) continue; seen.add(no);
+        const pw = String(x.password || "1234").slice(0, 30), ph = hashPw(pw), pe = await encrypt(pw);
         st.push(["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,agreed_notice,agreed_privacy,status,admin_memo,deposit,price_total,price_items,imported,legacy_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1,'접수',?,0,0,'[]',1,?)",
           [clip(x.createdAt, 30) || new Date().toISOString(), clip(x.name, 20), clip(x.phone, 13), clip(x.spouseName, 20), clip(x.spousePhone, 13), clip(x.weddingDate, 20), clip(x.weddingTime, 20), clip(x.hall, 60), clip(x.snapProduct, 60), clip(x.dvdProduct, 60),
            JSON.stringify((Array.isArray(x.addons) ? x.addons : []).slice(0, 10).map((a) => clip(a, 60))), clip(x.partnerCode, 30), ["personal", "business"].includes(x.receiptType) ? x.receiptType : "none", clip(x.receiptNumber, 13), clip(x.message, 1500), ph, pe, String(x.adminMemo || "").slice(0, 20000), no]]);
       }
       for (let i = 0; i < st.length; i += 100) await sql(st.slice(i, i + 100));
-      return res.status(200).json({ ok: true, inserted: st.length, skipped: items.length - st.length });
+      return res.status(200).json({ ok: true, inserted: st.length, skipped: items2.length - st.length });
     }
     if (b.action === "delete") {
       await sql([["DELETE FROM bookings WHERE id=?", [Number(b.id)]]]);
