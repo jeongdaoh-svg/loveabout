@@ -60,6 +60,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .chip.cnt b{font-weight:600;margin-left:4px}
 .chip.cnt.pend b{color:var(--rose)}.chip.cnt.conf b{color:var(--ok)}
 .chip.cnt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.bk-title{font-size:15px;font-weight:500;padding:9px 12px;border:1px solid var(--line);background:var(--bg-alt);margin:0 0 12px}
 .pwrow{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:13px;color:var(--soft)}
 .pwrow code{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:2px 8px;margin-left:6px}
 dl{display:grid;grid-template-columns:96px 1fr;gap:3px 12px;margin:0}
@@ -185,8 +186,8 @@ const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.
 let page=1,openId=null;const PER=15;
 const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
- return `<article class="bk" data-id="${b.id}"><div class="info"><dl>
-  ${r("예약자 연락처",b.phone)}${r("배우자",[b.spouseName,b.spousePhone].filter(Boolean).join(" / "))}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
+ return `<article class="bk" data-id="${b.id}"><div class="info"><p class="bk-title">러브어바웃 예약글 작성 목록</p><dl>
+  ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
   <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p></div>
   <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>

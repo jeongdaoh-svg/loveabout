@@ -202,6 +202,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mc-form .btn{width:100%;margin-top:4px}.mc-form .ferr:empty{display:none}
 .mine{border-top:1px solid var(--line);margin-top:4px;padding-top:24px}
 .mine+.mine{margin-top:28px}
+.bk-title{font-family:var(--ko-serif);font-size:16px;text-align:center;padding:12px;border:1px solid var(--line);background:var(--bg-alt);margin:0 0 18px;letter-spacing:.02em}
 .mine-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
 .mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
 .badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
@@ -607,9 +608,9 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     </div>
     <form class="rpanel" id="step2" hidden novalidate>
       <fieldset class="fs"><legend>예약자 정보</legend>
-        <div class="f"><label for="fname">예약자 성함 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
+        <div class="f"><label for="fname">예약자 이름 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
         <div class="f"><label for="fphone">예약자 연락처 *</label><input id="fphone" class="ph" type="tel" inputmode="numeric" required placeholder="010-0000-0000" maxlength="13"></div>
-        <div class="f"><label for="fsname">배우자 성함</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
+        <div class="f"><label for="fsname">배우자 이름</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
         <div class="f"><label for="fsphone">배우자 연락처</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
@@ -791,7 +792,8 @@ $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$(
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.error);
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
   $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
-   ${sec("예약자 정보",row("예약자",x.name+" · "+x.phone)+row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" · ")))}
+   <p class="bk-title">러브어바웃 예약글 작성 목록</p>
+   ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
