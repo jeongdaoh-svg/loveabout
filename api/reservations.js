@@ -9,7 +9,7 @@ const toFull = (r) => ({
   paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1, imported: Number(r.imported) === 1,
   priceItems: (() => { try { return JSON.parse(r.price_items || "[]"); } catch (e) { return []; } })(),
   priceTotal: Number(r.price_total) || 0, discount: Number(r.discount) || 0, deposit: Number(r.deposit) || 0,
-  name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
+  name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone, email: r.email || "",
   weddingDate: r.wedding_date, weddingTime: r.wedding_time, hall: r.hall,
   snapProduct: r.snap_product, dvdProduct: r.dvd_product, addons: JSON.parse(r.addons || "[]"),
   partnerCode: r.partner_code, receiptType: r.receipt_type, receiptNumber: r.receipt_number, message: r.message,
@@ -17,7 +17,7 @@ const toFull = (r) => ({
 
 function validate(b) {
   const d = {
-    name: clip(b.name, 20), phone: clip(b.phone, 13), spouse_name: clip(b.spouseName, 20), spouse_phone: clip(b.spousePhone, 13),
+    name: clip(b.name, 20), phone: clip(b.phone, 13), spouse_name: clip(b.spouseName, 20), spouse_phone: clip(b.spousePhone, 13), email: clip(b.email, 80).toLowerCase(),
     wedding_date: clip(b.weddingDate, 10), wedding_time: clip(b.weddingTime, 20), hall: clip(b.hall, 60),
     snap_product: clip(b.snapProduct, 60), dvd_product: clip(b.dvdProduct, 60),
     addons: JSON.stringify((Array.isArray(b.addons) ? b.addons : []).slice(0, 20).map((x) => clip(x, 60)).filter(Boolean)),
@@ -28,6 +28,7 @@ function validate(b) {
   if (d.name.length < 2) e.push("예약자 성함을 적어주세요.");
   if (!PHONE.test(d.phone)) e.push("예약자 연락처를 010-0000-0000 형식으로 적어주세요.");
   if (d.spouse_phone && !PHONE.test(d.spouse_phone)) e.push("배우자 연락처를 010-0000-0000 형식으로 적어주세요.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) e.push("이메일 주소를 정확히 적어주세요. 예) love@naver.com");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.wedding_date)) e.push("예식일을 선택해 주세요.");
   if (!d.wedding_time) e.push("예식 시작 시간을 선택해 주세요.");
   if (!d.hall) e.push("예식장을 적어주세요.");
@@ -68,10 +69,10 @@ module.exports = async (req, res) => {
     const { d, e, pw } = validate(b);
     if (e.length) return fail(res, 400, e.join(" "));
     const now = new Date().toISOString();
-    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,price_items,deposit,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
+    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,price_items,deposit,email,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
       [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw), Math.max(0, Math.min(100000000, Math.round(Number(b.priceTotal) || 0))),
       JSON.stringify((Array.isArray(b.priceItems) ? b.priceItems : []).slice(0, 20).map((x) => ({ name: clip(x && x.name, 60), price: Math.max(0, Math.min(100000000, Math.round(Number(x && x.price) || 0))) })).filter((x) => x.name)),
-      200000 * ((d.snap_product ? 1 : 0) + (d.dvd_product ? 1 : 0))]]]);
+      200000 * ((d.snap_product ? 1 : 0) + (d.dvd_product ? 1 : 0)), d.email]]]);
     return res.status(201).json({ ok: true });
   } catch (err) {
     return fail(res, 500, "잠시 후 다시 시도해 주세요.");
