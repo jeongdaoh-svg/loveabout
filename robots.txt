@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://loveabout-five.vercel.app/sitemap.xml
