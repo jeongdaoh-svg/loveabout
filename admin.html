@@ -62,9 +62,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .chip.cnt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .bk-title{font:inherit;color:inherit;margin:0 0 3px;padding:0;border:0;background:none}
 .pbox{border:1px solid var(--line);background:var(--bg);padding:10px;display:grid;gap:6px}
+.pitems{list-style:none;margin:0;padding:0;font-size:12.5px}.pitems li{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted var(--line)}
 .pbox-h{margin:0;font-size:12.5px;color:var(--soft)}
 .pbox input{text-align:right;font-variant-numeric:tabular-nums}
 .pbal{margin:2px 0 0;display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--line);padding-top:8px}.pbal b{font-size:15px}
+.wrote{margin:8px 0 0;font-size:13px;color:var(--soft)}
 .pwrow{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:13px;color:var(--soft)}
 .pwrow code{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:2px 8px;margin-left:6px}
 dl{display:grid;grid-template-columns:96px 1fr;gap:3px 12px;margin:0}
@@ -81,7 +83,7 @@ dt{color:var(--soft)}dd{margin:0;overflow-wrap:anywhere}
 .btbl th{font-weight:500;font-size:12.5px;color:var(--soft);text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 .btbl td{padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 .btbl tr.row{cursor:pointer}.btbl tr.row:hover td,.btbl tr.row.open td{background:var(--bg-alt)}
-.btbl .c-no{width:56px;color:var(--soft)}.btbl .c-st{width:150px}
+.btbl .c-no{width:56px;color:var(--soft);text-align:center}.btbl .c-st{width:150px}.btbl .c-who{width:110px}.btbl .c-date{width:110px;color:var(--soft);font-variant-numeric:tabular-nums}.btbl td.name .lk{font-size:11px;opacity:.55}.btbl th.c-no{text-align:center}
 .btbl td.name b{font-weight:500}.btbl td.name small{display:block;color:var(--soft);font-size:12px}
 .btbl tr.detail>td{padding:0 0 14px;background:var(--bg-alt)}
 .btbl .empty{text-align:center;color:var(--soft);padding:40px 0}
@@ -89,7 +91,7 @@ dt{color:var(--soft)}dd{margin:0;overflow-wrap:anywhere}
 .pager button{min-width:34px;padding:6px 8px;border:1px solid var(--line);background:var(--bg);font:inherit;font-size:13px;cursor:pointer}
 .pager button[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 mark{background:#f6dfd6;color:inherit;padding:0 1px}
-@media (max-width:820px){.btbl .c-hide{display:none}}
+@media (max-width:820px){.btbl .c-who{display:none}.btbl .c-st{width:auto}}
 @media (max-width:820px){.bk{grid-template-columns:1fr}.bk .side{border-left:0;border-top:1px solid var(--line)}.prow,.prow.add{grid-template-columns:1fr}.prow .h{display:none}}
 </style>
 </head>
@@ -118,10 +120,10 @@ mark{background:#f6dfd6;color:inherit;padding:0 1px}
 
 <section id="vBookings" hidden>
  <h1>예약 관리</h1>
- <form class="bar" id="qForm" role="search"><input id="q" type="search" placeholder="예약자 · 배우자 이름 검색" aria-label="이름 검색"><button class="btn sm fill" type="submit">검색</button><select id="fStatus" aria-label="상태"><option value="">전체</option><option value="pending">접수</option><option value="confirmed">예약확정</option></select><button class="btn sm" id="reload" type="button">새로고침</button></form>
+ <form class="bar" id="qForm" role="search"><input id="q" type="search" placeholder="예약자 이름 검색" aria-label="이름 검색"><button class="btn sm fill" type="submit">검색</button><select id="fStatus" aria-label="상태"><option value="">전체</option><option value="pending">접수</option><option value="confirmed">예약확정</option></select><button class="btn sm" id="reload" type="button">새로고침</button></form>
  <div class="chips" id="counts"></div>
  <p class="soft" id="qInfo"></p>
- <div class="tbl-wrap"><table class="btbl"><thead><tr><th class="c-no">번호</th><th>예약자</th><th>예식 날짜</th><th class="c-hide">예식장</th><th class="c-hide">상품</th><th class="c-hide">작성일</th><th class="c-st">상태</th></tr></thead><tbody id="bkList"><tr><td colspan="7" class="empty">불러오는 중이에요.</td></tr></tbody></table></div>
+ <div class="tbl-wrap"><table class="btbl"><thead><tr><th class="c-no">번호</th><th>제목</th><th class="c-who">작성자</th><th class="c-date">작성일</th><th class="c-st">상태</th></tr></thead><tbody id="bkList"><tr><td colspan="5" class="empty">불러오는 중이에요.</td></tr></tbody></table></div>
  <div class="pager" id="pager"></div>
 </section>
 
@@ -181,6 +183,7 @@ function go(v){$$("#nav [data-v]").forEach(b=>b.setAttribute("aria-current",b.da
 
 /* 예약 관리 */
 const rtypeLabel={personal:"휴대폰",business:"사업자번호",none:"발행 안 함"};
+const fmtD=iso=>{if(!iso)return"";const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
 const fmtDT=iso=>iso?new Date(iso).toLocaleString("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
 async function loadBookings(){try{const j=await api({action:"list"});bookings=j.items;STATUSES=j.statuses||STATUSES;
  renderBookings()}
@@ -191,11 +194,11 @@ let page=1,openId=null;const PER=15;
 const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><p class="bk-title">러브어바웃 예약글 작성 목록</p><dl>
-  ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
-  <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p></div>
+  ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</dl>
+  <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p><p class="wrote">작성일 ${fmtDT(b.createdAt)}</p></div>
   <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
-  <div class="pbox"><p class="pbox-h">결제 금액</p>
-   <label>상품 금액<input class="pTot" inputmode="numeric" value="${money(b.priceTotal||0)}"></label>
+  <div class="pbox"><p class="pbox-h">결제 금액</p>${(b.priceItems||[]).length?`<ul class="pitems">${b.priceItems.map(i=>`<li><span>${esc(i.name)}</span><span>${money(i.price)||"0"}원</span></li>`).join("")}</ul>`:""}
+   <label>총 상품 금액<input class="pTot" inputmode="numeric" value="${money(b.priceTotal||0)}"></label>
    <label>할인 금액<input class="pDis" inputmode="numeric" value="${money(b.discount||0)}"></label>
    <label>예약금 (입금액)<input class="pDep" inputmode="numeric" value="${money(b.deposit||0)}"></label>
    <p class="pbal">남은 잔금 <b>${money(Math.max(0,(b.priceTotal||0)-(b.discount||0)-(b.deposit||0)))||"0"}원</b></p></div>
@@ -210,14 +213,14 @@ function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
   el.querySelector(".sDel").onclick=()=>{m.className="msg sMsg";m.innerHTML=`<span class="confirm">이 예약을 삭제할까요? 되돌릴 수 없어요. <button class="btn sm danger yes" type="button">삭제</button><button class="btn sm no" type="button">취소</button></span>`;
    m.querySelector(".no").onclick=()=>m.textContent="";m.querySelector(".yes").onclick=async()=>{try{await api({action:"delete",id});bookings=bookings.filter(x=>x.id!==id);openId=null;renderBookings()}catch(x){m.className="msg sMsg err";m.textContent=x.message}}}}
 function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=q.toLowerCase();
- const list=bookings.filter(b=>(!f||(f==="confirmed"?b.confirmed:!b.confirmed))&&(!q||[b.name,b.spouseName].join(" ").toLowerCase().includes(ql)));
+ const list=bookings.filter(b=>(!f||(f==="confirmed"?b.confirmed:!b.confirmed))&&(!q||String(b.name||"").toLowerCase().includes(ql)));
  $("#counts").innerHTML=`<button type="button" class="chip cnt pend${$("#fStatus").value==="pending"?" on":""}" data-f="pending">접수 <b>${bookings.filter(b=>!b.confirmed).length}</b></button><button type="button" class="chip cnt conf${$("#fStatus").value==="confirmed"?" on":""}" data-f="confirmed">예약확정 <b>${bookings.filter(b=>b.confirmed).length}</b></button>`;
  $$("#counts .cnt").forEach(c=>c.onclick=()=>{const fs=$("#fStatus");fs.value=fs.value===c.dataset.f?"":c.dataset.f;page=1;openId=null;renderBookings()});
  $("#qInfo").textContent=q||f?`검색 결과 ${list.length}건`+(q?` · "${q}"`:"")+(f?` · ${$("#fStatus").selectedOptions[0].text}`:""):"";
  const pages=Math.max(1,Math.ceil(list.length/PER));if(page>pages)page=pages;const slice=list.slice((page-1)*PER,page*PER);
  $("#bkList").innerHTML=slice.length?slice.map((b,i)=>{const no=list.length-((page-1)*PER+i);const prod=[withAdd(b.snapProduct,"스냅",b.addons),withAdd(b.dvdProduct,"영상",b.addons)].filter(Boolean).join(" / ");
-  return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name"><b>${hl(b.name,q)}</b>${b.spouseName?`<small>배우자 ${hl(b.spouseName,q)}</small>`:""}</td><td>${esc(b.weddingDate)}</td><td class="c-hide">${esc(b.hall)}</td><td class="c-hide">${esc(prod)}</td><td class="c-hide">${fmtDT(b.createdAt).slice(0,12)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?'<span class="st conf">예약확정</span>':""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="7">${detailHTML(b)}</td></tr>`:"")}).join("")
-  :`<tr><td colspan="7" class="empty">${bookings.length?"검색 결과가 없어요.":"아직 접수된 예약이 없어요."}</td></tr>`;
+  return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name">${hl(b.name,q)} 본식 예약 <span class="lk">🔒</span></td><td class="c-who">${hl(b.name,q)}</td><td class="c-date">${fmtD(b.createdAt)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?'<span class="st conf">예약확정</span>':""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="5">${detailHTML(b)}</td></tr>`:"")}).join("")
+  :`<tr><td colspan="5" class="empty">${bookings.length?"검색 결과가 없어요.":"아직 접수된 예약이 없어요."}</td></tr>`;
  $("#pager").innerHTML=pages>1?Array.from({length:pages},(_,k)=>`<button type="button" data-p="${k+1}"${k+1===page?' aria-current="page"':""}>${k+1}</button>`).join(""):"";
  $$("#pager button").forEach(x=>x.onclick=()=>{page=+x.dataset.p;openId=null;renderBookings()});
  $$("#bkList tr.row").forEach(tr=>{const t=()=>{const id=+tr.dataset.id;openId=openId===id?null:id;renderBookings()};tr.onclick=t;tr.onkeydown=e=>{if(e.key==="Enter")t()}});
