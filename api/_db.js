@@ -55,7 +55,13 @@ function checkPw(pw, stored) {
   const a = crypto.scryptSync(String(pw), salt, 32), b = Buffer.from(h, "hex");
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
+let secretCache = null, keyCache = null;
 async function secret() {
+  if (secretCache) return secretCache;
+  secretCache = await loadSecret();
+  return secretCache;
+}
+async function loadSecret() {
   const [rows] = await sql([["SELECT value FROM settings WHERE key='secret'"]]);
   if (rows[0]) return rows[0].value;
   const s = crypto.randomBytes(32).toString("hex");
@@ -78,7 +84,7 @@ async function verifyToken(t) {
 }
 
 // 예약자 비밀번호: 관리자가 볼 수 있도록 암호화해서 보관 (AES-256-GCM)
-async function encKey() { return crypto.createHash("sha256").update("pw-enc:" + (await secret())).digest(); }
+async function encKey() { if (!keyCache) keyCache = crypto.createHash("sha256").update("pw-enc:" + (await secret())).digest(); return keyCache; }
 async function encrypt(text) {
   const iv = crypto.randomBytes(12), c = crypto.createCipheriv("aes-256-gcm", await encKey(), iv);
   const out = Buffer.concat([c.update(String(text), "utf8"), c.final()]);
