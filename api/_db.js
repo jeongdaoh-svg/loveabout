@@ -38,7 +38,15 @@ const SCHEMA = [
   [`CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)`],
 ];
 let schemaReady = false;
-async function ensure() { if (!schemaReady) { await sql(SCHEMA); schemaReady = true; } }
+const EXTRA_COLS = [["paid", "INTEGER NOT NULL DEFAULT 0"], ["confirmed", "INTEGER NOT NULL DEFAULT 0"], ["pw_enc", "TEXT"]];
+async function ensure() {
+  if (schemaReady) return;
+  await sql(SCHEMA);
+  const [cols] = await sql([["SELECT name FROM pragma_table_info('bookings')"]]);
+  const have = new Set(cols.map((c) => c.name));
+  for (const [c, def] of EXTRA_COLS) if (!have.has(c)) { try { await sql([["ALTER TABLE bookings ADD COLUMN " + c + " " + def]]); } catch (e) {} }
+  schemaReady = true;
+}
 
 function hashPw(pw) { const salt = crypto.randomBytes(16).toString("hex"); return salt + ":" + crypto.scryptSync(String(pw), salt, 32).toString("hex"); }
 function checkPw(pw, stored) {
@@ -69,6 +77,19 @@ async function verifyToken(t) {
   return p.exp > Date.now() ? p.u : null;
 }
 
+// 예약자 비밀번호: 관리자가 볼 수 있도록 암호화해서 보관 (AES-256-GCM)
+async function encKey() { return crypto.createHash("sha256").update("pw-enc:" + (await secret())).digest(); }
+async function encrypt(text) {
+  const iv = crypto.randomBytes(12), c = crypto.createCipheriv("aes-256-gcm", await encKey(), iv);
+  const out = Buffer.concat([c.update(String(text), "utf8"), c.final()]);
+  return [iv, c.getAuthTag(), out].map((x) => x.toString("base64")).join(".");
+}
+async function decrypt(s) {
+  try { const [iv, tag, data] = String(s).split(".").map((x) => Buffer.from(x, "base64"));
+    const d = crypto.createDecipheriv("aes-256-gcm", await encKey(), iv); d.setAuthTag(tag);
+    return Buffer.concat([d.update(data), d.final()]).toString("utf8"); } catch (e) { return null; }
+}
+
 const clip = (s, n) => String(s ?? "").trim().slice(0, n);
 const mask = (n) => { n = String(n || "").trim(); if (n.length <= 1) return n + "*"; if (n.length === 2) return n[0] + "*"; return n[0] + "*".repeat(n.length - 2) + n[n.length - 1]; };
 const PHONE = /^01[016789]-\d{3,4}-\d{4}$/;
@@ -76,4 +97,4 @@ const BIZ = /^\d{3}-\d{2}-\d{5}$/;
 const body = (req) => (typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {});
 const fail = (res, code, msg) => res.status(code).json({ error: msg });
 
-module.exports = { sql, setSql, ensure, hashPw, checkPw, signToken, verifyToken, clip, mask, PHONE, BIZ, body, fail };
+module.exports = { sql, setSql, ensure, hashPw, checkPw, signToken, verifyToken, encrypt, decrypt, clip, mask, PHONE, BIZ, body, fail };

@@ -1,5 +1,5 @@
 // 관리자 API: 최초 설정, 로그인, 예약 관리, 홈페이지 내용 수정
-const { sql, ensure, hashPw, checkPw, signToken, verifyToken, clip, PHONE, body, fail } = require("./_db.js");
+const { sql, ensure, hashPw, checkPw, signToken, verifyToken, decrypt, clip, PHONE, body, fail } = require("./_db.js");
 const { toFull } = require("./reservations.js");
 const STATUSES = ["접수", "확인중", "예약확정", "촬영완료", "취소"];
 
@@ -29,7 +29,9 @@ module.exports = async (req, res) => {
 
     if (b.action === "list") {
       const [rows] = await sql([["SELECT * FROM bookings ORDER BY created_at DESC, id DESC"]]);
-      return res.status(200).json({ items: rows.map((r) => ({ ...toFull(r), adminMemo: r.admin_memo })), statuses: STATUSES });
+      const items = [];
+      for (const r of rows) items.push({ ...toFull(r), adminMemo: r.admin_memo, password: r.pw_enc ? await decrypt(r.pw_enc) : null });
+      return res.status(200).json({ items, statuses: STATUSES });
     }
     if (b.action === "update") {
       const id = Number(b.id); const f = b.fields || {};
@@ -41,6 +43,7 @@ module.exports = async (req, res) => {
         if ((k === "phone" || (k === "spousePhone" && v)) && !PHONE.test(v)) return fail(res, 400, "연락처는 010-0000-0000 형식으로 적어주세요.");
         sets.push(col + "=?"); args.push(v);
       }
+      for (const k of ["paid", "confirmed"]) if (k in f) { sets.push(k + "=?"); args.push(f[k] ? 1 : 0); }
       if (!id || !sets.length) return fail(res, 400, "수정할 내용이 없어요.");
       sets.push("updated_at=?"); args.push(new Date().toISOString(), id);
       await sql([["UPDATE bookings SET " + sets.join(",") + " WHERE id=?", args]]);
