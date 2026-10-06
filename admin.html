@@ -54,7 +54,7 @@ dt{color:var(--soft)}dd{margin:0;overflow-wrap:anywhere}
 .confirm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--bad)}
 .prod-group{margin-bottom:28px}
 .prow{display:grid;grid-template-columns:1.2fr 1fr 1fr 2fr auto;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
-.prow.add{grid-template-columns:1.4fr 1fr 2fr auto}
+.prow.add{grid-template-columns:.7fr 1.4fr 1fr 2fr auto}
 .prow .h{font-size:12px;color:var(--soft)}
 .terms-ed textarea{min-height:260px}
 .empty{padding:40px;text-align:center;color:var(--soft);border:1px dashed var(--line)}
@@ -170,14 +170,14 @@ $("#q").oninput=renderBookings;$("#fStatus").onchange=renderBookings;$("#reload"
 async function loadContent(){if(content)return content;let c=null;try{c=(await (await fetch("/api/content",{cache:"no-store"})).json()).content}catch(e){}
  if(!c){try{c=await (await fetch("/content-default.json",{cache:"no-store"})).json()}catch(e){c={}}}
  content={snap:c.snap||[],dvd:c.dvd||[],addons:c.addons||[],terms:c.terms||{notice:"",privacy:""}};return content}
-function prodRow(k,p,i){if(k==="addons")return `<div class="prow add" data-k="${k}" data-i="${i}"><label>추가 상품명<input class="pn" value="${esc(p.name)}"></label><label>가격 (원)<input class="pp" inputmode="numeric" value="${esc(p.price)}"></label><label>설명<input class="pd" value="${esc(p.desc||"")}"></label><button class="btn sm danger pdel" type="button" aria-label="삭제">삭제</button></div>`;
+function prodRow(k,p,i){if(k==="addons")return `<div class="prow add" data-k="${k}" data-i="${i}"><label>구분<select class="pg"><option value="snap"${(p.group||"snap")==="snap"?" selected":""}>스냅</option><option value="dvd"${p.group==="dvd"?" selected":""}>영상</option></select></label><label>추가 상품명<input class="pn" value="${esc(p.name)}"></label><label>가격 (원)<input class="pp" inputmode="numeric" value="${esc(p.price)}"></label><label>설명<input class="pd" value="${esc(p.desc||"")}"></label><button class="btn sm danger pdel" type="button" aria-label="삭제">삭제</button></div>`;
  return `<div class="prow" data-k="${k}" data-i="${i}"><label>상품명<input class="pn" value="${esc(p.ko)}"></label><label>영문 표기<input class="pe" value="${esc(p.en||"")}"></label><label>가격 (원)<input class="pp" inputmode="numeric" value="${esc(p.price)}"></label><label>구성 (한 줄에 하나)<textarea class="pi" rows="4">${esc((p.items||[]).join("\n"))}</textarea></label><button class="btn sm danger pdel" type="button">삭제</button></div>`}
 function renderProducts(){[["snap","#pSnap"],["dvd","#pDvd"],["addons","#pAdd"]].forEach(([k,el])=>{$(el).innerHTML=content[k].length?content[k].map((p,i)=>prodRow(k,p,i)).join(""):`<p class="soft">아직 없어요.</p>`});
  $$(".pdel").forEach(b=>b.onclick=()=>{collect();const r=b.closest(".prow");content[r.dataset.k].splice(+r.dataset.i,1);renderProducts()})}
-$$("[data-add]").forEach(b=>b.onclick=()=>{collect();const k=b.dataset.add;content[k].push(k==="addons"?{name:"",price:"",desc:""}:{ko:"",en:"",price:"",items:[]});renderProducts()});
+$$("[data-add]").forEach(b=>b.onclick=()=>{collect();const k=b.dataset.add;content[k].push(k==="addons"?{group:"snap",name:"",price:"",desc:""}:{ko:"",en:"",price:"",items:[]});renderProducts()});
 const money=v=>{const d=String(v).replace(/[^\d]/g,"");return d?Number(d).toLocaleString("ko-KR"):""};
 function collect(){$$(".prow").forEach(r=>{const k=r.dataset.k,i=+r.dataset.i,p=content[k][i];if(!p)return;
- if(k==="addons"){p.name=r.querySelector(".pn").value.trim();p.price=money(r.querySelector(".pp").value);p.desc=r.querySelector(".pd").value.trim()}
+ if(k==="addons"){p.group=r.querySelector(".pg").value;p.name=r.querySelector(".pn").value.trim();p.price=money(r.querySelector(".pp").value);p.desc=r.querySelector(".pd").value.trim()}
  else{p.ko=r.querySelector(".pn").value.trim();p.en=r.querySelector(".pe").value.trim();p.price=money(r.querySelector(".pp").value);p.items=r.querySelector(".pi").value.split("\n").map(s=>s.trim()).filter(Boolean)}})}
 async function save(msgEl){msgEl.className="msg";msgEl.textContent="저장하는 중…";try{await api({action:"saveContent",content});msgEl.className="msg ok";msgEl.textContent="저장했어요. 홈페이지를 새로고침하면 반영돼요."}catch(x){msgEl.className="msg err";msgEl.textContent=x.message}}
 $("#saveProducts").onclick=()=>{collect();const bad=["snap","dvd"].some(k=>content[k].some(p=>!p.ko||!p.price))||content.addons.some(p=>!p.name);
