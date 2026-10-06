@@ -206,7 +206,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
 .mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
 .badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
-.badge.ok{background:var(--rose);color:#fff}.pay dl{border-top:1px solid var(--ink);grid-template-columns:1fr auto!important;column-gap:0}.pay dt{padding-right:16px}.pay dd{text-align:right;font-variant-numeric:tabular-nums}.pay dt.sum,.pay dd.sum{font-weight:500;color:var(--ink)}.pay dt.bal,.pay dd.bal{font-weight:600;font-size:15px;color:var(--ink)}
+.badge.ok{background:var(--rose);color:#fff}.pay dl{border-top:1px solid var(--ink);grid-template-columns:1fr auto!important;column-gap:0}.pay dt{padding-right:16px}.pay dt small{font-size:11.5px;color:var(--ink-soft)}.pay dd{text-align:right;font-variant-numeric:tabular-nums}.pay dt.sum,.pay dd.sum{font-weight:500;color:var(--ink)}.pay dt.bal,.pay dd.bal{font-weight:600;font-size:15px;color:var(--ink)}
 .badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.badge.no{border-color:var(--line);color:var(--ink-soft)}
 .mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
@@ -810,8 +810,10 @@ const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seou
 const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
 (()=>{try{const t=localStorage.getItem("la_admin");if(!t)return;const p=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));if(p.exp>Date.now())$("#adminGo").hidden=false}catch(e){}})();
 const won0=n=>(Number(n)||0).toLocaleString("ko-KR")+"원";
-function payHTML(x){const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-(x.deposit||0));const it=x.priceItems||[];
- return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>예약금</dt><dd>${x.deposit?"- "+won0(x.deposit):"입금 확인 전"}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
+const depLabel=x=>x.snapProduct&&x.dvdProduct?"스냅+DVD 예약금":x.dvdProduct?"DVD 예약금":"스냅 예약금";
+const depAmt=x=>x.deposit||200000*((x.snapProduct?1:0)+(x.dvdProduct?1:0));
+function payHTML(x){const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-dep);const it=x.priceItems||[];
+ return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
 const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");

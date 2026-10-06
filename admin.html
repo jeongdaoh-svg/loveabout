@@ -200,8 +200,8 @@ function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
   <div class="pbox"><p class="pbox-h">결제 금액</p>${(b.priceItems||[]).length?`<ul class="pitems">${b.priceItems.map(i=>`<li><span>${esc(i.name)}</span><span>${money(i.price)||"0"}원</span></li>`).join("")}</ul>`:""}
    <label>총 상품 금액<input class="pTot" inputmode="numeric" value="${money(b.priceTotal||0)}"></label>
    <label>할인 금액<input class="pDis" inputmode="numeric" value="${money(b.discount||0)}"></label>
-   <label>예약금 (입금액)<input class="pDep" inputmode="numeric" value="${money(b.deposit||0)}"></label>
-   <p class="pbal">남은 잔금 <b>${money(Math.max(0,(b.priceTotal||0)-(b.discount||0)-(b.deposit||0)))||"0"}원</b></p></div>
+   <label>${b.snapProduct&&b.dvdProduct?"스냅+DVD 예약금":b.dvdProduct?"DVD 예약금":"스냅 예약금"}<input class="pDep" inputmode="numeric" value="${money(b.deposit||200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0)))}"></label>
+   <p class="pbal">남은 잔금 <b>${money(Math.max(0,(b.priceTotal||0)-(b.discount||0)-(b.deposit||200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0)))))||"0"}원</b></p></div>
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>
   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm fill sSave" type="button">저장</button><button class="btn sm danger sDel" type="button">삭제</button></div><p class="msg sMsg" role="status"></p></div></article>`}
 function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
