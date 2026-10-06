@@ -38,7 +38,7 @@ const SCHEMA = [
   [`CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)`],
 ];
 let schemaReady = false;
-const EXTRA_COLS = [["paid", "INTEGER NOT NULL DEFAULT 0"], ["confirmed", "INTEGER NOT NULL DEFAULT 0"], ["pw_enc", "TEXT"], ["price_total", "INTEGER NOT NULL DEFAULT 0"], ["discount", "INTEGER NOT NULL DEFAULT 0"], ["deposit", "INTEGER NOT NULL DEFAULT 0"], ["price_items", "TEXT"]];
+const EXTRA_COLS = [["paid", "INTEGER NOT NULL DEFAULT 0"], ["confirmed", "INTEGER NOT NULL DEFAULT 0"], ["pw_enc", "TEXT"], ["price_total", "INTEGER NOT NULL DEFAULT 0"], ["discount", "INTEGER NOT NULL DEFAULT 0"], ["deposit", "INTEGER NOT NULL DEFAULT 0"], ["price_items", "TEXT"], ["imported", "INTEGER NOT NULL DEFAULT 0"], ["legacy_no", "INTEGER"]];
 async function ensure() {
   if (schemaReady) return;
   await sql(SCHEMA);

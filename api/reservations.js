@@ -6,7 +6,7 @@ const { sql, ensure, hashPw, checkPw, encrypt, clip, PHONE, BIZ, body, fail } = 
 
 const toFull = (r) => ({
   id: Number(r.id), createdAt: r.created_at, updatedAt: r.updated_at, status: r.status,
-  paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1,
+  paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1, imported: Number(r.imported) === 1,
   priceItems: (() => { try { return JSON.parse(r.price_items || "[]"); } catch (e) { return []; } })(),
   priceTotal: Number(r.price_total) || 0, discount: Number(r.discount) || 0, deposit: Number(r.deposit) || 0,
   name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
