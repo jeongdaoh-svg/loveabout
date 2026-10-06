@@ -47,12 +47,20 @@ module.exports = async (req, res) => {
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); return fail(res, 405, "지원하지 않는 요청이에요."); }
     const b = body(req);
     if (b.website) return res.status(200).json({ ok: true });
+    if (b.action === "mine") {
+      const name = clip(b.name, 20), phone = clip(b.phone, 13);
+      if (!name || !PHONE.test(phone)) return fail(res, 400, "이름과 연락처(010-0000-0000)를 적어주세요.");
+      const [rows] = await sql([["SELECT id, created_at, wedding_date, paid, confirmed FROM bookings WHERE name=? AND phone=? ORDER BY created_at DESC, id DESC LIMIT 20", [name, phone]]]);
+      if (!rows.length) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "입력하신 이름과 연락처로 등록된 예약글이 없어요."); }
+      return res.status(200).json({ items: rows.map((r) => ({ id: Number(r.id), createdAt: r.created_at, weddingDate: r.wedding_date, paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1 })) });
+    }
     if (b.action === "lookup") {
       const name = clip(b.name, 20), phone = clip(b.phone, 13), pw = String(b.password || "");
       if (!name || !PHONE.test(phone) || !pw) return fail(res, 400, "성함, 연락처, 비밀번호를 모두 적어주세요.");
-      const [rows] = await sql([["SELECT * FROM bookings WHERE name=? AND phone=? ORDER BY created_at DESC", [name, phone]]]);
+      const id = Number(b.id) || 0;
+      const [rows] = await sql([[id ? "SELECT * FROM bookings WHERE id=? AND name=? AND phone=?" : "SELECT * FROM bookings WHERE name=? AND phone=? ORDER BY created_at DESC", id ? [id, name, phone] : [name, phone]]]);
       const mine = rows.filter((r) => checkPw(pw, r.pw_hash));
-      if (!mine.length) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "일치하는 예약 글이 없어요. 성함, 연락처, 비밀번호를 다시 확인해 주세요."); }
+      if (!mine.length) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "비밀번호가 맞지 않아요. 예약할 때 정한 비밀번호를 다시 확인해 주세요."); }
       return res.status(200).json({ items: mine.map(toFull) });
     }
     const { d, e, pw } = validate(b);
