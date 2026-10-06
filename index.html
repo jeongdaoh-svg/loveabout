@@ -203,6 +203,44 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .btable .empty{text-align:center;color:var(--ink-soft);padding:30px 8px}
 @media (max-width:560px){form.rpanel{grid-template-columns:1fr}.btable th:first-child,.btable td:first-child{display:none}.btable{min-width:0}}
 
+.fs{grid-column:1/-1;border:0;margin:0;padding:0 0 22px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;min-width:0}
+.fs legend{font-family:var(--ko-serif);font-size:17px;padding:0;margin-bottom:14px;width:100%}
+.fs legend small,.pick-h small{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-left:8px}
+.lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.pick-h{grid-column:1/-1;font-size:14px;font-weight:500;margin:6px 0 -6px}
+.picks{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:10px}
+.pick{position:relative;cursor:pointer;display:block}
+.pick input{position:absolute;opacity:0;pointer-events:none}
+.pk{display:grid;gap:4px;height:100%;border:1px solid var(--line);background:var(--bg);padding:14px 14px 12px;transition:border-color .2s,background .2s}
+.pk b{font-weight:500;font-size:15px}
+.pk .pp{font-family:var(--en);font-size:19px;color:var(--ink)}
+.pk ul{list-style:none;margin:4px 0 0;padding:0;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+.pk ul li::before{content:"· "}
+.pick input:checked+.pk{border-color:var(--rose);background:color-mix(in srgb,var(--rose) 8%,var(--bg));box-shadow:inset 0 0 0 1px var(--rose)}
+.pick input:checked+.pk::after{content:"선택됨";position:absolute;top:10px;right:10px;font-size:11px;color:var(--bg);background:var(--rose);padding:1px 8px}
+.pick input:focus-visible+.pk{outline:2px solid var(--rose);outline-offset:2px}
+.pick.none .pk{place-content:center;text-align:center;color:var(--ink-soft);min-height:72px}
+.total{grid-column:1/-1;text-align:right;font-size:14px;color:var(--ink-soft);margin:4px 0 0}
+.total b{font-family:var(--en);font-size:22px;color:var(--ink);margin-left:8px;font-weight:400}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.seg label{cursor:pointer}.seg input{position:absolute;opacity:0}
+.seg span{display:block;font-size:13px;padding:6px 12px;border:1px solid var(--line)}
+.seg input:checked+span{border-color:var(--rose);color:var(--ink);background:color-mix(in srgb,var(--rose) 10%,var(--bg))}
+.seg input:focus-visible+span{outline:2px solid var(--rose)}
+#freceipt{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:9px 0;width:100%}
+#freceipt:disabled{opacity:.4}
+.btn.sm{padding:8px 14px;font-size:11px}
+.bh-r{display:flex;align-items:center;gap:12px}
+.lookup{border:1px solid var(--line);background:var(--bg-alt);padding:16px;margin-bottom:14px;display:grid;gap:8px}
+.lk-row{display:grid;grid-template-columns:1fr 1.2fr 1fr auto;gap:8px}
+.lk-row input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:9px 10px;min-width:0}
+.mine{border:1px solid var(--rose);background:var(--bg);padding:18px;margin-bottom:12px;display:grid;gap:4px}
+.mine h4{font-weight:500;font-size:15px;margin-bottom:6px}
+.mine dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:0;font-size:14px}
+.mine dt{color:var(--ink-soft)}.mine dd{margin:0;overflow-wrap:anywhere}
+.btable tbody tr{cursor:pointer}.btable tbody tr:hover td{background:var(--bg-alt)}
+@media (max-width:640px){.fs{grid-template-columns:1fr}.lk-row{grid-template-columns:1fr}.mine dl{grid-template-columns:92px 1fr}}
+
 /* dvd */
 .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 18px}
 .vcard{display:grid;gap:10px;text-align:left;padding:0;min-width:0}
@@ -499,13 +537,39 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <div class="rbtns"><button class="btn fill" id="toStep2" type="button" disabled>동의하고 다음으로</button></div>
     </div>
     <form class="rpanel" id="step2" hidden novalidate>
-      <div class="f"><label for="fname">성함 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
-      <div class="f"><label for="fphone">연락처 *</label><input id="fphone" type="tel" inputmode="numeric" required placeholder="010-0000-0000" autocomplete="tel" maxlength="13"></div>
-      <div class="f"><label for="fdate">예식일 *</label><input id="fdate" type="date" required></div>
-      <div class="f"><label for="ftime">예식 시간 *</label><input id="ftime" required placeholder="예) 오후 1시 30분" maxlength="20"></div>
-      <div class="f full"><label for="fhall">예식장 *</label><input id="fhall" required placeholder="예) 채플앳청담 3층 그랜드홀" maxlength="60"></div>
-      <div class="f full"><label for="fprod">상품</label><select id="fprod"></select></div>
-      <div class="f full"><label for="fmsg">요청사항</label><textarea id="fmsg" maxlength="1000" placeholder="원하시는 분위기, 2부 진행 여부, 궁금한 점을 자유롭게 적어주세요."></textarea></div>
+      <fieldset class="fs"><legend>예약자 정보</legend>
+        <div class="f"><label for="fname">예약자 성함 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
+        <div class="f"><label for="fphone">예약자 연락처 *</label><input id="fphone" class="ph" type="tel" inputmode="numeric" required placeholder="010-0000-0000" maxlength="13"></div>
+        <div class="f"><label for="fsname">배우자 성함</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
+        <div class="f"><label for="fsphone">배우자 연락처</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
+      </fieldset>
+      <fieldset class="fs"><legend>예식 정보</legend>
+        <div class="f"><label for="fdate">예식일 *</label><input id="fdate" type="date" required></div>
+        <div class="f"><label for="ftime">예식 시간 *</label><input id="ftime" required placeholder="예) 오후 1시 30분" maxlength="20"></div>
+        <div class="f full"><label for="fhall">예식장 *</label><input id="fhall" required placeholder="예) 채플앳청담 3층 그랜드홀" maxlength="60"></div>
+      </fieldset>
+      <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
+        <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
+        <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div>
+        <p class="pick-h">추가 상품 <small>여러 개 선택할 수 있어요</small></p><div class="picks" id="pickAdd"></div>
+        <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
+      </fieldset>
+      <fieldset class="fs"><legend>기타</legend>
+        <div class="f"><label for="fpartner">짝꿍코드</label><input id="fpartner" placeholder="받으신 짝꿍코드가 있으면 적어주세요" maxlength="30"></div>
+        <div class="f"><span class="lbl">현금영수증</span>
+          <div class="seg" role="radiogroup" aria-label="현금영수증 종류">
+            <label><input type="radio" name="rtype" value="personal" checked><span>휴대폰 번호</span></label>
+            <label><input type="radio" name="rtype" value="business"><span>사업자번호</span></label>
+            <label><input type="radio" name="rtype" value="none"><span>발행 안 함</span></label>
+          </div>
+          <input id="freceipt" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" aria-label="현금영수증 번호">
+        </div>
+        <div class="f full"><label for="fmsg">요청사항</label><textarea id="fmsg" maxlength="1500" placeholder="원하시는 분위기, 2부 진행 여부, 궁금한 점을 자유롭게 적어주세요."></textarea></div>
+      </fieldset>
+      <fieldset class="fs"><legend>글 비밀번호 <small>나중에 본인 글을 확인할 때 필요해요</small></legend>
+        <div class="f"><label for="fpw">비밀번호 *</label><input id="fpw" type="password" required minlength="4" maxlength="30" autocomplete="new-password" placeholder="4자 이상"></div>
+        <div class="f"><label for="fpw2">비밀번호 확인 *</label><input id="fpw2" type="password" required maxlength="30" autocomplete="new-password"></div>
+      </fieldset>
       <input type="text" name="website" id="fweb" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
       <p class="ferr" id="ferr" role="alert"></p>
       <div class="rbtns"><button class="btn" type="button" id="back1">이전</button><button class="btn fill" type="submit" id="fsubmit">예약 글 등록</button></div>
@@ -516,9 +580,11 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <div class="rbtns"><button class="btn" id="newRsv" type="button">새 예약 글 쓰기</button></div>
     </div>
     <div class="board">
-      <div class="board-head"><h3 class="rt">예약 게시판</h3><span class="soft" id="bcount"></span></div>
-      <div class="bscroll"><table class="btable"><thead><tr><th>번호</th><th>예식장</th><th>작성자</th><th>작성일</th><th>상태</th></tr></thead><tbody id="blist"><tr><td colspan="5" class="empty">예약 글을 불러오는 중이에요.</td></tr></tbody></table></div>
-      <p class="note">개인정보 보호를 위해 연락처와 상세 내용은 게시판에 공개되지 않아요.</p>
+      <div class="board-head"><h3 class="rt">예약 게시판</h3><div class="bh-r"><span class="soft" id="bcount"></span><button class="btn sm" type="button" id="openLookup">내 예약 확인</button></div></div>
+      <form class="lookup" id="lookup" hidden novalidate><p class="soft">작성할 때 입력한 성함, 연락처, 비밀번호를 적으면 본인 글을 볼 수 있어요.</p><div class="lk-row"><input id="lkName" placeholder="성함" maxlength="20" aria-label="성함"><input id="lkPhone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" aria-label="연락처"><input id="lkPw" type="password" placeholder="비밀번호" maxlength="30" aria-label="비밀번호"><button class="btn fill sm" type="submit">확인</button></div><p class="ferr" id="lkErr" role="alert"></p></form>
+      <div id="myPosts"></div>
+      <div class="bscroll"><table class="btable"><thead><tr><th>번호</th><th>제목</th><th>작성자</th><th>작성일</th><th>상태</th></tr></thead><tbody id="blist"><tr><td colspan="5" class="empty">예약 글을 불러오는 중이에요.</td></tr></tbody></table></div>
+      <p class="note">모든 예약 글은 비밀글이에요. 본인(성함·연락처·비밀번호 확인)과 관리자만 내용을 볼 수 있어요.</p>
     </div>
   </div>
 </section>
@@ -528,7 +594,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="cols">
       <div><a href="#home" class="logo">Love About</a><p>사랑에 관한 모든 순간을 기록합니다</p></div>
       </div>
-    <div class="base"><span>러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802</span><span>© 2026 LOVE ABOUT. All rights reserved.</span></div>
+    <div class="base"><span>러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802</span><span>© 2026 LOVE ABOUT. All rights reserved. · <a href="/admin" style="opacity:.6">관리자</a></span></div>
   </div>
 </footer>
 
@@ -542,7 +608,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 
 <script>
 const albums=[{"id": "w00", "name": "분당 W힐스컨벤션", "region": "경기", "cover": "04.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w01", "name": "신도림 웨딩시티", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w02", "name": "노원 비엔티", "region": "서울", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg"]}, {"id": "w03", "name": "수원 노블레스웨딩홀", "region": "경기", "cover": "16.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"]}, {"id": "w04", "name": "채플앳청담", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg"]}, {"id": "w05", "name": "송파 올림픽파크텔", "region": "서울", "cover": "13.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg"]}, {"id": "w06", "name": "안양 빌라드지디", "region": "경기", "cover": "19.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "18.jpg", "19.jpg"]}, {"id": "w07", "name": "여의도 더파티움", "region": "서울", "cover": "01.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w08", "name": "반포 더컨벤션", "region": "서울", "cover": "09.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}, {"id": "w09", "name": "부천 라비에벨", "region": "경기", "cover": "12.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg"]}, {"id": "w10", "name": "평택 JNJ웨딩홀", "region": "경기", "cover": "21.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg", "19.jpg", "20.jpg", "21.jpg", "22.jpg", "23.jpg", "24.jpg", "25.jpg", "26.jpg", "27.jpg", "29.jpg", "30.jpg"]}, {"id": "w11", "name": "강남 빌라드지디", "region": "서울", "cover": "07.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg", "10.jpg"]}, {"id": "w12", "name": "강서 보타닉파크웨딩홀", "region": "서울", "cover": "03.jpg", "photos": ["01.jpg", "02.jpg", "03.jpg", "04.jpg", "05.jpg", "06.jpg", "07.jpg", "08.jpg", "09.jpg"]}];
-const products={"snap": [{"ko": "데이터 상품", "en": "Data", "price": "450,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 40장"]}, {"ko": "베이직 상품", "en": "Basic", "price": "600,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 50장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "화보형 상품", "en": "Editorial", "price": "1,000,000", "items": ["2인 촬영 (메인 + 서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 60장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "서브스냅", "en": "Sub Snap", "price": "300,000", "items": ["1인 촬영 (서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 30장"]}], "dvd": [{"ko": "DVD 기록형", "en": "Record", "price": "330,000", "items": ["1인 1캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)"]}, {"ko": "DVD 기본형", "en": "Basic", "price": "400,000", "items": ["1인 2캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}, {"ko": "DVD 스탠다드형", "en": "Standard", "price": "700,000", "items": ["2인 3캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}]};
+const products={"snap": [{"ko": "데이터 상품", "en": "Data", "price": "450,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 40장"]}, {"ko": "베이직 상품", "en": "Basic", "price": "600,000", "items": ["1인 촬영 (메인작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 50장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "화보형 상품", "en": "Editorial", "price": "1,000,000", "items": ["2인 촬영 (메인 + 서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 60장", "14x11인치 50p 앨범 1권", "11x8.5 미니앨범 2권"]}, {"ko": "서브스냅", "en": "Sub Snap", "price": "300,000", "items": ["1인 촬영 (서브작가)", "신부대기실 ~ 본식 + 원판촬영", "원본 전체 + 보정본 30장"]}], "dvd": [{"ko": "DVD 기록형", "en": "Record", "price": "330,000", "items": ["1인 1캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)"]}, {"ko": "DVD 기본형", "en": "Basic", "price": "400,000", "items": ["1인 2캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}, {"ko": "DVD 스탠다드형", "en": "Standard", "price": "700,000", "items": ["2인 3캠 · 4K", "신부대기실 ~ 본식 + 식 후 홀촬영까지 녹화", "거치캠 편집본 파트별 제공 (식전 · 식중 · 식후)", "3분 하이라이트 영상"]}], "addons": []};
 const videos=[{"id": "yzfL0w6aW2k", "name": "문래 규수당", "len": "4:41"}, {"id": "7mdtZIQ0Yxg", "name": "강남 그랜드힐컨벤션", "len": "5:13"}, {"id": "Wt09XKhWXe4", "name": "용인 it컨벤션", "len": "5:06"}, {"id": "mmSHKNC4wEE", "name": "여의도 웨딩컨벤션", "len": "5:26"}, {"id": "8IRHv12DU0E", "name": "합정 웨딩시그니처", "len": "5:21"}, {"id": "bjuJuZ7n2Tw", "name": "양재 AT포레", "len": "5:14"}, {"id": "FTFfgk0hC5k", "name": "노원 비엔티", "len": "5:22"}, {"id": "HC1oc3MDHNI", "name": "부산w웨딩 국민연금", "len": "3:22"}, {"id": "nkFoHRxKzX8", "name": "강변 웨딩스퀘어", "len": "4:53"}, {"id": "BEv4NPszhdA", "name": "수원 마이어스", "len": "3:06"}, {"id": "oHX1qs4-k5I", "name": "잠실 더컨벤션", "len": "4:08"}, {"id": "S_SrUOhbuDE", "name": "신도림 더세인트", "len": "4:08"}, {"id": "VYtk0BkJnUw", "name": "반포 아펠가모", "len": "3:54"}, {"id": "73B0ZTxnYbM", "name": "대구 인터불고호텔(만촌)", "len": "4:06"}, {"id": "IW5IBO3unY8", "name": "여의도 더파티움", "len": "4:04"}, {"id": "RbZLRJ4kZQA", "name": "수원 리츠호텔", "len": "5:32"}, {"id": "_oVk2yqYz4M", "name": "강변 웨딩스퀘어", "len": "4:01"}, {"id": "71JG3xBxRJM", "name": "강남 노블발렌티", "len": "3:55"}, {"id": "wRAWDxLq5RU", "name": "대구 인터불고호텔", "len": "4:06"}, {"id": "g5sFM96WsCA", "name": "여의도 더파티움", "len": "4:04"}, {"id": "A2KEycPaZJs", "name": "광명 무역센터컨벤션", "len": "4:37"}, {"id": "Der8HN2S4Zc", "name": "수원 SY컨벤션", "len": "4:16"}, {"id": "DlcVQ8vW96I", "name": "건대 스타시티웨딩", "len": "3:46"}, {"id": "mJDA_obCCJM", "name": "원주 빌라드아모르", "len": "4:01"}, {"id": "U3InM5kGV4g", "name": "노원 테라리움", "len": "4:16"}, {"id": "MDas6ND7Lh0", "name": "건대 까사그랑데", "len": "3:39"}, {"id": "weZZesuDMFA", "name": "청주 더빈", "len": "4:01"}];
 const $=s=>document.querySelector(s);
 
@@ -574,12 +640,30 @@ let sx=null;$("#stage").addEventListener("touchstart",e=>sx=e.touches[0].clientX
 $("#stage").addEventListener("touchend",e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)show(idx+(dx<0?1:-1));sx=null});
 
 // products
-const sel=$("#fprod"),allP=[...products.snap,...products.dvd];
-sel.innerHTML=`<option value="">선택해주세요</option>`+allP.map(p=>`<option>${p.ko}</option>`).join("")+`<option>스냅 + DVD 함께</option><option>기타 / 상담 후 결정</option>`;
-[["snap","#cards-snap"],["dvd","#cards-dvd"]].forEach(([k,el])=>products[k].forEach(p=>{const a=document.createElement("article");a.className="card";
- a.innerHTML=`<div class="body"><span class="en">${p.en}</span><h3>${p.ko}</h3><p class="price">${p.price}<small>원</small></p>
- <ul>${p.items.map(i=>`<li>${i}</li>`).join("")}</ul><a href="#reservation" class="btn">이 상품 문의하기</a></div>`;
- a.querySelector(".btn").onclick=()=>{sel.value=p.ko};$(el).append(a)}));
+const won=v=>{const n=parseInt(String(v).replace(/[^\d]/g,""),10);return isNaN(n)?0:n};
+const fmtWon=n=>n.toLocaleString("ko-KR")+"원";
+const escA=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function renderPricing(){[["snap","#cards-snap"],["dvd","#cards-dvd"]].forEach(([k,el])=>{$(el).innerHTML="";(products[k]||[]).forEach(p=>{const a=document.createElement("article");a.className="card";
+ a.innerHTML=`<div class="body"><span class="en">${escA(p.en)}</span><h3>${escA(p.ko)}</h3><p class="price">${escA(p.price)}<small>원</small></p>
+ <ul>${(p.items||[]).map(i=>`<li>${escA(i)}</li>`).join("")}</ul><a href="#reservation" class="btn">이 상품 예약하기</a></div>`;
+ a.querySelector(".btn").onclick=()=>{pending={k,v:p.ko};renderPicks()};$(el).append(a)})})}
+let pending=null;
+function renderPicks(){
+ const card=(type,name,v,title,price,items)=>`<label class="pick"><input type="${type}" name="${name}" value="${escA(v)}" data-price="${won(price)}"><span class="pk"><b>${escA(title)}</b><span class="pp">${price?escA(String(price).includes("원")?price:price+"원"):""}</span>${items&&items.length?`<ul>${items.map(i=>`<li>${escA(i)}</li>`).join("")}</ul>`:""}</span></label>`;
+ const none=name=>`<label class="pick none"><input type="radio" name="${name}" value="" data-price="0" checked><span class="pk">선택 안 함</span></label>`;
+ $("#pickSnap").innerHTML=(products.snap||[]).map(p=>card("radio","snap",p.ko,p.ko,p.price,p.items)).join("")+none("snap");
+ $("#pickDvd").innerHTML=(products.dvd||[]).map(p=>card("radio","dvd",p.ko,p.ko,p.price,p.items)).join("")+none("dvd");
+ const ad=products.addons||[];
+ $("#pickAdd").innerHTML=ad.length?ad.map(p=>card("checkbox","addon",p.name,p.name,p.price,p.desc?[p.desc]:[])).join(""):`<p class="soft" style="font-size:13px;grid-column:1/-1">추가 상품은 상담할 때 안내해 드려요.</p>`;
+ if(pending){const i=[...document.querySelectorAll(`#step2 input[name="${pending.k}"]`)].find(x=>x.value===pending.v);if(i)i.checked=true}
+ calcTotal()}
+function calcTotal(){const t=[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0);$("#ptotal b").textContent=fmtWon(t)}
+document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest(".picks"))calcTotal()});
+renderPricing();renderPicks();
+fetch("/api/content",{cache:"no-store"}).then(r=>r.json()).then(j=>{const c=j&&j.content;if(!c)return;
+ if(Array.isArray(c.snap))products.snap=c.snap;if(Array.isArray(c.dvd))products.dvd=c.dvd;if(Array.isArray(c.addons))products.addons=c.addons;
+ if(c.terms){if(c.terms.notice)$("#termsNotice").textContent=c.terms.notice;if(c.terms.privacy)$("#termsPrivacy").textContent=c.terms.privacy}
+ renderPricing();renderPicks()}).catch(()=>{});
 
 // dvd
 const vgrid=$("#vgrid"),vbox=$("#vbox");let vOpener=null;
@@ -601,29 +685,56 @@ function rstep(n){["step1","step2","step3"].forEach((id,i)=>$("#"+id).hidden=i!=
 toS2.onclick=()=>{if(toS2.disabled)return;rstep(2);setTimeout(()=>$("#fname").focus(),300)};
 $("#back1").onclick=()=>rstep(1);
 $("#newRsv").onclick=()=>{agN.checked=agP.checked=false;syncAgree();rstep(1)};
-const fph=$("#fphone");
 const fmtPhone=v=>{const d=v.replace(/\D/g,"").slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+"-"+d.slice(3);if(d.length===10)return d.slice(0,3)+"-"+d.slice(3,6)+"-"+d.slice(6);return d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7)};
-fph.addEventListener("input",()=>{fph.value=fmtPhone(fph.value)});
-const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtBiz=v=>{const d=v.replace(/\D/g,"").slice(0,10);if(d.length<4)return d;if(d.length<6)return d.slice(0,3)+"-"+d.slice(3);return d.slice(0,3)+"-"+d.slice(3,5)+"-"+d.slice(5)};
+document.querySelectorAll("input.ph").forEach(i=>i.addEventListener("input",()=>{i.value=fmtPhone(i.value)}));
+const rc=$("#freceipt"),rtype=()=>(document.querySelector('input[name="rtype"]:checked')||{}).value||"none";
+function syncReceipt(){const t=rtype();rc.disabled=t==="none";rc.placeholder=t==="business"?"000-00-00000":t==="personal"?"010-0000-0000":"발행하지 않아요";rc.maxLength=t==="business"?12:13;rc.value=t==="business"?fmtBiz(rc.value):t==="personal"?fmtPhone(rc.value):""}
+document.querySelectorAll('input[name="rtype"]').forEach(i=>i.onchange=syncReceipt);
+rc.addEventListener("input",()=>{rc.value=rtype()==="business"?fmtBiz(rc.value):fmtPhone(rc.value)});syncReceipt();
+const escH=escA;
 const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
 async function loadBoard(){const tb=$("#blist");try{const r=await fetch("/api/reservations",{cache:"no-store"});const j=await r.json();if(!r.ok)throw new Error(j.error);
  const it=j.items||[];$("#bcount").textContent=it.length?"총 "+it.length+"건":"";
- tb.innerHTML=it.length?it.map((x,i)=>"<tr><td>"+(it.length-i)+"</td><td>"+escH(x.hall)+"<span class=\"lock\">비공개</span></td><td>"+escH(x.name)+"</td><td>"+fmtDate(x.createdAt)+"</td><td class=\"st\">"+escH(x.status)+"</td></tr>").join(""):"<tr><td colspan=\"5\" class=\"empty\">아직 등록된 예약 글이 없어요. 첫 예약 글을 남겨주세요.</td></tr>"}
+ tb.innerHTML=it.length?it.map((x,i)=>"<tr tabindex=\"0\"><td>"+(it.length-i)+"</td><td>본식 예약 문의<span class=\"lock\">비밀글</span></td><td>"+escH(x.name)+"</td><td>"+fmtDate(x.createdAt)+"</td><td class=\"st\">"+escH(x.status)+"</td></tr>").join(""):"<tr><td colspan=\"5\" class=\"empty\">아직 등록된 예약 글이 없어요. 첫 예약 글을 남겨주세요.</td></tr>";
+ tb.querySelectorAll("tr[tabindex]").forEach(tr=>{tr.onclick=openLookup;tr.onkeydown=e=>{if(e.key==="Enter")openLookup()}})}
  catch(e){tb.innerHTML="<tr><td colspan=\"5\" class=\"empty\">게시판을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</td></tr>"}}
+function openLookup(){const f=$("#lookup");f.hidden=false;f.scrollIntoView({block:"nearest",behavior:"smooth"});$("#lkName").focus()}
+$("#openLookup").onclick=()=>{const f=$("#lookup");f.hidden?openLookup():(f.hidden=true)};
+const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
+$("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr");err.textContent="";
+ const d={action:"lookup",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim(),password:$("#lkPw").value};
+ if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)||!d.password){err.textContent="성함, 연락처(010-0000-0000), 비밀번호를 모두 적어주세요.";return}
+ try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.error);
+  $("#myPosts").innerHTML=j.items.map(x=>{const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";
+   return `<article class="mine"><h4>${fmtDate(x.createdAt)} 작성 · <span class="st">${escH(x.status)}</span></h4><dl>${row("예약자",x.name+" / "+x.phone)}${row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" / "))}${row("예식",x.weddingDate+" "+x.weddingTime)}${row("예식장",x.hall)}${row("본식 스냅",x.snapProduct)}${row("본식 DVD",x.dvdProduct)}${row("추가 상품",(x.addons||[]).join(", "))}${row("짝꿍코드",x.partnerCode)}${row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")}${row("요청사항",x.message)}</dl></article>`}).join("");
+  $("#lookup").hidden=true;$("#lkPw").value="";$("#myPosts").scrollIntoView({block:"nearest",behavior:"smooth"})}
+ catch(x){err.textContent=x.message}});
 loadBoard();
 $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
- const d={name:$("#fname").value.trim(),phone:fph.value.trim(),weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),product:sel.value,message:$("#fmsg").value.trim(),website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
- const bad=(m,el)=>{err.textContent=m;el&&el.focus()};
- if(d.name.length<2)return bad("성함을 적어주세요.",$("#fname"));
- if(!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone))return bad("연락처를 010-0000-0000 형식으로 적어주세요.",fph);
+ const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
+ const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),
+  weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),
+  snapProduct:ck("snap"),dvdProduct:ck("dvd"),addons:[...document.querySelectorAll('#step2 input[name="addon"]:checked')].map(i=>i.value),
+  partnerCode:$("#fpartner").value.trim(),receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
+  password:$("#fpw").value,website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
+ const P=/^01[016789]-\d{3,4}-\d{4}$/;const bad=(m,el)=>{err.textContent=m;el&&el.focus()};
+ if(d.name.length<2)return bad("예약자 성함을 적어주세요.",$("#fname"));
+ if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
+ if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
  if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
  if(!d.weddingTime)return bad("예식 시간을 적어주세요.",$("#ftime"));
  if(!d.hall)return bad("예식장을 적어주세요.",$("#fhall"));
+ if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
+ if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
+ if(d.receiptType==="business"&&!/^\d{3}-\d{2}-\d{5}$/.test(d.receiptNumber))return bad("사업자번호를 000-00-00000 형식으로 적어주세요.",rc);
+ if(d.password.length<4)return bad("비밀번호를 4자 이상으로 정해주세요.",$("#fpw"));
+ if(d.password!==$("#fpw2").value)return bad("비밀번호 확인이 일치하지 않아요.",$("#fpw2"));
  if(!d.agreeNotice||!d.agreePrivacy){rstep(1);return}
  err.textContent="";btn.disabled=true;btn.textContent="등록하는 중…";
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(j.error||"등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
-  $("#step2").reset();rstep(3);loadBoard()}
+  $("#step2").reset();pending=null;renderPicks();syncReceipt();rstep(3);loadBoard()}
  catch(x){err.textContent=x.message}
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
