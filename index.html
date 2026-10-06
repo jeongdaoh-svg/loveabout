@@ -326,6 +326,11 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .card li{font-size:14px;color:var(--ink-soft);padding:3px 0}
 .card li::before{content:"♡";color:var(--rose);margin-right:10px;font-size:11px}
 .card .btn{align-self:stretch}
+.consult-cta{text-align:center;margin-top:28px}
+.consult-box{max-width:520px;margin:0 auto;text-align:center;border:1px solid var(--line);background:var(--bg);padding:40px 28px;display:grid;gap:10px;justify-items:center}
+.consult-box .cb-t{font-family:var(--ko-serif);font-size:20px;margin:0}
+.consult-box .cb-s{font-size:14px;color:var(--ink-soft);margin:0 0 12px;word-break:keep-all}
+.btn.kakao{background:#FEE500;color:#191919;border-color:#FEE500;letter-spacing:.08em}.btn.kakao:hover{background:#f5d900;border-color:#f5d900;color:#191919}
 .note{margin-top:28px;font-size:13px;color:var(--ink-soft);text-align:center}
 
 .pgroup{display:grid;gap:22px;margin-bottom:56px}
@@ -431,7 +436,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
     <nav class="nav" id="mainNav" aria-label="주요 메뉴">
-      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#reservation">Reservation</a><a href="#mybooking">My Booking</a>
+      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#contact">Contact</a><a href="#reservation">Reservation</a><a href="#mybooking">My Booking</a>
     </nav>
     
   </div>
@@ -501,6 +506,18 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">DVD</span>본식 DVD</h3><div class="cards c3" id="cards-dvd"></div></div>
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">Options</span>추가상품</h3><div class="addl" id="addl"></div></div>
     <p class="note">모든 상품은 신부대기실부터 본식까지 촬영해요. 일정과 옵션은 편하게 문의해 주세요.</p>
+    <div class="consult-cta"><a class="btn fill kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
+  </div>
+</section>
+
+<section class="band alt" id="contact" data-tab="contact">
+  <div class="wrap">
+    <div class="head c"><span class="eyebrow">Contact</span><h2 class="h-en">상담하기</h2><p class="soft">날짜 가능 여부, 견적, 상품 구성 등 궁금한 점은 카카오채널로 편하게 물어봐 주세요.</p></div>
+    <div class="consult-box">
+      <p class="cb-t">러브어바웃 카카오채널</p>
+      <p class="cb-s">카카오톡에서 ‘러브어바웃’을 검색하거나 아래 버튼을 눌러 채팅을 시작하세요.</p>
+      <a class="btn fill kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a>
+    </div>
   </div>
 </section>
 
@@ -887,7 +904,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
 // tabs
-const TABS=["home","about","portfolio","film","products","notice","reservation","mybooking"];
+const TABS=["home","about","portfolio","film","products","contact","notice","reservation","mybooking"];
 function route(){let t=(location.hash||"#home").slice(1);if(t==="about"||t==="notice"||t==="guide"||t==="faq")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
