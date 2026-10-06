@@ -192,6 +192,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .btn[disabled]:hover{background:var(--ink);color:var(--bg)}
 .done-panel{text-align:center;justify-items:center}
 .mycheck{margin:0 auto;max-width:640px;border:1px solid var(--line);background:var(--bg);padding:36px 32px}
+.admin-go{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px dashed var(--rose);background:var(--bg-alt);padding:10px 14px;margin-bottom:22px;font-size:13px;color:var(--ink-soft)}
 .mc-head{text-align:center;margin-bottom:20px}.mc-head .rt{margin:6px 0 8px}.mc-head .soft{font-size:13.5px;word-break:keep-all}
 .mc-form{display:grid;grid-template-columns:1fr;gap:14px;max-width:420px;margin:0 auto}
 .mycheck{scroll-margin-top:90px}
@@ -619,8 +620,8 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
         <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
         <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div>
-        <p class="pick-h">스냅 추가상품 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
-        <p class="pick-h">영상 추가상품 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
+        <p class="pick-h">스냅 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
+        <p class="pick-h">영상 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
         <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
       </fieldset>
       <fieldset class="fs"><legend>기타</legend>
@@ -635,7 +636,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         </div>
         <div class="f full"><label for="fmsg">요청사항</label><textarea id="fmsg" maxlength="1500" placeholder="원하시는 분위기, 2부 진행 여부, 궁금한 점을 자유롭게 적어주세요."></textarea></div>
       </fieldset>
-      <fieldset class="fs"><legend>글 비밀번호 <small>나중에 본인 글을 확인할 때 필요해요</small></legend>
+      <fieldset class="fs"><legend>글 비밀번호 <small>나중에 MY BOOKING에서 내 예약을 확인할 때 필요해요 · 예약 확인을 도와드리기 위해 관리자도 볼 수 있으니 다른 곳에서 쓰는 비밀번호는 피해주세요</small></legend>
         <div class="f"><label for="fpw">비밀번호 *</label><input id="fpw" type="password" required minlength="4" maxlength="30" autocomplete="new-password" placeholder="4자 이상"></div>
         <div class="f"><label for="fpw2">비밀번호 확인 *</label><input id="fpw2" type="password" required maxlength="30" autocomplete="new-password"></div>
       </fieldset>
@@ -655,6 +656,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <div class="head c"><span class="eyebrow">My Booking</span><h2 class="h-en">My Booking</h2></div>
     <div class="mycheck" id="mycheck">
+      <div class="admin-go" id="adminGo" hidden><span>관리자 전용</span><a class="btn sm fill" href="/admin">예약글 게시판 보기</a></div>
       <div class="mc-head"><p class="soft"><b>내 예약 확인</b><br>예약할 때 적은 성함, 연락처, 비밀번호를 입력하면 내 예약 내용과 진행 상태를 볼 수 있어요.</p></div>
       <form class="mc-form" id="lookup" novalidate>
         <label class="fld"><span>성함</span><input id="lkName" maxlength="20" autocomplete="name" placeholder="예약자 성함"></label>
@@ -778,17 +780,19 @@ rc.addEventListener("input",()=>{rc.value=rtype()==="business"?fmtBiz(rc.value):
 const escH=escA;
 const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
 const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
-const stCls=st=>st==="예약확정"||st==="촬영완료"?"ok":st==="취소"?"no":"";
+(()=>{try{const t=localStorage.getItem("la_admin");if(!t)return;const p=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));if(p.exp>Date.now())$("#adminGo").hidden=false}catch(e){}})();
+const stOf=x=>x.confirmed?["ok","예약확정"]:x.paid?["","입금확인"]:["no","예약 신청 완료"];
+const addonsTxt=x=>(x.addons||[]).length?x.addons.join("\n"):"추가상품 없음";
 $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
  const d={action:"lookup",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim(),password:$("#lkPw").value};
  if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)||!d.password){err.textContent="성함, 연락처(010-0000-0000), 비밀번호를 모두 적어주세요.";return}
  btn.disabled=true;btn.textContent="확인하는 중…";
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.error);
   const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
-  $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stCls(x.status)}">${escH(x.status)}</span></div>
+  $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
    ${sec("예약자 정보",row("예약자",x.name+" · "+x.phone)+row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" · ")))}
    ${sec("예식 정보",row("예식일",x.weddingDate+" "+x.weddingTime)+row("예식장",x.hall))}
-   ${sec("선택 상품",row("본식 스냅",x.snapProduct)+row("본식 DVD",x.dvdProduct)+row("추가 상품",(x.addons||[]).join("\n")))}
+   ${sec("선택 상품",row("본식 스냅",x.snapProduct)+row("본식 DVD",x.dvdProduct)+row("추가상품 선택",addonsTxt(x)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
   </article>`).join("")+`<div class="mine-end"><button class="btn sm" type="button" id="lkClose">닫기</button></div>`;
   $("#lookup").hidden=true;$("#lkPw").value="";
