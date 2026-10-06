@@ -191,6 +191,25 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .btn[disabled]{opacity:.4;cursor:not-allowed}
 .btn[disabled]:hover{background:var(--ink);color:var(--bg)}
 .done-panel{text-align:center;justify-items:center}
+.mycheck{margin:56px auto 0;max-width:640px;border:1px solid var(--line);background:var(--bg);padding:36px 32px}
+.mc-head{text-align:center;margin-bottom:24px}.mc-head .rt{margin:6px 0 8px}.mc-head .soft{font-size:13.5px;word-break:keep-all}
+.mc-form{display:grid;grid-template-columns:1fr;gap:14px;max-width:420px;margin:0 auto}
+.mycheck{scroll-margin-top:90px}
+.mc-form .fld{display:grid;gap:6px}.mc-form .fld span{font-size:12.5px;letter-spacing:.04em;color:var(--ink-soft)}
+.mc-form input{font:inherit;color:var(--ink);background:var(--bg-alt);border:1px solid var(--line);padding:12px 14px;min-width:0;width:100%;box-sizing:border-box}
+.mc-form input:focus{outline:none;border-color:var(--rose)}
+.mc-form .btn{width:100%;margin-top:4px}.mc-form .ferr:empty{display:none}
+.mine{border-top:1px solid var(--line);margin-top:4px;padding-top:24px}
+.mine+.mine{margin-top:28px}
+.mine-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
+.badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
+.badge.ok{background:var(--rose);color:#fff}.badge.no{border-color:var(--line);color:var(--ink-soft)}
+.mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
+.mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
+.mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
+.mine-end{text-align:center;margin-top:8px}
+@media (max-width:600px){.mycheck{padding:28px 18px}.mine dl{grid-template-columns:84px 1fr}}
 .board{margin-top:48px}
 .board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
 .bscroll{overflow-x:auto}
@@ -231,16 +250,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 #freceipt{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:9px 0;width:100%}
 #freceipt:disabled{opacity:.4}
 .btn.sm{padding:8px 14px;font-size:11px}
-.bh-r{display:flex;align-items:center;gap:12px}
-.lookup{border:1px solid var(--line);background:var(--bg-alt);padding:16px;margin-bottom:14px;display:grid;gap:8px}
-.lk-row{display:grid;grid-template-columns:1fr 1.2fr 1fr auto;gap:8px}
-.lk-row input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:9px 10px;min-width:0}
-.mine{border:1px solid var(--rose);background:var(--bg);padding:18px;margin-bottom:12px;display:grid;gap:4px}
-.mine h4{font-weight:500;font-size:15px;margin-bottom:6px}
-.mine dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:0;font-size:14px}
-.mine dt{color:var(--ink-soft)}.mine dd{margin:0;overflow-wrap:anywhere}
-.btable tbody tr{cursor:pointer}.btable tbody tr:hover td{background:var(--bg-alt)}
-@media (max-width:640px){.fs{grid-template-columns:1fr}.lk-row{grid-template-columns:1fr}.mine dl{grid-template-columns:92px 1fr}}
+@media (max-width:640px){.fs{grid-template-columns:1fr}}
 
 .addl{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px}
 .addl h4{font-family:var(--ko-serif);font-weight:400;font-size:16px;margin-bottom:6px}
@@ -666,15 +676,19 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     </form>
     <div class="rpanel done-panel" id="step3" hidden>
       <p class="h-ko">예약 글이 등록됐어요.</p>
-      <p class="soft">남겨주신 연락처로 확인 후 연락드릴게요. 아래 게시판에서 접수된 글을 확인할 수 있어요.</p>
+      <p class="soft">남겨주신 연락처로 확인 후 연락드릴게요. 아래 '내 예약 확인'에서 성함, 연락처, 비밀번호로 언제든 확인할 수 있어요.</p>
       <div class="rbtns"><button class="btn" id="newRsv" type="button">새 예약 글 쓰기</button></div>
     </div>
-    <div class="board">
-      <div class="board-head"><h3 class="rt">예약 게시판</h3><div class="bh-r"><span class="soft" id="bcount"></span><button class="btn sm" type="button" id="openLookup">내 예약 확인</button></div></div>
-      <form class="lookup" id="lookup" hidden novalidate><p class="soft">작성할 때 입력한 성함, 연락처, 비밀번호를 적으면 본인 글을 볼 수 있어요.</p><div class="lk-row"><input id="lkName" placeholder="성함" maxlength="20" aria-label="성함"><input id="lkPhone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" aria-label="연락처"><input id="lkPw" type="password" placeholder="비밀번호" maxlength="30" aria-label="비밀번호"><button class="btn fill sm" type="submit">확인</button></div><p class="ferr" id="lkErr" role="alert"></p></form>
-      <div id="myPosts"></div>
-      <div class="bscroll"><table class="btable"><thead><tr><th>번호</th><th>제목</th><th>작성자</th><th>작성일</th><th>상태</th></tr></thead><tbody id="blist"><tr><td colspan="5" class="empty">예약 글을 불러오는 중이에요.</td></tr></tbody></table></div>
-      <p class="note">모든 예약 글은 비밀글이에요. 본인(성함·연락처·비밀번호 확인)과 관리자만 내용을 볼 수 있어요.</p>
+    <div class="mycheck" id="mycheck">
+      <div class="mc-head"><span class="eyebrow">My Reservation</span><h3 class="rt">내 예약 확인</h3><p class="soft">예약할 때 적은 성함, 연락처, 비밀번호를 입력하면 내 예약 내용과 진행 상태를 볼 수 있어요.</p></div>
+      <form class="mc-form" id="lookup" novalidate>
+        <label class="fld"><span>성함</span><input id="lkName" maxlength="20" autocomplete="name" placeholder="예약자 성함"></label>
+        <label class="fld"><span>연락처</span><input id="lkPhone" class="ph" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-0000-0000"></label>
+        <label class="fld"><span>비밀번호</span><input id="lkPw" type="password" maxlength="30" autocomplete="current-password" placeholder="예약할 때 정한 비밀번호"></label>
+        <button class="btn fill" type="submit" id="lkBtn">예약 확인하기</button>
+        <p class="ferr" id="lkErr" role="alert"></p>
+      </form>
+      <div id="myPosts" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -788,23 +802,25 @@ document.querySelectorAll('input[name="rtype"]').forEach(i=>i.onchange=syncRecei
 rc.addEventListener("input",()=>{rc.value=rtype()==="business"?fmtBiz(rc.value):fmtPhone(rc.value)});syncReceipt();
 const escH=escA;
 const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
-async function loadBoard(){const tb=$("#blist");try{const r=await fetch("/api/reservations",{cache:"no-store"});const j=await r.json();if(!r.ok)throw new Error(j.error);
- const it=j.items||[];$("#bcount").textContent=it.length?"총 "+it.length+"건":"";
- tb.innerHTML=it.length?it.map((x,i)=>"<tr tabindex=\"0\"><td>"+(it.length-i)+"</td><td>본식 예약 문의<span class=\"lock\">비밀글</span></td><td>"+escH(x.name)+"</td><td>"+fmtDate(x.createdAt)+"</td><td class=\"st\">"+escH(x.status)+"</td></tr>").join(""):"<tr><td colspan=\"5\" class=\"empty\">아직 등록된 예약 글이 없어요. 첫 예약 글을 남겨주세요.</td></tr>";
- tb.querySelectorAll("tr[tabindex]").forEach(tr=>{tr.onclick=openLookup;tr.onkeydown=e=>{if(e.key==="Enter")openLookup()}})}
- catch(e){tb.innerHTML="<tr><td colspan=\"5\" class=\"empty\">게시판을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</td></tr>"}}
-function openLookup(){const f=$("#lookup");f.hidden=false;f.scrollIntoView({block:"nearest",behavior:"smooth"});$("#lkName").focus()}
-$("#openLookup").onclick=()=>{const f=$("#lookup");f.hidden?openLookup():(f.hidden=true)};
 const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
-$("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr");err.textContent="";
+const stCls=st=>st==="예약확정"||st==="촬영완료"?"ok":st==="취소"?"no":"";
+$("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
  const d={action:"lookup",name:$("#lkName").value.trim(),phone:$("#lkPhone").value.trim(),password:$("#lkPw").value};
  if(!d.name||!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)||!d.password){err.textContent="성함, 연락처(010-0000-0000), 비밀번호를 모두 적어주세요.";return}
+ btn.disabled=true;btn.textContent="확인하는 중…";
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.error);
-  $("#myPosts").innerHTML=j.items.map(x=>{const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";
-   return `<article class="mine"><h4>${fmtDate(x.createdAt)} 작성 · <span class="st">${escH(x.status)}</span></h4><dl>${row("예약자",x.name+" / "+x.phone)}${row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" / "))}${row("예식",x.weddingDate+" "+x.weddingTime)}${row("예식장",x.hall)}${row("본식 스냅",x.snapProduct)}${row("본식 DVD",x.dvdProduct)}${row("추가 상품",(x.addons||[]).join(", "))}${row("짝꿍코드",x.partnerCode)}${row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")}${row("요청사항",x.message)}</dl></article>`}).join("");
-  $("#lookup").hidden=true;$("#lkPw").value="";$("#myPosts").scrollIntoView({block:"nearest",behavior:"smooth"})}
- catch(x){err.textContent=x.message}});
-loadBoard();
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
+  $("#myPosts").innerHTML=j.items.map(x=>`<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stCls(x.status)}">${escH(x.status)}</span></div>
+   ${sec("예약자 정보",row("예약자",x.name+" · "+x.phone)+row("배우자",[x.spouseName,x.spousePhone].filter(Boolean).join(" · ")))}
+   ${sec("예식 정보",row("예식일",x.weddingDate+" "+x.weddingTime)+row("예식장",x.hall))}
+   ${sec("선택 상품",row("본식 스냅",x.snapProduct)+row("본식 DVD",x.dvdProduct)+row("추가 상품",(x.addons||[]).join("\n")))}
+   ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
+  </article>`).join("")+`<div class="mine-end"><button class="btn sm" type="button" id="lkClose">닫기</button></div>`;
+  $("#lookup").hidden=true;$("#lkPw").value="";
+  $("#lkClose").onclick=()=>{$("#myPosts").innerHTML="";$("#lookup").hidden=false;$("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})};
+  $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
+ catch(x){err.textContent=x.message||"잠시 후 다시 시도해 주세요."}
+ finally{btn.disabled=false;btn.textContent="예약 확인하기"}});
 $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
  const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
  const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),
@@ -828,7 +844,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  err.textContent="";btn.disabled=true;btn.textContent="등록하는 중…";
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(j.error||"등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
-  $("#step2").reset();pending=null;renderPicks();syncReceipt();rstep(3);loadBoard()}
+  $("#step2").reset();pending=null;renderPicks();syncReceipt();rstep(3)}
  catch(x){err.textContent=x.message}
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
