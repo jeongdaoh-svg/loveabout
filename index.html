@@ -172,6 +172,37 @@ section{scroll-margin-top:70px}
 .vnotes li p{font-size:13.5px;color:var(--ink-soft);word-break:keep-all}
 @media (max-width:760px){.vnotes ul{grid-template-columns:1fr}}
 
+/* reservation */
+.rsv{max-width:900px}
+.rsteps{scroll-margin-top:96px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;list-style:none;padding:0;margin:0 0 24px;counter-reset:r}
+.rsteps li{counter-increment:r;font-size:13px;color:var(--ink-soft);padding:7px 14px;border:1px solid var(--line);background:var(--bg)}
+.rsteps li::before{content:counter(r) ". "}
+.rsteps li[aria-current]{color:var(--ink);border-color:var(--rose)}
+.rpanel{display:grid;gap:14px;border:1px solid var(--line);background:var(--bg);padding:clamp(20px,4vw,36px);position:relative}
+.rt{font-family:var(--ko-serif);font-weight:400;font-size:18px}
+.terms{max-height:240px;overflow-y:auto;border:1px solid var(--line);background:var(--bg-alt);padding:16px 18px;font-size:13.5px;line-height:1.8;color:var(--ink-soft);white-space:pre-line;word-break:keep-all}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer;margin-bottom:10px}
+.agree input{width:19px;height:19px;margin:2px 0 0;accent-color:var(--rose);flex:none}
+.agree em{font-style:normal;color:var(--rose);font-size:12px}
+.agree.all{padding-top:14px;border-top:1px solid var(--line);font-weight:500}
+form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
+.ferr{grid-column:1/-1;color:var(--rose);font-size:13px;min-height:1.2em;margin:0}
+.rbtns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn[disabled]:hover{background:var(--ink);color:var(--bg)}
+.done-panel{text-align:center;justify-items:center}
+.board{margin-top:48px}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+.bscroll{overflow-x:auto}
+.btable{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+.btable th{font-weight:500;font-size:12px;letter-spacing:.06em;color:var(--ink-soft);text-align:left;padding:10px 8px;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);white-space:nowrap}
+.btable td{padding:13px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:top}
+.btable td:first-child{color:var(--ink-soft);width:56px}
+.btable .lock{font-size:11px;color:var(--ink-soft);border:1px solid var(--line);padding:0 6px;margin-left:6px;white-space:nowrap}
+.btable .st{font-size:12px;color:var(--rose);white-space:nowrap}
+.btable .empty{text-align:center;color:var(--ink-soft);padding:30px 8px}
+@media (max-width:560px){form.rpanel{grid-template-columns:1fr}.btable th:first-child,.btable td:first-child{display:none}.btable{min-width:0}}
+
 /* dvd */
 .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 18px}
 .vcard{display:grid;gap:10px;text-align:left;padding:0;min-width:0}
@@ -452,40 +483,43 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 </section>
 
 <section class="band" id="reservation" data-tab="reservation">
-  <div class="wrap contact">
-    <div>
-      <span class="eyebrow">Contact</span>
-      <h2 class="h-ko">편하게 연락주세요</h2>
-      <ul class="info">
-        <li><span>Tel</span><b id="v-tel">010-0000-0000</b><button class="copy" data-copy="v-tel">복사</button></li>
-        <li><span>Email</span><b id="v-mail">hello@loveabout.kr</b><button class="copy" data-copy="v-mail">복사</button></li>
-        <li><span>Address</span><b id="v-addr">서울특별시 성동구 성수이로 00, 3층</b><button class="copy" data-copy="v-addr">복사</button></li>
-        <li><span>Hours</span><b>화–일 10:00 – 19:00 · 월요일 휴무</b><i></i></li>
-      </ul>
-      <div class="links">
-        <a class="btn fill" href="https://pf.kakao.com/" target="_blank" rel="noopener">카카오톡 상담</a>
-        <a class="btn" href="https://booking.naver.com/" target="_blank" rel="noopener">네이버 예약</a>
-        <a class="btn" href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
-      </div>
+  <div class="wrap rsv">
+    <div class="head c"><span class="eyebrow">Reservation</span><h2 class="h-en">Reservation</h2><p class="soft">필독사항과 개인정보 처리방침을 확인하고 동의한 뒤 예약 글을 남겨주세요.</p></div>
+    <ol class="rsteps"><li data-s="1" aria-current="step">약관 동의</li><li data-s="2">예약 정보 작성</li><li data-s="3">접수 완료</li></ol>
+    <div class="rpanel" id="step1">
+      <h3 class="rt">러브어바웃 필독사항</h3>
+      <div class="terms" id="termsNotice" tabindex="0">필독사항 내용을 정리하고 있어요.
+기존 홈페이지의 '러브어바웃 필독사항 및 약관동의서' 내용이 곧 이곳에 올라올 예정이에요.</div>
+      <label class="agree"><input type="checkbox" id="agNotice"><span>필독사항을 모두 읽었으며 동의합니다. <em>(필수)</em></span></label>
+      <h3 class="rt">개인정보 처리방침</h3>
+      <div class="terms" id="termsPrivacy" tabindex="0">개인정보 처리방침 내용을 정리하고 있어요.
+기존 홈페이지의 개인정보 처리방침 내용이 곧 이곳에 올라올 예정이에요.</div>
+      <label class="agree"><input type="checkbox" id="agPrivacy"><span>개인정보 수집·이용에 동의합니다. <em>(필수)</em></span></label>
+      <label class="agree all"><input type="checkbox" id="agAll"><span>위 내용에 모두 동의합니다.</span></label>
+      <div class="rbtns"><button class="btn fill" id="toStep2" type="button" disabled>동의하고 다음으로</button></div>
     </div>
-    <form id="form" novalidate>
-      <div class="f"><label for="fname">Name *</label><input id="fname" required placeholder="성함" autocomplete="name"></div>
-      <div class="f"><label for="fphone">Phone *</label><input id="fphone" type="tel" required placeholder="010-0000-0000" autocomplete="tel"></div>
-      <div class="f"><label for="fprod">Product</label><select id="fprod"></select></div>
-      <div class="f"><label for="fdate">Wedding Date</label><input id="fdate" type="date"></div>
-      <div class="f full"><label for="fhall">Wedding Hall · Time</label><input id="fhall" placeholder="예) 더채플앳청담 3층, 오후 1시"></div>
-      <div class="f full"><label for="fmsg">Message</label><textarea id="fmsg" placeholder="원하시는 분위기나 궁금한 점을 자유롭게 적어주세요."></textarea></div>
-      <p class="f full soft" id="ferr" style="font-size:13px">* 성함과 연락처는 꼭 적어주세요.</p>
-      <button type="submit" class="btn fill">문의 내용 정리하기</button>
-      <div class="done" id="done" hidden>
-        <p>문의 내용이 정리됐어요. 복사해서 카카오톡 채널로 보내주시면 24시간 안에 답장드릴게요.</p>
-        <pre id="summary"></pre>
-        <div class="row">
-          <button type="button" class="btn fill" id="copySummary">내용 복사</button>
-          <a class="btn" href="https://pf.kakao.com/" target="_blank" rel="noopener">카카오톡 열기</a>
-        </div>
-      </div>
+    <form class="rpanel" id="step2" hidden novalidate>
+      <div class="f"><label for="fname">성함 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
+      <div class="f"><label for="fphone">연락처 *</label><input id="fphone" type="tel" inputmode="numeric" required placeholder="010-0000-0000" autocomplete="tel" maxlength="13"></div>
+      <div class="f"><label for="fdate">예식일 *</label><input id="fdate" type="date" required></div>
+      <div class="f"><label for="ftime">예식 시간 *</label><input id="ftime" required placeholder="예) 오후 1시 30분" maxlength="20"></div>
+      <div class="f full"><label for="fhall">예식장 *</label><input id="fhall" required placeholder="예) 채플앳청담 3층 그랜드홀" maxlength="60"></div>
+      <div class="f full"><label for="fprod">상품</label><select id="fprod"></select></div>
+      <div class="f full"><label for="fmsg">요청사항</label><textarea id="fmsg" maxlength="1000" placeholder="원하시는 분위기, 2부 진행 여부, 궁금한 점을 자유롭게 적어주세요."></textarea></div>
+      <input type="text" name="website" id="fweb" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+      <p class="ferr" id="ferr" role="alert"></p>
+      <div class="rbtns"><button class="btn" type="button" id="back1">이전</button><button class="btn fill" type="submit" id="fsubmit">예약 글 등록</button></div>
     </form>
+    <div class="rpanel done-panel" id="step3" hidden>
+      <p class="h-ko">예약 글이 등록됐어요.</p>
+      <p class="soft">남겨주신 연락처로 확인 후 연락드릴게요. 아래 게시판에서 접수된 글을 확인할 수 있어요.</p>
+      <div class="rbtns"><button class="btn" id="newRsv" type="button">새 예약 글 쓰기</button></div>
+    </div>
+    <div class="board">
+      <div class="board-head"><h3 class="rt">예약 게시판</h3><span class="soft" id="bcount"></span></div>
+      <div class="bscroll"><table class="btable"><thead><tr><th>번호</th><th>예식장</th><th>작성자</th><th>작성일</th><th>상태</th></tr></thead><tbody id="blist"><tr><td colspan="5" class="empty">예약 글을 불러오는 중이에요.</td></tr></tbody></table></div>
+      <p class="note">개인정보 보호를 위해 연락처와 상세 내용은 게시판에 공개되지 않아요.</p>
+    </div>
   </div>
 </section>
 
@@ -559,14 +593,39 @@ $("#vClose").onclick=closeV;vbox.onclick=e=>{if(e.target===vbox)closeV()};addEve
 async function copyText(t,btn){const old=btn.textContent;try{await navigator.clipboard.writeText(t);btn.textContent="복사됨"}catch(e){btn.textContent="길게 눌러 복사"}setTimeout(()=>btn.textContent=old,1600)}
 document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(document.getElementById(b.dataset.copy).textContent,b));
 
-// form
-$("#form").addEventListener("submit",e=>{e.preventDefault();
- const n=$("#fname").value.trim(),ph=$("#fphone").value.trim(),err=$("#ferr");
- if(!n||!ph){err.textContent="성함과 연락처를 적어주세요.";err.style.color="var(--rose)";(n?$("#fphone"):$("#fname")).focus();return}
- err.textContent="* 성함과 연락처는 꼭 적어주세요.";err.style.color="";
- $("#summary").textContent=`[러브어바웃 촬영 문의]\n성함: ${n}\n연락처: ${ph}\n상품: ${sel.value||"미정"}\n예식일: ${$("#fdate").value||"미정"}\n예식장/시간: ${$("#fhall").value.trim()||"-"}\n내용: ${$("#fmsg").value.trim()||"-"}`;
- $("#done").hidden=false;$("#done").scrollIntoView({block:"nearest"})});
-$("#copySummary").onclick=e=>copyText($("#summary").textContent,e.currentTarget);
+// reservation
+const agN=$("#agNotice"),agP=$("#agPrivacy"),agA=$("#agAll"),toS2=$("#toStep2");
+function syncAgree(){toS2.disabled=!(agN.checked&&agP.checked);agA.checked=agN.checked&&agP.checked}
+agN.onchange=syncAgree;agP.onchange=syncAgree;agA.onchange=()=>{agN.checked=agP.checked=agA.checked;syncAgree()};
+function rstep(n){["step1","step2","step3"].forEach((id,i)=>$("#"+id).hidden=i!==n-1);document.querySelectorAll(".rsteps li").forEach(li=>{if(+li.dataset.s===n)li.setAttribute("aria-current","step");else li.removeAttribute("aria-current")});$(".rsteps").scrollIntoView({block:"start",behavior:"smooth"})}
+toS2.onclick=()=>{if(toS2.disabled)return;rstep(2);setTimeout(()=>$("#fname").focus(),300)};
+$("#back1").onclick=()=>rstep(1);
+$("#newRsv").onclick=()=>{agN.checked=agP.checked=false;syncAgree();rstep(1)};
+const fph=$("#fphone");
+const fmtPhone=v=>{const d=v.replace(/\D/g,"").slice(0,11);if(d.length<4)return d;if(d.length<8)return d.slice(0,3)+"-"+d.slice(3);if(d.length===10)return d.slice(0,3)+"-"+d.slice(3,6)+"-"+d.slice(6);return d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7)};
+fph.addEventListener("input",()=>{fph.value=fmtPhone(fph.value)});
+const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
+async function loadBoard(){const tb=$("#blist");try{const r=await fetch("/api/reservations",{cache:"no-store"});const j=await r.json();if(!r.ok)throw new Error(j.error);
+ const it=j.items||[];$("#bcount").textContent=it.length?"총 "+it.length+"건":"";
+ tb.innerHTML=it.length?it.map((x,i)=>"<tr><td>"+(it.length-i)+"</td><td>"+escH(x.hall)+"<span class=\"lock\">비공개</span></td><td>"+escH(x.name)+"</td><td>"+fmtDate(x.createdAt)+"</td><td class=\"st\">"+escH(x.status)+"</td></tr>").join(""):"<tr><td colspan=\"5\" class=\"empty\">아직 등록된 예약 글이 없어요. 첫 예약 글을 남겨주세요.</td></tr>"}
+ catch(e){tb.innerHTML="<tr><td colspan=\"5\" class=\"empty\">게시판을 불러오지 못했어요. 잠시 후 새로고침해 주세요.</td></tr>"}}
+loadBoard();
+$("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
+ const d={name:$("#fname").value.trim(),phone:fph.value.trim(),weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),product:sel.value,message:$("#fmsg").value.trim(),website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
+ const bad=(m,el)=>{err.textContent=m;el&&el.focus()};
+ if(d.name.length<2)return bad("성함을 적어주세요.",$("#fname"));
+ if(!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone))return bad("연락처를 010-0000-0000 형식으로 적어주세요.",fph);
+ if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
+ if(!d.weddingTime)return bad("예식 시간을 적어주세요.",$("#ftime"));
+ if(!d.hall)return bad("예식장을 적어주세요.",$("#fhall"));
+ if(!d.agreeNotice||!d.agreePrivacy){rstep(1);return}
+ err.textContent="";btn.disabled=true;btn.textContent="등록하는 중…";
+ try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||"등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
+  $("#step2").reset();rstep(3);loadBoard()}
+ catch(x){err.textContent=x.message}
+ finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
 // tabs
 const TABS=["home","about","portfolio","film","products","guide","notice","reservation"];
