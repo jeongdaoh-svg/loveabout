@@ -402,7 +402,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#reservation">Reservation</a><a href="#mybooking">My Booking</a>
+      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#reservation">Reservation</a><a href="#mybooking">My Booking</a>
     </nav>
     
   </div>
@@ -476,37 +476,6 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   </div>
 </section>
 
-<section class="band alt" id="guide" data-tab="guide">
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">Guide</span>
-      <h2 class="h-en">How it works</h2>
-    </div>
-    <ol class="steps">
-      <li><h4>예약 문의</h4><p>예식 날짜·시간·웨딩홀을 알려주시면 가능 여부를 바로 확인해 드려요.</p></li>
-      <li><h4>계약 · 예약금</h4><p>예약금 입금으로 일정이 확정돼요.</p></li>
-      <li><h4>사전 체크</h4><p>예식 2주 전, 식순과 꼭 남기고 싶은 장면을 함께 정리해요.</p></li>
-      <li><h4>본식 촬영</h4><p>신부대기실부터 폐백까지 함께해요.</p></li>
-      <li><h4>전달</h4><p>원본은 1주 안에, 보정본·필름은 6–8주 안에 받아보세요.</p></li>
-    </ol>
-  </div>
-</section>
-
-<section class="band" id="faq" data-tab="guide">
-  <div class="wrap">
-    <div class="head c">
-      <span class="eyebrow">FAQ</span>
-      <h2 class="h-ko">자주 묻는 질문</h2>
-    </div>
-    <div class="faq">
-      <details><summary>예약금은 얼마인가요?</summary><p>상품 금액의 20%를 예약금으로 받고, 잔금은 촬영 당일 결제해요.</p></details>
-      <details><summary>날짜를 바꿀 수 있나요?</summary><p>촬영 7일 전까지 1회 무료로 변경할 수 있어요.</p></details>
-      <details><summary>지방 예식도 촬영하나요?</summary><p>전국 촬영이 가능해요. 수도권 외 지역은 출장비가 추가돼요.</p></details>
-      <details><summary>원본은 언제 받을 수 있나요?</summary><p>예식 후 1주 안에 온라인 갤러리로 보내드려요.</p></details>
-    </div>
-  </div>
-</section>
-
 <section class="band alt" id="notice" data-tab="notice">
   <div class="wrap notice-grid">
     <div>
@@ -523,7 +492,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <div class="quick">
         <a class="q" href="#products"><b>Pricing</b><span>상품 · 가격 보기</span><em>→</em></a>
         <a class="q" href="#reservation"><b>Reservation</b><span>날짜 문의하기</span><em>→</em></a>
-        <a class="q" href="#guide"><b>Guide</b><span>진행 과정 · FAQ</span><em>→</em></a>
+        <a class="q" href="#mybooking"><b>My Booking</b><span>내 예약 확인</span><em>→</em></a>
         <a class="q" href="https://pf.kakao.com/" target="_blank" rel="noopener"><b>Contact</b><span>카카오톡 상담</span><em>↗</em></a>
       </div>
     </div>
@@ -855,8 +824,8 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
 // tabs
-const TABS=["home","about","portfolio","film","products","guide","notice","reservation","mybooking"];
-function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(t==="about"||t==="notice")t="home";if(!TABS.includes(t))t="home";
+const TABS=["home","about","portfolio","film","products","notice","reservation","mybooking"];
+function route(){let t=(location.hash||"#home").slice(1);if(t==="about"||t==="notice"||t==="guide"||t==="faq")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
  const na=document.querySelector('.nav a[aria-current="page"]'),nv=document.querySelector(".nav");if(na&&nv&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=na.offsetLeft-nv.clientWidth/2+na.offsetWidth/2;
