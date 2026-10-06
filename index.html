@@ -132,14 +132,17 @@ section{scroll-margin-top:70px}
 .album .cap small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.85}
 .album .cap b{font-weight:400;font-size:17px;word-break:keep-all}
 .album .cnt{position:absolute;top:12px;right:12px;font-size:11px;letter-spacing:.12em;color:#fff;background:rgba(30,15,15,.45);padding:3px 9px;font-variant-numeric:tabular-nums}
-.box{position:fixed;inset:0;z-index:50;background:#140d0c;color:#fff;display:grid;grid-template-rows:auto 1fr auto;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
-.box-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px;gap:12px}
+.box{position:fixed;inset:0;z-index:50;background:#140d0c;color:#fff;display:block;overflow-y:auto;overscroll-behavior:contain;padding:0 0 env(safe-area-inset-bottom,0px)}
+.box-top{display:flex;justify-content:space-between;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 64px 14px 16px;gap:12px;max-width:1032px;margin:0 auto}
+.box .x{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:3;background:rgba(20,13,12,.7);border-radius:50%}
 .box-top p{font-size:13px;line-height:1.6;opacity:.82;max-width:56em;margin:4px 0 6px;word-break:keep-all}
 .box-top h3{font-family:var(--en);font-style:italic;font-size:22px}
 .box-top span{font-size:12px;letter-spacing:.14em;opacity:.7;font-variant-numeric:tabular-nums}
 .box .x{color:#fff;font-size:34px;font-weight:200;width:44px;height:44px;line-height:1}
-.stage{position:relative;display:grid;place-items:center;min-height:0;padding:0 56px}
-.stage img{max-height:100%;max-width:100%;object-fit:contain;user-select:none}
+.stage{display:grid;gap:14px;justify-items:center;padding:8px 16px 48px}
+.stage img{display:block;width:100%;max-width:1000px;height:auto;background:#1e1513}
+.stage .end{margin-top:18px;color:#fff;border-color:#fff}
+.box .nav-btn,.box .thumbs{display:none!important}
 .nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:72px;color:#fff;font-size:34px;font-weight:200;opacity:.75}
 .nav-btn:hover{opacity:1}.nav-btn.prev{left:4px}.nav-btn.next{right:4px}
 .thumbs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 14px;scrollbar-width:thin}
@@ -311,7 +314,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
+      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#reservation">Reservation</a>
     </nav>
     
   </div>
@@ -524,17 +527,14 @@ albums.forEach(a=>{
   b.innerHTML=`<img src="${src(a,a.cover)}" alt="${a.name} 본식스냅" loading="lazy"><span class="cnt">${a.photos.length} PHOTOS</span><span class="cap"><b>${a.name}</b></span>`;
   b.onclick=()=>openAlbum(a,0);grid.append(b)});
 const box=$("#box"),img=$("#boxImg"),thumbs=$("#thumbs");let alb=null,idx=0,opener=null;
-function openAlbum(a,i){alb=a;opener=document.activeElement;$("#boxTitle").textContent=a.name+" 본식스냅";$("#boxDesc").textContent=notes[a.id]||"";
-  thumbs.innerHTML=a.photos.map((f,k)=>`<button data-k="${k}" aria-label="${k+1}번째 사진"><img src="${src(a,f)}" alt="" loading="lazy"></button>`).join("");
-  thumbs.querySelectorAll("button").forEach(t=>t.onclick=()=>show(+t.dataset.k));
-  box.hidden=false;document.body.style.overflow="hidden";show(i);$("#boxClose").focus()}
-function show(i){idx=(i+alb.photos.length)%alb.photos.length;img.src=src(alb,alb.photos[idx]);img.alt=`${alb.name} ${idx+1}번째 사진`;
-  $("#boxCount").textContent=`${idx+1} / ${alb.photos.length}`;
-  thumbs.querySelectorAll("button").forEach((t,k)=>{t.setAttribute("aria-current",k===idx);if(k===idx)t.scrollIntoView({block:"nearest",inline:"center"})});
-  [idx+1,idx-1].forEach(k=>{const n=alb.photos[(k+alb.photos.length)%alb.photos.length];new Image().src=src(alb,n)})}
+function openAlbum(a){alb=a;opener=document.activeElement;$("#boxTitle").textContent=a.name+" 본식스냅";$("#boxDesc").textContent=notes[a.id]||"";
+  $("#boxCount").textContent=`사진 ${a.photos.length}장 · 아래로 내려서 보세요`;
+  const st=$("#stage");st.innerHTML=a.photos.map((f,k)=>`<img src="${src(a,f)}" alt="${a.name} 본식스냅 ${k+1}" loading="${k<2?"eager":"lazy"}">`).join("")+`<button class="btn end" type="button">앨범 닫기</button>`;
+  st.querySelector(".end").onclick=closeBox;box.hidden=false;box.scrollTop=0;document.body.style.overflow="hidden";$("#boxClose").focus()}
+function show(){}
 function closeBox(){box.hidden=true;document.body.style.overflow="";opener&&opener.focus()}
 $("#boxClose").onclick=closeBox;$("#prev").onclick=()=>show(idx-1);$("#next").onclick=()=>show(idx+1);
-$("#stage").onclick=e=>{if(e.target.id==="stage")closeBox()};
+
 addEventListener("keydown",e=>{if(box.hidden)return;if(e.key==="Escape")closeBox();if(e.key==="ArrowRight")show(idx+1);if(e.key==="ArrowLeft")show(idx-1)});
 let sx=null;$("#stage").addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
 $("#stage").addEventListener("touchend",e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)show(idx+(dx<0?1:-1));sx=null});
@@ -570,7 +570,7 @@ $("#copySummary").onclick=e=>copyText($("#summary").textContent,e.currentTarget)
 
 // tabs
 const TABS=["home","about","portfolio","film","products","guide","notice","reservation"];
-function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(t==="about")t="home";if(!TABS.includes(t))t="home";
+function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(t==="about"||t==="notice")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
  window.scrollTo(0,0)}
