@@ -61,6 +61,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .chip.cnt.pend b{color:var(--rose)}.chip.cnt.conf b{color:var(--ok)}
 .chip.cnt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .bk-title{font:inherit;color:inherit;margin:0 0 3px;padding:0;border:0;background:none}
+.pbox{border:1px solid var(--line);background:var(--bg);padding:10px;display:grid;gap:6px}
+.pbox-h{margin:0;font-size:12.5px;color:var(--soft)}
+.pbox input{text-align:right;font-variant-numeric:tabular-nums}
+.pbal{margin:2px 0 0;display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--line);padding-top:8px}.pbal b{font-size:15px}
 .pwrow{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;font-size:13px;color:var(--soft)}
 .pwrow code{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:2px 8px;margin-left:6px}
 dl{display:grid;grid-template-columns:96px 1fr;gap:3px 12px;margin:0}
@@ -190,12 +194,19 @@ function detailHTML(b){const r=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:"";
   ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}${r("작성일시",fmtDT(b.createdAt))}</dl>
   <p class="pwrow">예약자 비밀번호${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p></div>
   <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
+  <div class="pbox"><p class="pbox-h">결제 금액</p>
+   <label>상품 금액<input class="pTot" inputmode="numeric" value="${money(b.priceTotal||0)}"></label>
+   <label>할인 금액<input class="pDis" inputmode="numeric" value="${money(b.discount||0)}"></label>
+   <label>예약금 (입금액)<input class="pDep" inputmode="numeric" value="${money(b.deposit||0)}"></label>
+   <p class="pbal">남은 잔금 <b>${money(Math.max(0,(b.priceTotal||0)-(b.discount||0)-(b.deposit||0)))||"0"}원</b></p></div>
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>
-  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm fill sSave" type="button">메모 저장</button><button class="btn sm danger sDel" type="button">삭제</button></div><p class="msg sMsg" role="status"></p></div></article>`}
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm fill sSave" type="button">저장</button><button class="btn sm danger sDel" type="button">삭제</button></div><p class="msg sMsg" role="status"></p></div></article>`}
 function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
-  const tog=(sel,key)=>{const btn=el.querySelector(sel);btn.onclick=async()=>{const b=bookings.find(x=>x.id===id),v=!b[key];btn.disabled=true;try{await api({action:"update",id,fields:{[key]:v}});b[key]=v;renderBookings()}catch(x){btn.disabled=false;m.className="msg sMsg err";m.textContent=x.message}}};
+  const tog=(sel,key)=>{const btn=el.querySelector(sel);btn.onclick=async()=>{const b=bookings.find(x=>x.id===id),v=!b[key];btn.disabled=true;const fields={[key]:v};if(key==="paid"&&v&&!b.deposit){const dep=200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0));if(dep)fields.deposit=dep}try{await api({action:"update",id,fields});Object.assign(b,fields);renderBookings()}catch(x){btn.disabled=false;m.className="msg sMsg err";m.textContent=x.message}}};
   tog(".tPaid","paid");tog(".tConf","confirmed");
-  el.querySelector(".sSave").onclick=async()=>{m.className="msg sMsg";m.textContent="저장하는 중…";try{await api({action:"update",id,fields:{adminMemo:el.querySelector(".sMemo").value}});const b=bookings.find(x=>x.id===id);b.adminMemo=el.querySelector(".sMemo").value;renderBookings();const m2=document.querySelector(`.bk[data-id="${id}"] .sMsg`);if(m2){m2.className="msg sMsg ok";m2.textContent="저장했어요."}}catch(x){m.className="msg sMsg err";m.textContent=x.message}};
+  const upd=()=>{const num=c=>Number(String(el.querySelector(c).value).replace(/[^\d]/g,""))||0;el.querySelector(".pbal b").textContent=(money(Math.max(0,num(".pTot")-num(".pDis")-num(".pDep")))||"0")+"원"};
+  el.querySelectorAll(".pTot,.pDis,.pDep").forEach(i=>i.oninput=()=>{const p=i.selectionStart,l=i.value.length;i.value=money(i.value);upd()});
+  el.querySelector(".sSave").onclick=async()=>{m.className="msg sMsg";m.textContent="저장하는 중…";const num=c=>Number(String(el.querySelector(c).value).replace(/[^\d]/g,""))||0;const F={adminMemo:el.querySelector(".sMemo").value,priceTotal:num(".pTot"),discount:num(".pDis"),deposit:num(".pDep")};try{await api({action:"update",id,fields:F});const b=bookings.find(x=>x.id===id);Object.assign(b,F);renderBookings();const m2=document.querySelector(`.bk[data-id="${id}"] .sMsg`);if(m2){m2.className="msg sMsg ok";m2.textContent="저장했어요."}}catch(x){m.className="msg sMsg err";m.textContent=x.message}};
   el.querySelector(".sDel").onclick=()=>{m.className="msg sMsg";m.innerHTML=`<span class="confirm">이 예약을 삭제할까요? 되돌릴 수 없어요. <button class="btn sm danger yes" type="button">삭제</button><button class="btn sm no" type="button">취소</button></span>`;
    m.querySelector(".no").onclick=()=>m.textContent="";m.querySelector(".yes").onclick=async()=>{try{await api({action:"delete",id});bookings=bookings.filter(x=>x.id!==id);openId=null;renderBookings()}catch(x){m.className="msg sMsg err";m.textContent=x.message}}}}
 function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=q.toLowerCase();

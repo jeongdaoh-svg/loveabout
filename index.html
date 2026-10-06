@@ -206,7 +206,8 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
 .mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
 .badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
-.badge.ok{background:var(--rose);color:#fff}.badge.no{border-color:var(--line);color:var(--ink-soft)}
+.badge.ok{background:var(--rose);color:#fff}.pay dl{border-top:1px solid var(--ink)}.pay dd{text-align:right;font-variant-numeric:tabular-nums}.pay dt.bal,.pay dd.bal{font-weight:600;font-size:15px;color:var(--ink)}
+.badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.badge.no{border-color:var(--line);color:var(--ink-soft)}
 .mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
 .mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
@@ -221,7 +222,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .ml-pw{display:block;padding:4px 4px 16px 48px}.ml-pw[hidden]{display:none}.ml-pw p{font-size:13px;color:var(--ink-soft);margin:0 0 8px;word-break:keep-all}
 .ml-pw-row{display:flex;gap:8px}.ml-pw-row input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg-alt);border:1px solid var(--line);padding:10px 12px}
 .ml-pw .ferr:empty{display:none}
-@media (max-width:600px){.ml-pw{padding-left:4px}.ml-row{grid-template-columns:24px 1fr auto}.lock{display:none}}
+@media (max-width:600px){.ml-pw{padding-left:4px}.ml-row{grid-template-columns:24px 1fr;row-gap:8px}.ml-row .badges{grid-column:2;justify-content:flex-start}.lock{display:none}}
 @media (max-width:600px){.mycheck{padding:28px 18px}.mine dl{grid-template-columns:84px 1fr}}
 .board{margin-top:48px}
 .board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
@@ -396,6 +397,20 @@ footer a:hover{color:#fff}
 footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;opacity:.75;font-size:12px}
 
 @media (max-width:1020px){.top .wrap{height:auto;flex-wrap:wrap;gap:6px 20px;padding-block:12px}.nav{overflow-x:auto;scrollbar-width:none;gap:18px;max-width:100%}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;letter-spacing:.12em;font-size:11px}}
+.menu-btn{display:none}
+@media (max-width:760px){
+  .top .wrap{height:60px;flex-wrap:nowrap;padding-block:0;position:relative}
+  .menu-btn{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;margin-right:-8px;padding:0 9px;background:none;border:0;cursor:pointer}
+  .menu-btn span{display:block;height:1.5px;background:var(--ink);transition:transform .2s,opacity .2s}
+  .menu-btn[aria-expanded="true"] span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+  .menu-btn[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .menu-btn[aria-expanded="true"] span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+  .nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;overflow:visible;max-width:none;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.06);padding:6px 16px 10px}
+  .nav.open{display:flex}
+  .nav a{font-size:13px;letter-spacing:.14em;padding:14px 4px;border-bottom:1px solid var(--line)}
+  .nav a:last-child{border-bottom:0}
+  .nav a[aria-current="page"]{color:var(--rose);border-color:var(--line)}
+}
 @media (max-width:860px){
   .split,.contact{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr 1fr}
@@ -414,7 +429,8 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 <header class="top">
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
-    <nav class="nav" aria-label="주요 메뉴">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
+    <nav class="nav" id="mainNav" aria-label="주요 메뉴">
       <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#reservation">Reservation</a><a href="#mybooking">My Booking</a>
     </nav>
     
@@ -793,22 +809,26 @@ const escH=escA;
 const fmtDate=iso=>{const p=new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(iso));const g=k=>p.find(x=>x.type===k).value;return g("year")+"."+g("month")+"."+g("day")};
 const rtypeLabel={personal:"휴대폰 번호",business:"사업자번호",none:"발행 안 함"};
 (()=>{try{const t=localStorage.getItem("la_admin");if(!t)return;const p=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));if(p.exp>Date.now())$("#adminGo").hidden=false}catch(e){}})();
-const stOf=x=>x.confirmed?["ok","예약확정"]:x.paid?["","입금확인"]:["no","예약 신청 완료"];
+const won0=n=>(Number(n)||0).toLocaleString("ko-KR")+"원";
+function payHTML(x){const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-(x.deposit||0));
+ return `<section class="pay"><h5>결제 정보</h5><dl><dt>상품 금액</dt><dd>${won0(x.priceTotal)}</dd><dt>할인 금액</dt><dd>${x.discount?"- "+won0(x.discount):"0원"}</dd><dt>예약금</dt><dd>${x.deposit?"- "+won0(x.deposit):x.paid?"0원":"입금 확인 전"}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
+const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 const lkPost=async d=>{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"잠시 후 다시 시도해 주세요.");return j};
 let lkWho=null;
 function renderDetail(x){const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
- return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span></div>
+ return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${badges(x)}</div>
    <p class="bk-title">러브어바웃 예약글 작성 목록</p>
    ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
+   ${payHTML(x)}
   </article><div class="mine-end"><button class="btn sm" type="button" id="lkBack">목록으로</button></div>`}
 function renderList(items){const L=$("#myList");$("#myPosts").innerHTML="";
  L.innerHTML=`<div class="ml-head"><p><b>${escH(lkWho.name)}</b>님의 예약글 ${items.length}건</p><button class="btn sm" type="button" id="lkReset">다시 찾기</button></div>
-  <ul class="ml">${items.map((x,i)=>`<li data-id="${x.id}"><button type="button" class="ml-row" aria-expanded="false"><span class="ml-no">${items.length-i}</span><span class="ml-t">본식 예약 문의<small>예식 ${escH(x.weddingDate)} · ${fmtDate(x.createdAt)} 작성</small></span><span class="badge ${stOf(x)[0]}">${stOf(x)[1]}</span><span class="lock" aria-hidden="true">🔒</span></button>
+  <ul class="ml">${items.map((x,i)=>`<li data-id="${x.id}"><button type="button" class="ml-row" aria-expanded="false"><span class="ml-no">${items.length-i}</span><span class="ml-t">${escH(lkWho.name)} 본식 예약<small>${fmtDate(x.createdAt)} 작성</small></span>${badges(x)}<span class="lock" aria-hidden="true">🔒</span></button>
   <form class="ml-pw" hidden novalidate><p>이 글은 비밀글이에요. 예약할 때 정한 비밀번호를 입력해 주세요.</p><div class="ml-pw-row"><input type="password" maxlength="30" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호"><button class="btn sm fill" type="submit">확인</button></div><p class="ferr" role="alert"></p></form></li>`).join("")}</ul>`;
  $("#lkReset").onclick=()=>{L.innerHTML="";$("#myPosts").innerHTML="";$("#lookup").hidden=false;$("#lkName").focus()};
  L.querySelectorAll(".ml li").forEach(li=>{const btn=li.querySelector(".ml-row"),f=li.querySelector(".ml-pw"),inp=f.querySelector("input"),er=f.querySelector(".ferr");
@@ -831,6 +851,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
  const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),
   weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),
+  priceTotal:[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0),
   snapProduct:ck("snap"),dvdProduct:ck("dvd"),addons:[...document.querySelectorAll('#step2 input[name="addon"]:checked')].map(i=>i.value),
   partnerCode:$("#fpartner").value.trim(),receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
   password:$("#fpw").value,website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
@@ -859,8 +880,14 @@ const TABS=["home","about","portfolio","film","products","notice","reservation",
 function route(){let t=(location.hash||"#home").slice(1);if(t==="about"||t==="notice"||t==="guide"||t==="faq")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
- const na=document.querySelector('.nav a[aria-current="page"]'),nv=document.querySelector(".nav");if(na&&nv&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=na.offsetLeft-nv.clientWidth/2+na.offsetWidth/2;
+ const na=document.querySelector('.nav a[aria-current="page"]'),nv=document.querySelector(".nav");if(na&&nv&&!nv.classList.contains("open")&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=na.offsetLeft-nv.clientWidth/2+na.offsetWidth/2;
+ setMenu(false);
  window.scrollTo(0,0)}
+function setMenu(o){const n=$("#mainNav"),b=$("#menuBtn");if(!n||!b)return;n.classList.toggle("open",o);b.setAttribute("aria-expanded",String(o));b.setAttribute("aria-label",o?"메뉴 닫기":"메뉴 열기")}
+$("#menuBtn").onclick=()=>setMenu(!$("#mainNav").classList.contains("open"));
+$("#mainNav").addEventListener("click",e=>{if(e.target.closest("a"))setMenu(false)});
+document.addEventListener("click",e=>{if(!e.target.closest(".top"))setMenu(false)});
+addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
 addEventListener("hashchange",route);route();
 </script>
 </body>
