@@ -7,6 +7,7 @@ const { sql, ensure, hashPw, checkPw, encrypt, clip, PHONE, BIZ, body, fail } = 
 const toFull = (r) => ({
   id: Number(r.id), createdAt: r.created_at, updatedAt: r.updated_at, status: r.status,
   paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1,
+  priceItems: (() => { try { return JSON.parse(r.price_items || "[]"); } catch (e) { return []; } })(),
   priceTotal: Number(r.price_total) || 0, discount: Number(r.discount) || 0, deposit: Number(r.deposit) || 0,
   name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
   weddingDate: r.wedding_date, weddingTime: r.wedding_time, hall: r.hall,
@@ -67,8 +68,9 @@ module.exports = async (req, res) => {
     const { d, e, pw } = validate(b);
     if (e.length) return fail(res, 400, e.join(" "));
     const now = new Date().toISOString();
-    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
-      [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw), Math.max(0, Math.min(100000000, Math.round(Number(b.priceTotal) || 0)))]]]);
+    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,price_items,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
+      [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw), Math.max(0, Math.min(100000000, Math.round(Number(b.priceTotal) || 0))),
+      JSON.stringify((Array.isArray(b.priceItems) ? b.priceItems : []).slice(0, 20).map((x) => ({ name: clip(x && x.name, 60), price: Math.max(0, Math.min(100000000, Math.round(Number(x && x.price) || 0))) })).filter((x) => x.name))]]]);
     return res.status(201).json({ ok: true });
   } catch (err) {
     return fail(res, 500, "잠시 후 다시 시도해 주세요.");
