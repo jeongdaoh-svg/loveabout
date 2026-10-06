@@ -44,6 +44,11 @@ module.exports = async (req, res) => {
         sets.push(col + "=?"); args.push(v);
       }
       for (const k of ["paid", "confirmed"]) if (k in f) { sets.push(k + "=?"); args.push(f[k] ? 1 : 0); }
+      for (const [k, col] of [["priceTotal", "price_total"], ["discount", "discount"], ["deposit", "deposit"]]) if (k in f) {
+        const n = Math.round(Number(String(f[k]).replace(/[^\d.-]/g, "")) || 0);
+        if (n < 0 || n > 100000000) return fail(res, 400, "금액을 다시 확인해 주세요.");
+        sets.push(col + "=?"); args.push(n);
+      }
       if (!id || !sets.length) return fail(res, 400, "수정할 내용이 없어요.");
       sets.push("updated_at=?"); args.push(new Date().toISOString(), id);
       await sql([["UPDATE bookings SET " + sets.join(",") + " WHERE id=?", args]]);

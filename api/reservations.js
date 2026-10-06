@@ -7,6 +7,7 @@ const { sql, ensure, hashPw, checkPw, encrypt, clip, PHONE, BIZ, body, fail } = 
 const toFull = (r) => ({
   id: Number(r.id), createdAt: r.created_at, updatedAt: r.updated_at, status: r.status,
   paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1,
+  priceTotal: Number(r.price_total) || 0, discount: Number(r.discount) || 0, deposit: Number(r.deposit) || 0,
   name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
   weddingDate: r.wedding_date, weddingTime: r.wedding_time, hall: r.hall,
   snapProduct: r.snap_product, dvdProduct: r.dvd_product, addons: JSON.parse(r.addons || "[]"),
@@ -66,8 +67,8 @@ module.exports = async (req, res) => {
     const { d, e, pw } = validate(b);
     if (e.length) return fail(res, 400, e.join(" "));
     const now = new Date().toISOString();
-    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
-      [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw)]]]);
+    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
+      [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw), Math.max(0, Math.min(100000000, Math.round(Number(b.priceTotal) || 0)))]]]);
     return res.status(201).json({ ok: true });
   } catch (err) {
     return fail(res, 500, "잠시 후 다시 시도해 주세요.");
