@@ -1,77 +1,71 @@
-// 러브어바웃 예약 게시판 API (Vercel Serverless Function)
-// GET  /api/reservations  → 예약글 목록 (개인정보는 가린 상태로만 반환)
-// POST /api/reservations  → 예약글 작성
-const URL_ = (process.env.TURSO_DATABASE_URL || "").replace(/^libsql:\/\//, "https://");
-const TOKEN = process.env.TURSO_AUTH_TOKEN || "";
+// 예약 게시판 API
+// GET                         → 목록 (이름은 가리고, 연락처·내용은 보내지 않아요)
+// POST {action:"create",...}   → 예약글 작성
+// POST {action:"lookup",name,phone,password} → 본인 글 조회
+const { sql, ensure, hashPw, checkPw, clip, mask, PHONE, BIZ, body, fail } = require("./_db.js");
 
-const v = (x) => (x === null || x === undefined ? { type: "null" } : typeof x === "number" ? { type: "integer", value: String(x) } : { type: "text", value: String(x) });
+const toPublic = (r) => ({ id: Number(r.id), createdAt: r.created_at, name: mask(r.name), status: r.status });
+const toFull = (r) => ({
+  id: Number(r.id), createdAt: r.created_at, updatedAt: r.updated_at, status: r.status,
+  name: r.name, phone: r.phone, spouseName: r.spouse_name, spousePhone: r.spouse_phone,
+  weddingDate: r.wedding_date, weddingTime: r.wedding_time, hall: r.hall,
+  snapProduct: r.snap_product, dvdProduct: r.dvd_product, addons: JSON.parse(r.addons || "[]"),
+  partnerCode: r.partner_code, receiptType: r.receipt_type, receiptNumber: r.receipt_number, message: r.message,
+});
 
-async function sql(statements) {
-  const r = await fetch(URL_ + "/v2/pipeline", {
-    method: "POST",
-    headers: { Authorization: "Bearer " + TOKEN, "Content-Type": "application/json" },
-    body: JSON.stringify({ requests: [...statements.map(([q, args]) => ({ type: "execute", stmt: { sql: q, args: (args || []).map(v) } })), { type: "close" }] }),
-  });
-  const j = await r.json();
-  if (!r.ok) throw new Error("db " + r.status);
-  return j.results.map((x) => {
-    if (x.type === "error") throw new Error(x.error && x.error.message);
-    const res = x.response && x.response.result;
-    if (!res) return [];
-    const cols = res.cols.map((c) => c.name);
-    return res.rows.map((row) => Object.fromEntries(row.map((cell, i) => [cols[i], cell.value])));
-  });
+function validate(b) {
+  const d = {
+    name: clip(b.name, 20), phone: clip(b.phone, 13), spouse_name: clip(b.spouseName, 20), spouse_phone: clip(b.spousePhone, 13),
+    wedding_date: clip(b.weddingDate, 10), wedding_time: clip(b.weddingTime, 20), hall: clip(b.hall, 60),
+    snap_product: clip(b.snapProduct, 60), dvd_product: clip(b.dvdProduct, 60),
+    addons: JSON.stringify((Array.isArray(b.addons) ? b.addons : []).slice(0, 20).map((x) => clip(x, 60)).filter(Boolean)),
+    partner_code: clip(b.partnerCode, 30), receipt_type: clip(b.receiptType, 20), receipt_number: clip(b.receiptNumber, 13), message: clip(b.message, 1500),
+  };
+  const e = [];
+  if (!b.agreeNotice || !b.agreePrivacy) e.push("필독사항과 개인정보 처리방침에 동의해 주세요.");
+  if (d.name.length < 2) e.push("예약자 성함을 적어주세요.");
+  if (!PHONE.test(d.phone)) e.push("예약자 연락처를 010-0000-0000 형식으로 적어주세요.");
+  if (d.spouse_phone && !PHONE.test(d.spouse_phone)) e.push("배우자 연락처를 010-0000-0000 형식으로 적어주세요.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d.wedding_date)) e.push("예식일을 선택해 주세요.");
+  if (!d.wedding_time) e.push("예식 시간을 적어주세요.");
+  if (!d.hall) e.push("예식장을 적어주세요.");
+  if (!d.snap_product && !d.dvd_product) e.push("상품을 하나 이상 선택해 주세요.");
+  if (d.receipt_type === "personal" && !PHONE.test(d.receipt_number)) e.push("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.");
+  if (d.receipt_type === "business" && !BIZ.test(d.receipt_number)) e.push("사업자번호를 000-00-00000 형식으로 적어주세요.");
+  if (!["personal", "business", "none", ""].includes(d.receipt_type)) e.push("현금영수증 종류를 다시 선택해 주세요.");
+  if (d.receipt_type === "none" || !d.receipt_type) d.receipt_number = "";
+  const pw = String(b.password || "");
+  if (pw.length < 4 || pw.length > 30) e.push("비밀번호는 4자 이상으로 정해주세요.");
+  return { d, e, pw };
 }
-
-const CREATE = `CREATE TABLE IF NOT EXISTS reservations (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  created_at TEXT NOT NULL,
-  name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  wedding_date TEXT NOT NULL,
-  wedding_time TEXT NOT NULL,
-  hall TEXT NOT NULL,
-  product TEXT,
-  message TEXT,
-  agreed_notice INTEGER NOT NULL,
-  agreed_privacy INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT '접수'
-)`;
-
-const mask = (n) => { n = String(n || "").trim(); if (n.length <= 1) return n + "*"; if (n.length === 2) return n[0] + "*"; return n[0] + "*".repeat(n.length - 2) + n[n.length - 1]; };
-const clip = (s, n) => String(s || "").trim().slice(0, n);
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
-  if (!URL_ || !TOKEN) return res.status(500).json({ error: "저장소가 아직 연결되지 않았어요." });
   try {
+    await ensure();
     if (req.method === "GET") {
-      const [, rows] = await sql([[CREATE], ["SELECT id, created_at, name, hall, status FROM reservations ORDER BY created_at DESC, id DESC LIMIT 200"]]);
-      return res.status(200).json({ items: rows.map((r) => ({ id: Number(r.id), createdAt: r.created_at, name: mask(r.name), hall: r.hall, status: r.status })) });
+      const [rows] = await sql([["SELECT id, created_at, name, status FROM bookings ORDER BY created_at DESC, id DESC LIMIT 300"]]);
+      return res.status(200).json({ items: rows.map(toPublic) });
     }
-    if (req.method === "POST") {
-      const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-      if (b.website) return res.status(200).json({ ok: true }); // 스팸 방지용 숨김칸
-      const d = {
-        name: clip(b.name, 20), phone: clip(b.phone, 13), wedding_date: clip(b.weddingDate, 10), wedding_time: clip(b.weddingTime, 20),
-        hall: clip(b.hall, 60), product: clip(b.product, 40), message: clip(b.message, 1000),
-      };
-      const errs = [];
-      if (!b.agreeNotice || !b.agreePrivacy) errs.push("필독사항과 개인정보 처리방침에 동의해 주세요.");
-      if (d.name.length < 2) errs.push("성함을 적어주세요.");
-      if (!/^01[016789]-\d{3,4}-\d{4}$/.test(d.phone)) errs.push("연락처는 010-0000-0000 형식으로 적어주세요.");
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(d.wedding_date)) errs.push("예식일을 선택해 주세요.");
-      if (!d.wedding_time) errs.push("예식 시간을 적어주세요.");
-      if (!d.hall) errs.push("예식장을 적어주세요.");
-      if (errs.length) return res.status(400).json({ error: errs.join(" ") });
-      const now = new Date().toISOString();
-      await sql([[CREATE], ["INSERT INTO reservations (created_at,name,phone,wedding_date,wedding_time,hall,product,message,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,1,1)",
-        [now, d.name, d.phone, d.wedding_date, d.wedding_time, d.hall, d.product, d.message]]]);
-      return res.status(201).json({ ok: true });
+    if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return fail(res, 405, "지원하지 않는 요청이에요."); }
+    const b = body(req);
+    if (b.website) return res.status(200).json({ ok: true });
+    if (b.action === "lookup") {
+      const name = clip(b.name, 20), phone = clip(b.phone, 13), pw = String(b.password || "");
+      if (!name || !PHONE.test(phone) || !pw) return fail(res, 400, "성함, 연락처, 비밀번호를 모두 적어주세요.");
+      const [rows] = await sql([["SELECT * FROM bookings WHERE name=? AND phone=? ORDER BY created_at DESC", [name, phone]]]);
+      const mine = rows.filter((r) => checkPw(pw, r.pw_hash));
+      if (!mine.length) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "일치하는 예약 글이 없어요. 성함, 연락처, 비밀번호를 다시 확인해 주세요."); }
+      return res.status(200).json({ items: mine.map(toFull) });
     }
-    res.setHeader("Allow", "GET, POST");
-    return res.status(405).json({ error: "지원하지 않는 요청이에요." });
-  } catch (e) {
-    return res.status(500).json({ error: "잠시 후 다시 시도해 주세요." });
+    const { d, e, pw } = validate(b);
+    if (e.length) return fail(res, 400, e.join(" "));
+    const now = new Date().toISOString();
+    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
+      [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw)]]]);
+    return res.status(201).json({ ok: true });
+  } catch (err) {
+    return fail(res, 500, "잠시 후 다시 시도해 주세요.");
   }
 };
+module.exports.toFull = toFull;
