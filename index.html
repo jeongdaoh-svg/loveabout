@@ -191,8 +191,8 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .btn[disabled]{opacity:.4;cursor:not-allowed}
 .btn[disabled]:hover{background:var(--ink);color:var(--bg)}
 .done-panel{text-align:center;justify-items:center}
-.mycheck{margin:56px auto 0;max-width:640px;border:1px solid var(--line);background:var(--bg);padding:36px 32px}
-.mc-head{text-align:center;margin-bottom:24px}.mc-head .rt{margin:6px 0 8px}.mc-head .soft{font-size:13.5px;word-break:keep-all}
+.mycheck{margin:0 auto;max-width:640px;border:1px solid var(--line);background:var(--bg);padding:36px 32px}
+.mc-head{text-align:center;margin-bottom:20px}.mc-head .rt{margin:6px 0 8px}.mc-head .soft{font-size:13.5px;word-break:keep-all}
 .mc-form{display:grid;grid-template-columns:1fr;gap:14px;max-width:420px;margin:0 auto}
 .mycheck{scroll-margin-top:90px}
 .mc-form .fld{display:grid;gap:6px}.mc-form .fld span{font-size:12.5px;letter-spacing:.04em;color:var(--ink-soft)}
@@ -402,7 +402,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#reservation">Reservation</a>
+      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#reservation">Reservation</a><a href="#mybooking">예약확인</a>
     </nav>
     
   </div>
@@ -676,11 +676,17 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     </form>
     <div class="rpanel done-panel" id="step3" hidden>
       <p class="h-ko">예약 글이 등록됐어요.</p>
-      <p class="soft">남겨주신 연락처로 확인 후 연락드릴게요. 아래 '내 예약 확인'에서 성함, 연락처, 비밀번호로 언제든 확인할 수 있어요.</p>
+      <p class="soft">남겨주신 연락처로 확인 후 연락드릴게요. 상단 <a href="#mybooking">예약확인</a> 메뉴에서 성함, 연락처, 비밀번호로 언제든 확인할 수 있어요.</p>
       <div class="rbtns"><button class="btn" id="newRsv" type="button">새 예약 글 쓰기</button></div>
     </div>
+  </div>
+</section>
+
+<section class="band" id="mybooking" data-tab="mybooking">
+  <div class="wrap">
+    <div class="head c"><span class="eyebrow">My Reservation</span><h2 class="h-en">예약확인</h2></div>
     <div class="mycheck" id="mycheck">
-      <div class="mc-head"><span class="eyebrow">My Reservation</span><h3 class="rt">내 예약 확인</h3><p class="soft">예약할 때 적은 성함, 연락처, 비밀번호를 입력하면 내 예약 내용과 진행 상태를 볼 수 있어요.</p></div>
+      <div class="mc-head"><p class="soft">예약할 때 적은 성함, 연락처, 비밀번호를 입력하면 내 예약 내용과 진행 상태를 볼 수 있어요.</p></div>
       <form class="mc-form" id="lookup" novalidate>
         <label class="fld"><span>성함</span><input id="lkName" maxlength="20" autocomplete="name" placeholder="예약자 성함"></label>
         <label class="fld"><span>연락처</span><input id="lkPhone" class="ph" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-0000-0000"></label>
@@ -849,10 +855,11 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
 // tabs
-const TABS=["home","about","portfolio","film","products","guide","notice","reservation"];
+const TABS=["home","about","portfolio","film","products","guide","notice","reservation","mybooking"];
 function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(t==="about"||t==="notice")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
+ const na=document.querySelector('.nav a[aria-current="page"]'),nv=document.querySelector(".nav");if(na&&nv&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=na.offsetLeft-nv.clientWidth/2+na.offsetWidth/2;
  window.scrollTo(0,0)}
 addEventListener("hashchange",route);route();
 </script>
