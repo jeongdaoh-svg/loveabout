@@ -299,7 +299,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Love About 홈">Love About</a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#home">Home</a><a href="#about">About</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
+      <a href="#home">Home</a><a href="#portfolio">Portfolio</a><a href="#film">DVD</a><a href="#products">Pricing</a><a href="#guide">Guide</a><a href="#notice">Notice</a><a href="#reservation">Reservation</a>
     </nav>
     
   </div>
@@ -559,7 +559,7 @@ $("#copySummary").onclick=e=>copyText($("#summary").textContent,e.currentTarget)
 
 // tabs
 const TABS=["home","about","portfolio","film","products","guide","notice","reservation"];
-function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(!TABS.includes(t))t="home";
+function route(){let t=(location.hash||"#home").slice(1);if(t==="faq")t="guide";if(t==="about")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
  window.scrollTo(0,0)}
