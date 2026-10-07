@@ -391,7 +391,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .links .btn{padding:11px 20px;font-size:11px}
 form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .f{display:grid;gap:6px;min-width:0}
-.f.full{grid-column:1/-1}
+.f.full{grid-column:1/-1}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
 .f label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
 .f input,.f select,.f textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:9px 0;width:100%}
 .f textarea{min-height:110px;resize:vertical}
@@ -678,7 +678,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <fieldset class="fs"><legend>예식 정보</legend>
         <div class="f"><label for="fdate">예식 날짜 *</label><input id="fdate" type="date" required></div>
         <div class="f"><label for="ftime">예식 시작 시간 *</label><input id="ftime" type="time" step="600" required></div>
-        <div class="f full"><label for="fhall">예식장 *</label><input id="fhall" required placeholder="예) 채플앳청담 3층 그랜드홀" maxlength="60"></div>
+        <div class="f full halls"><div class="f"><label for="fregion">지역명 *</label><input id="fregion" required placeholder="예) 천안" maxlength="15"></div><div class="f"><label for="fhall">웨딩홀명 *</label><input id="fhall" required placeholder="예) 베리컨벤션" maxlength="25"></div><div class="f"><label for="froom">홀명 *</label><input id="froom" required placeholder="예) 라벤더홀" maxlength="18"></div></div>
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
         <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
@@ -896,7 +896,7 @@ $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$(
 $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("#ferr"),btn=$("#fsubmit");
  const ck=n=>(document.querySelector(`#step2 input[name="${n}"]:checked`)||{}).value||"";
  const d={name:$("#fname").value.trim(),phone:$("#fphone").value.trim(),spouseName:$("#fsname").value.trim(),spousePhone:$("#fsphone").value.trim(),email:$("#femail").value.trim(),
-  weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:$("#fhall").value.trim(),
+  weddingDate:$("#fdate").value,weddingTime:$("#ftime").value.trim(),hall:[$("#fregion"),$("#fhall"),$("#froom")].map(e=>e.value.trim().replace(/\s+/g," ")).join(" "),
   priceTotal:[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0),
   priceItems:[...document.querySelectorAll('#step2 .picks input:checked')].filter(i=>i.value).map(i=>({name:i.name==="addon"?i.value.replace(/^(스냅|영상) · /,"$1 추가상품 · "):(i.name==="snap"?"본식 스냅 · ":"본식 DVD · ")+i.value,price:+i.dataset.price||0,k:i.name==="snap"?0:i.name==="dvd"?2:/^영상/.test(i.value)?3:1})).sort((p,q)=>p.k-q.k).map(({name,price})=>({name,price})),
   snapProduct:ck("snap"),dvdProduct:ck("dvd"),addons:[...document.querySelectorAll('#step2 input[name="addon"]:checked')].map(i=>i.value),
@@ -909,7 +909,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
  if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
  if(!d.weddingTime)return bad("예식 시작 시간을 선택해 주세요.",$("#ftime"));
- if(!d.hall)return bad("예식장을 적어주세요.",$("#fhall"));
+ for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","웨딩홀명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
  if(d.receiptType==="business"&&!/^\d{3}-\d{2}-\d{5}$/.test(d.receiptNumber))return bad("사업자번호를 000-00-00000 형식으로 적어주세요.",rc);
