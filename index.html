@@ -937,6 +937,10 @@ $("#mainNav").addEventListener("click",e=>{if(e.target.closest("a"))setMenu(fals
 document.addEventListener("click",e=>{if(!e.target.closest(".top"))setMenu(false)});
 addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
 addEventListener("hashchange",route);route();
+const SEL=".mine, .mycheck";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
+ const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+ const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
+ e.clipboardData.setData("text/plain",t);e.clipboardData.setData("text/html",h);e.preventDefault()});
 </script>
 </body>
 </html>

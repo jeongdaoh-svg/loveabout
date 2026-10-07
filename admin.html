@@ -277,6 +277,10 @@ $("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn
   m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${up?` · 이미 있던 ${up}건은 이메일을 넣었어요`:""}${sk?` (${sk}건은 건너뜀)`:""}.`;bookings=[];}
  catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
 boot();
+const SEL=".bk, .btbl";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
+ const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+ const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
+ e.clipboardData.setData("text/plain",t);e.clipboardData.setData("text/html",h);e.preventDefault()});
 </script>
 </body>
 </html>
