@@ -391,7 +391,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .links .btn{padding:11px 20px;font-size:11px}
 form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .f{display:grid;gap:6px;min-width:0}
-.f.full{grid-column:1/-1}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
+.f.full{grid-column:1/-1}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}.hall-note{grid-column:1/-1;margin:-8px 0 0;font-size:12px;color:var(--ink-soft)}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
 .f label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
 .f input,.f select,.f textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:9px 0;width:100%}
 .f textarea{min-height:110px;resize:vertical}
@@ -678,7 +678,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <fieldset class="fs"><legend>예식 정보</legend>
         <div class="f"><label for="fdate">예식 날짜 *</label><input id="fdate" type="date" required></div>
         <div class="f"><label for="ftime">예식 시작 시간 *</label><input id="ftime" type="time" step="600" required></div>
-        <div class="f full halls"><div class="f"><label for="fregion">지역명 *</label><input id="fregion" required placeholder="예) 천안" maxlength="15"></div><div class="f"><label for="fhall">웨딩홀명 *</label><input id="fhall" required placeholder="예) 베리컨벤션" maxlength="25"></div><div class="f"><label for="froom">홀명 *</label><input id="froom" required placeholder="예) 라벤더홀" maxlength="18"></div></div>
+        <div class="f full halls"><div class="f"><label for="fregion">지역명 *</label><input id="fregion" required placeholder="예) 천안" maxlength="15"></div><div class="f"><label for="fhall">장소명 *</label><input id="fhall" required placeholder="예) 베리컨벤션" maxlength="25"></div><div class="f"><label for="froom">홀명 *</label><input id="froom" required placeholder="예) 라벤더홀" maxlength="18"></div><p class="hall-note">홀 이름이 정해져있지 않은 호텔, 카페 등의 장소는 "웨딩홀"로 적어주세요.</p></div>
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
         <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
@@ -909,7 +909,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
  if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
  if(!d.weddingTime)return bad("예식 시작 시간을 선택해 주세요.",$("#ftime"));
- for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","웨딩홀명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
+ for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","장소명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
  if(d.receiptType==="business"&&!/^\d{3}-\d{2}-\d{5}$/.test(d.receiptNumber))return bad("사업자번호를 000-00-00000 형식으로 적어주세요.",rc);
