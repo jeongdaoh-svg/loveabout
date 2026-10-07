@@ -211,6 +211,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
 .mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
+.mine .kvs{border-top:1px solid var(--line);font-size:14px}.mine .kv{margin:0;padding:10px 0;border-bottom:1px solid var(--line);white-space:pre-line;overflow-wrap:anywhere}.mine .kv .k{color:var(--ink-soft)}
 .mine-end{text-align:center;margin-top:8px}
 .ml-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 12px;font-size:14px}.ml-head p{margin:0}
 .ml{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
@@ -862,9 +863,9 @@ const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";l
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 const lkPost=async d=>{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"잠시 후 다시 시도해 주세요.");return j};
 let lkWho=null;
-function renderDetail(x){const row=(k,v)=>v?`<dt>${k}</dt><dd>${escH(v)}</dd>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><dl>${b}</dl></section>`:"";
+function renderDetail(x){const row=(k,v)=>v?`<div class="kv"><span class="k">${k}</span> : <span class="v">${escH(v)}</span></div>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><div class="kvs">${b}</div></section>`:"";
  return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${badges(x)}</div>
-   <p class="bk-title">러브어바웃 예약글 작성 목록</p>
+   <div class="bk-title">러브어바웃 예약글 작성 목록</div>
    ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone)+row("이메일",x.email))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
