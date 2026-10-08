@@ -527,7 +527,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">DVD</span>본식 DVD</h3><div class="cards c3" id="cards-dvd"></div></div>
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">Options</span>추가상품</h3><div class="addl" id="addl"></div></div>
     <p class="note">모든 상품은 신부대기실부터 본식까지 촬영해요. 일정과 옵션은 편하게 문의해 주세요.</p>
-    <div class="consult-cta"><a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
+    <div class="consult-cta"><a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj/chat" data-kakao target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
   </div>
 </section>
 
@@ -545,7 +545,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <div class="consult-box">
       <p class="cb-t">러브어바웃 카카오채널</p>
       <p class="cb-s">카카오톡에서 ‘러브어바웃’을 검색하거나 아래 버튼을 눌러 채팅을 시작하세요.</p>
-      <a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener">카카오채널로 상담하기</a>
+      <a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj/chat" data-kakao target="_blank" rel="noopener">카카오채널로 상담하기</a>
     </div>
   </div>
 </section>
@@ -567,7 +567,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <a class="q" href="#products"><b>Pricing</b><span>상품 · 가격 보기</span><em>→</em></a>
         <a class="q" href="#reservation"><b>Reservation</b><span>날짜 문의하기</span><em>→</em></a>
         <a class="q" href="#mybooking"><b>My Booking</b><span>내 예약 확인</span><em>→</em></a>
-        <a class="q" href="https://pf.kakao.com/_VDmxoxj" target="_blank" rel="noopener"><b>Contact</b><span>카카오톡 상담</span><em>↗</em></a>
+        <a class="q" href="https://pf.kakao.com/_VDmxoxj/chat" data-kakao target="_blank" rel="noopener"><b>Contact</b><span>카카오톡 상담</span><em>↗</em></a>
       </div>
     </div>
   </div>
@@ -579,7 +579,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
     <span class="eyebrow">Reservation</span>
     <h2 class="h-en">Tell us your love story</h2>
     <p class="h-ko">당신만의 이야기를 들려주세요</p>
-    <a href="https://pf.kakao.com/_VDmxoxj" class="btn photo" target="_blank" rel="noopener">상담하기</a>
+    <a href="https://pf.kakao.com/_VDmxoxj/chat" data-kakao class="btn photo" target="_blank" rel="noopener">상담하기</a>
   </div>
 </section>
 
@@ -967,6 +967,10 @@ addEventListener("hashchange",route);route();
  $("#tp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
   if(b.dataset.ap){if(AP!==b.dataset.ap){AP=b.dataset.ap;H=null;MI=null}}else if(b.dataset.h){H=+b.dataset.h;if(MI===null)MI=0}else if(b.dataset.mi)MI=+b.dataset.mi;drawT()});
  window.resetDT=()=>{Y=M=D=H=MI=null;AP="am";drawD();drawT()};drawD();drawT()})();
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-kakao]");if(!a)return;
+ const mob=/Android|iPhone|iPad|iPod|Mobile|KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
+ if(mob){e.preventDefault();location.href=a.href;return}
+ e.preventDefault();const w=window.open(a.href,"_blank");if(w){try{w.opener=null}catch(_){}}else location.href=a.href});
 const SEL=".mine, .mycheck";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
  const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
  const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
