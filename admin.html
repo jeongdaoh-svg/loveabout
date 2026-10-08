@@ -50,11 +50,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .st{font-size:12px;padding:1px 8px;border:1px solid var(--rose);color:var(--rose)}
 .st.예약확정{border-color:var(--ok);color:var(--ok)}.st.취소{border-color:var(--bad);color:var(--bad)}
 .flags{display:flex;gap:4px;flex-wrap:wrap}.flags .st{white-space:nowrap}.flags .none{color:var(--soft);font-size:12px}
-.st.paid{border-color:var(--rose);color:var(--rose)}.st.conf{border-color:var(--ok);background:var(--ok);color:#fff}
+.st.paid{border-color:var(--rose);color:var(--rose)}.st.conf{border-color:var(--rose);background:var(--rose);color:#fff}.st.conf.lv2{border-color:var(--ok);background:var(--ok)}
 .tg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .tg button{font:inherit;font-size:13px;padding:10px 6px;border:1px solid var(--line);background:var(--bg);cursor:pointer;color:var(--ink)}
 .tg button[aria-pressed="true"].tPaid{background:var(--rose);border-color:var(--rose);color:#fff}
-.tg button[aria-pressed="true"].tConf{background:var(--ok);border-color:var(--ok);color:#fff}
+.tg button.tConf.lv1{background:var(--rose);border-color:var(--rose);color:#fff}.tg button.tConf.lv2{background:var(--ok);border-color:var(--ok);color:#fff}
 .tg button:disabled{opacity:.6;cursor:wait}
 .chip.cnt{font:inherit;font-size:14px;padding:8px 16px;cursor:pointer;background:var(--bg)}
 .chip.cnt b{font-weight:600;margin-left:4px}
@@ -62,6 +62,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .chip.cnt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .bk-title{font:inherit;color:inherit;margin:0 0 3px;padding:0;border:0;background:none}
 .newN{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:5px;border-radius:50%;background:#e0524a;color:#fff;font-size:10.5px;font-weight:700;font-style:normal;line-height:1;vertical-align:2px;animation:nBlink 1s ease-in-out infinite}@keyframes nBlink{0%,100%{opacity:1}50%{opacity:.25}}
+.eOpen{margin-top:10px}.eForm{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:10px}.eH{margin:0;font-weight:500}.eGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.eGrid label{display:grid;gap:3px;font-size:12.5px;color:var(--soft)}.eGrid .w{grid-column:1/-1}.eGrid .lab{font-size:12.5px;color:var(--soft)}.chks{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px}.chk{display:flex!important;align-items:center;gap:6px;color:var(--ink)!important;font-size:13px}.chk input{width:auto!important;flex:none;margin:0;padding:0}.eOpen,.eForm{user-select:none}.eForm input,.eForm textarea,.eForm select{user-select:text}.eBtns{display:flex;gap:6px}@media (max-width:820px){.eGrid{grid-template-columns:1fr}}
 .pbox{border:1px solid var(--line);background:var(--bg);padding:10px;display:grid;gap:6px}
 .pitems{list-style:none;margin:0;padding:0;font-size:12.5px}.pitems li{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted var(--line)}
 .pbox-h{margin:0;font-size:12.5px;color:var(--soft)}
@@ -210,11 +211,29 @@ const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";l
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 let page=1,openId=null;const PER=20;
 const hl=(t,q)=>{t=esc(t||"");return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
+function editHTML(b){const P=content||{snap:[],dvd:[],addons:[]},v=x=>esc(x||""),opts=(list,cur)=>`<option value="">선택 안 함</option>`+(list||[]).map(p=>`<option${p.ko===cur?" selected":""}>${esc(p.ko)}</option>`).join("")+(cur&&!(list||[]).some(p=>p.ko===cur)?`<option selected>${esc(cur)}</option>`:"");
+ const ad=(P.addons||[]).map(a=>{const val=(a.group==="dvd"?"영상":"스냅")+" · "+a.name;return `<label class="chk"><input type="checkbox" class="eAdd" value="${esc(val)}"${(b.addons||[]).includes(val)?" checked":""}> ${esc(val)}</label>`}).join("");
+ const ct=new Date(b.createdAt||Date.now()),loc=new Date(ct.getTime()+9*3600e3).toISOString().slice(0,16);
+ return `<form class="eForm" hidden novalidate><p class="eH">예약글 수정</p><div class="eGrid">
+  <label>예약자 이름<input name="name" value="${v(b.name)}" maxlength="20"></label><label>예약자 연락처<input name="phone" value="${v(b.phone)}" maxlength="13"></label>
+  <label>배우자 이름<input name="spouseName" value="${v(b.spouseName)}" maxlength="20"></label><label>배우자 연락처<input name="spousePhone" value="${v(b.spousePhone)}" maxlength="13"></label>
+  <label class="w">이메일<input name="email" value="${v(b.email)}" maxlength="80"></label>
+  <label>예식 날짜<input name="weddingDate" type="date" value="${/^\d{4}-\d{2}-\d{2}$/.test(b.weddingDate||"")?b.weddingDate:""}"></label><label>예식 시작 시간<input name="weddingTime" type="time" step="600" value="${/^\d{2}:\d{2}$/.test(b.weddingTime||"")?b.weddingTime:""}"></label>
+  <label class="w">예식장<input name="hall" value="${v(b.hall)}" maxlength="60"></label>
+  <label>본식 스냅<select name="snapProduct">${opts(P.snap,b.snapProduct)}</select></label><label>본식 DVD<select name="dvdProduct">${opts(P.dvd,b.dvdProduct)}</select></label>
+  <div class="w"><span class="lab">추가상품</span><div class="chks">${ad}</div></div>
+  <label>짝꿍코드<input name="partnerCode" value="${v(b.partnerCode)}" maxlength="30"></label>
+  <label>현금영수증<select name="receiptType">${[["none","발행 안 함"],["personal","휴대폰"],["business","사업자번호"]].map(([k,t])=>`<option value="${k}"${(b.receiptType||"none")===k?" selected":""}>${t}</option>`).join("")}</select></label>
+  <label class="w">현금영수증 번호<input name="receiptNumber" value="${v(b.receiptNumber)}" maxlength="13"></label>
+  <label class="w">요청사항<textarea name="message" rows="3" maxlength="1500">${v(b.message)}</textarea></label>
+  <label class="w">작성일<input name="createdAt" type="datetime-local" value="${loc}"></label>
+  <label class="w chk"><input type="checkbox" class="eRecalc"${b.imported?"":" checked"}> 상품·짝꿍코드가 바뀌면 결제 금액(상품가·할인·예약금)도 다시 계산</label></div>
+  <div class="eBtns"><button type="submit" class="btn sm fill">수정 저장</button><button type="button" class="btn sm eCancel">취소</button></div><p class="msg eMsg" role="status"></p></form>`}
 function detailHTML(b){const r=(k,v)=>v?`<div class="kv"><span class="k">${k}</span> : <span class="v">${esc(v)}</span></div>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><div class="bk-title">러브어바웃 예약글 작성 목록</div><div class="kvs">
   ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("이메일",b.email)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</div>
-  <p class="pwrow">예약자 비밀번호 : ${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p><p class="wrote">작성일 : ${fmtDT(b.createdAt)}</p></div>
-  <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf" aria-pressed="${!!b.confirmed}">${b.confirmed?"✓ ":""}예약확정</button></div>
+  <p class="pwrow">예약자 비밀번호 : ${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p><p class="wrote">작성일 : ${fmtDT(b.createdAt)}</p><button type="button" class="btn sm eOpen">예약글 수정</button>${editHTML(b)}</div>
+  <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf lv${b.confirmLevel||(b.confirmed?1:0)}" aria-pressed="${!!b.confirmed}" title="누를 때마다 분홍 → 초록 → 해제">${(b.confirmLevel||(b.confirmed?1:0))===2?"✓✓ ":b.confirmed?"✓ ":""}예약확정</button></div>
   <div class="pbox">${(()=>{const dep=(b.imported?(b.deposit||0):(b.deposit||200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0)))),depL=b.snapProduct&&b.dvdProduct?"스냅+DVD 예약금":b.dvdProduct?"DVD 예약금":"스냅 예약금",kv=(k,v,c)=>`<div class="kv${c?" "+c:""}"><span class="k">${k}</span> : <span class="v">${v}</span></div>`;
    return `<div class="ptext"><div class="pbox-h">결제 금액</div>${(b.priceItems||[]).map(i=>kv(esc(i.name),(money(i.price)||"0")+"원")).join("")}${kv("총 상품 금액",`<span class="tTot">${money(b.priceTotal||0)||"0"}</span>원`)}${(()=>{const P=discParts(b),ok=P.length&&P.reduce((a,c)=>a+c[1],0)===(b.discount||0);const sp=`<span class="tDis">${money(b.discount||0)||"0"}</span>원`;return ok&&P.length===1?kv(P[0][0],sp):(ok?P.map(([k,v])=>kv(k,(money(v)||"0")+"원")).join(""):"")+kv(ok?"할인 합계":"할인 이벤트",sp)})()}${kv(depL,`<span class="tDep">${money(dep)||"0"}</span>원`)}${kv("남은 잔금",`<b class="tBal">${money(Math.max(0,(b.priceTotal||0)-(b.discount||0)-dep))||"0"}</b>원`,"bal")}</div>
    <details class="pedit"><summary>금액 수정</summary>
@@ -224,8 +243,21 @@ function detailHTML(b){const r=(k,v)=>v?`<div class="kv"><span class="k">${k}</s
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>
   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm fill sSave" type="button">저장</button><button class="btn sm danger sDel" type="button">삭제</button></div><p class="msg sMsg" role="status"></p></div></article>`}
 function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
+  {const F=el.querySelector(".eForm"),op=el.querySelector(".eOpen"),em=el.querySelector(".eMsg");
+   op.onclick=()=>{F.hidden=!F.hidden;op.textContent=F.hidden?"예약글 수정":"수정 닫기";if(!F.hidden)F.querySelector("input").focus()};
+   el.querySelector(".eCancel").onclick=()=>{F.hidden=true;op.textContent="예약글 수정"};
+   F.onsubmit=async e=>{e.preventDefault();const g=n=>F.elements[n].value.trim(),PH=/^01[016789]-\d{3,4}-\d{4}$/;const b=bookings.find(x=>x.id===id);
+    const f={name:g("name"),phone:g("phone"),spouseName:g("spouseName"),spousePhone:g("spousePhone"),email:g("email"),weddingDate:g("weddingDate"),weddingTime:g("weddingTime"),hall:g("hall"),snapProduct:g("snapProduct"),dvdProduct:g("dvdProduct"),addons:[...F.querySelectorAll(".eAdd:checked")].map(i=>i.value),partnerCode:g("partnerCode"),receiptType:g("receiptType"),receiptNumber:g("receiptType")==="none"?"":g("receiptNumber"),message:F.elements.message.value};
+    const ca=g("createdAt");if(ca)f.createdAt=new Date(ca+":00+09:00").toISOString();
+    const bad=t=>{em.className="msg eMsg err";em.textContent=t};
+    if(f.name.length<2)return bad("예약자 이름을 적어주세요.");if(!PH.test(f.phone))return bad("예약자 연락처는 010-0000-0000 형식으로 적어주세요.");if(f.spousePhone&&!PH.test(f.spousePhone))return bad("배우자 연락처는 010-0000-0000 형식으로 적어주세요.");if(!f.snapProduct&&!f.dvdProduct)return bad("본식 스냅이나 DVD 중 하나는 골라주세요.");
+    const changed=b.snapProduct!==f.snapProduct||b.dvdProduct!==f.dvdProduct||JSON.stringify(b.addons||[])!==JSON.stringify(f.addons)||(b.partnerCode||"")!==f.partnerCode;
+    if(F.querySelector(".eRecalc").checked&&changed){const P=await loadContent();const it=deriveItems(f,P);f.priceItems=it;f.priceTotal=it.reduce((s,i)=>s+(+i.price||0),0);f.discount=discParts(f).reduce((s,c)=>s+c[1],0);f.deposit=200000*((f.snapProduct?1:0)+(f.dvdProduct?1:0))}
+    em.className="msg eMsg";em.textContent="저장하는 중…";
+    try{await api({action:"update",id,fields:f});Object.assign(b,f);renderBookings();const m2=document.querySelector(`.bk[data-id="${id}"] .sMsg`);if(m2){m2.className="msg sMsg ok";m2.textContent="예약글을 수정했어요."}}catch(x){bad(x.message)}}}
   const tog=(sel,key)=>{const btn=el.querySelector(sel);btn.onclick=async()=>{const b=bookings.find(x=>x.id===id),v=!b[key];btn.disabled=true;const fields={[key]:v};if(key==="paid"&&v&&!b.deposit){const dep=200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0));if(dep)fields.deposit=dep}try{await api({action:"update",id,fields});Object.assign(b,fields);renderBookings()}catch(x){btn.disabled=false;m.className="msg sMsg err";m.textContent=x.message}}};
-  tog(".tPaid","paid");tog(".tConf","confirmed");
+  tog(".tPaid","paid");
+  {const btn=el.querySelector(".tConf");btn.onclick=async()=>{const b=bookings.find(x=>x.id===id),cur=b.confirmLevel||(b.confirmed?1:0),nx=(cur+1)%3;btn.disabled=true;try{await api({action:"update",id,fields:{confirmed:nx}});Object.assign(b,{confirmLevel:nx,confirmed:nx>0});renderBookings()}catch(x){btn.disabled=false;m.className="msg sMsg err";m.textContent=x.message}}}
   const upd=()=>{const num=c=>Number(String(el.querySelector(c).value).replace(/[^\d]/g,""))||0,t=(c,v)=>{el.querySelector(c).textContent=money(v)||"0"};t(".tTot",num(".pTot"));t(".tDis",num(".pDis"));t(".tDep",num(".pDep"));t(".tBal",Math.max(0,num(".pTot")-num(".pDis")-num(".pDep")))};
   el.querySelectorAll(".pTot,.pDis,.pDep").forEach(i=>i.oninput=()=>{const p=i.selectionStart,l=i.value.length;i.value=money(i.value);upd()});
   el.querySelector(".sSave").onclick=async()=>{m.className="msg sMsg";m.textContent="저장하는 중…";const num=c=>Number(String(el.querySelector(c).value).replace(/[^\d]/g,""))||0;const F={adminMemo:el.querySelector(".sMemo").value,priceTotal:num(".pTot"),discount:num(".pDis"),deposit:num(".pDep")};try{await api({action:"update",id,fields:F});const b=bookings.find(x=>x.id===id);Object.assign(b,F);renderBookings();const m2=document.querySelector(`.bk[data-id="${id}"] .sMsg`);if(m2){m2.className="msg sMsg ok";m2.textContent="저장했어요."}}catch(x){m.className="msg sMsg err";m.textContent=x.message}};
@@ -240,7 +272,7 @@ function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=
  $("#qInfo").textContent=q||f?`검색 결과 ${list.length}건`+(q?` · "${q}"`:"")+(f?` · ${$("#fStatus").selectedOptions[0].text}`:""):"";
  const pages=Math.max(1,Math.ceil(list.length/PER));if(page>pages)page=pages;const slice=list.slice((page-1)*PER,page*PER);
  $("#bkList").innerHTML=slice.length?slice.map((b,i)=>{const no=list.length-((page-1)*PER+i);const prod=[withAdd(b.snapProduct,"스냅",b.addons),withAdd(b.dvdProduct,"영상",b.addons)].filter(Boolean).join(" / ");
-  return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name">${hl(b.name,q)} 본식 예약 <span class="lk">🔒</span>${isNew(b.createdAt)?'<i class="newN" title="새 글 (48시간)">N</i>':""}</td><td class="c-who">${hl(b.name,q)}</td><td class="c-date">${fmtD(b.createdAt)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?'<span class="st conf">예약확정</span>':""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="5">${detailHTML(b)}</td></tr>`:"")}).join("")
+  return `<tr class="row${openId===b.id?" open":""}" data-id="${b.id}" tabindex="0" aria-expanded="${openId===b.id}"><td class="c-no">${no}</td><td class="name">${hl(b.name,q)} 본식 예약 <span class="lk">🔒</span>${isNew(b.createdAt)?'<i class="newN" title="새 글 (48시간)">N</i>':""}</td><td class="c-who">${hl(b.name,q)}</td><td class="c-date">${fmtD(b.createdAt)}</td><td class="c-st"><div class="flags">${b.paid?'<span class="st paid">입금확인</span>':""}${b.confirmed?`<span class="st conf lv${b.confirmLevel||1}">예약확정</span>`:""}${!b.paid&&!b.confirmed?'<span class="none">—</span>':""}</div></td></tr>`+(openId===b.id?`<tr class="detail"><td colspan="5">${detailHTML(b)}</td></tr>`:"")}).join("")
   :`<tr><td colspan="5" class="empty">${bookings.length?"검색 결과가 없어요.":"아직 접수된 예약이 없어요."}</td></tr>`;
  {const bs=Math.floor((page-1)/10)*10+1,be=Math.min(pages,bs+9),nb=(p,l,dis,cls)=>`<button type="button" class="${cls||""}" data-p="${p}"${dis?" disabled":""}${p===page&&!cls?' aria-current="page"':""}>${l}</button>`;
  $("#pager").innerHTML=pages>1?nb(1,"처음",page===1,"nav")+nb(Math.max(1,bs-10),"이전",bs===1,"nav")+Array.from({length:be-bs+1},(_,k)=>nb(bs+k,bs+k)).join("")+nb(Math.min(pages,bs+10),"다음",be===pages,"nav")+nb(pages,"끝",page===pages,"nav"):"";}
