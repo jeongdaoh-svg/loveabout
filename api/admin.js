@@ -55,6 +55,7 @@ module.exports = async (req, res) => {
         if (n < 0 || n > 100000000) return fail(res, 400, "금액을 다시 확인해 주세요.");
         sets.push(col + "=?"); args.push(n);
       }
+      if ("createdAt" in f) { const d = new Date(String(f.createdAt)); if (isNaN(d)) return fail(res, 400, "작성일을 다시 확인해 주세요."); sets.push("created_at=?"); args.push(d.toISOString()); }
       if (!id || !sets.length) return fail(res, 400, "수정할 내용이 없어요.");
       sets.push("updated_at=?"); args.push(new Date().toISOString(), id);
       await sql([["UPDATE bookings SET " + sets.join(",") + " WHERE id=?", args]]);
