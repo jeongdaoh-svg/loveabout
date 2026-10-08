@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
     if (b.action === "list") {
       // 목록은 가볍게: 게시판에 필요한 칸만 보내고, 글 내용은 열 때 따로 불러와요.
       const [rows] = await sql([["SELECT id, created_at, name, paid, confirmed, imported FROM bookings ORDER BY created_at DESC, id DESC"]]);
-      const items = rows.map((r) => ({ id: Number(r.id), createdAt: r.created_at, name: r.name, paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) === 1, imported: Number(r.imported) === 1, light: true }));
+      const items = rows.map((r) => ({ id: Number(r.id), createdAt: r.created_at, name: r.name, paid: Number(r.paid) === 1, confirmed: Number(r.confirmed) >= 1, confirmLevel: Number(r.confirmed) || 0, imported: Number(r.imported) === 1, light: true }));
       return res.status(200).json({ items, statuses: STATUSES });
     }
     if (b.action === "get") {
@@ -49,12 +49,15 @@ module.exports = async (req, res) => {
         if ((k === "phone" || (k === "spousePhone" && v)) && !PHONE.test(v)) return fail(res, 400, "연락처는 010-0000-0000 형식으로 적어주세요.");
         sets.push(col + "=?"); args.push(v);
       }
-      for (const k of ["paid", "confirmed"]) if (k in f) { sets.push(k + "=?"); args.push(f[k] ? 1 : 0); }
+      if ("paid" in f) { sets.push("paid=?"); args.push(f.paid ? 1 : 0); }
+      if ("confirmed" in f) { const c = typeof f.confirmed === "number" ? Math.max(0, Math.min(2, Math.round(f.confirmed))) : (f.confirmed ? 1 : 0); sets.push("confirmed=?"); args.push(c); }
       for (const [k, col] of [["priceTotal", "price_total"], ["discount", "discount"], ["deposit", "deposit"]]) if (k in f) {
         const n = Math.round(Number(String(f[k]).replace(/[^\d.-]/g, "")) || 0);
         if (n < 0 || n > 100000000) return fail(res, 400, "금액을 다시 확인해 주세요.");
         sets.push(col + "=?"); args.push(n);
       }
+      if ("addons" in f) { sets.push("addons=?"); args.push(JSON.stringify((Array.isArray(f.addons) ? f.addons : []).slice(0, 20).map((a) => clip(a, 60)).filter(Boolean))); }
+      if ("priceItems" in f) { sets.push("price_items=?"); args.push(JSON.stringify((Array.isArray(f.priceItems) ? f.priceItems : []).slice(0, 20).map((x) => ({ name: clip(x && x.name, 60), price: Math.max(0, Math.min(100000000, Math.round(Number(x && x.price) || 0))) })).filter((x) => x.name))); }
       if ("createdAt" in f) { const d = new Date(String(f.createdAt)); if (isNaN(d)) return fail(res, 400, "작성일을 다시 확인해 주세요."); sets.push("created_at=?"); args.push(d.toISOString()); }
       if (!id || !sets.length) return fail(res, 400, "수정할 내용이 없어요.");
       sets.push("updated_at=?"); args.push(new Date().toISOString(), id);
