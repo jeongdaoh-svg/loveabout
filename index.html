@@ -695,13 +695,13 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
         <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
-        <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div><p class="pkg-note">스냅과 DVD를 함께 예약하면 패키지 할인으로 DVD에서 10,000원 할인돼요.</p>
+        <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div><p class="pkg-note">스냅과 DVD를 함께 예약하면 패키지 할인으로 DVD에서 10,000원 할인돼요. 짝꿍코드를 적으면 짝꿍 할인(스냅 20,000원 · DVD만 예약 시 10,000원)도 함께 적용돼요.</p>
         <p class="pick-h">스냅 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
         <p class="pick-h">영상 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
         <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
       </fieldset>
       <fieldset class="fs"><legend>기타</legend>
-        <div class="f"><label for="fpartner">짝꿍코드</label><input id="fpartner" placeholder="받으신 짝꿍코드가 있으면 적어주세요" maxlength="30"></div>
+        <div class="f"><label for="fpartner">짝꿍코드</label><input id="fpartner" placeholder="예) 261219이선호 (예식일+이름)" maxlength="30"></div>
         <div class="f"><span class="lbl">현금영수증</span>
           <div class="seg" role="radiogroup" aria-label="현금영수증 종류">
             <label><input type="radio" name="rtype" value="personal" checked><span>휴대폰 번호</span></label>
@@ -870,12 +870,12 @@ function deriveItems(x,P){const won=v=>{const n=parseInt(String(v||"").replace(/
  return out}
 function fillPrice(x,P){if(x.imported)return x;if(!(x.priceItems||[]).length)x.priceItems=deriveItems(x,P);if(!x.priceTotal)x.priceTotal=x.priceItems.reduce((s,i)=>s+(+i.price||0),0);return x}
 function payHTML(x){fillPrice(x,products);if(x.imported&&!x.priceTotal)return `<section class="pay"><h5>결제 정보</h5><p class="soft" style="font-size:13.5px;margin:10px 0 0">이전 홈페이지에서 옮겨온 예약이에요. 결제 금액은 확인 후 안내해 드릴게요.</p></section>`;const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-dep);const it=x.priceItems||[];
- return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인 이벤트${x.snapProduct&&x.dvdProduct?" <small>(패키지 할인 · DVD 1만원)</small>":""}</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
+ return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${(()=>{if(!x.discount)return "";const P=discParts(x);if(P.length&&P.reduce((a,b)=>a+b[1],0)===x.discount)return P.map(([k,v])=>`<dt>${k}</dt><dd>- ${won0(v)}</dd>`).join("");return `<dt>할인 이벤트</dt><dd>- ${won0(x.discount)}</dd>`})()}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
 const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 const lkPost=async d=>{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"잠시 후 다시 시도해 주세요.");return j};
-let lkWho=null;const isNew=t=>{const d=new Date(t).getTime();return d&&Date.now()-d<48*3600e3&&Date.now()>=d-6e4};
+let lkWho=null;const isPartner=c=>/^\s*(\d{6}|\d{4})[\s.\-]*[가-힣]{2,}/.test(String(c||""));const discParts=x=>{const p=[];if(x.snapProduct&&x.dvdProduct)p.push(["패키지 할인 (스냅+DVD · DVD 1만원)",10000]);if(isPartner(x.partnerCode)&&(x.snapProduct||x.dvdProduct))p.push([x.snapProduct?"짝꿍 할인 (스냅 2만원)":"짝꿍 할인 (DVD 1만원)",x.snapProduct?20000:10000]);return p};const isNew=t=>{const d=new Date(t).getTime();return d&&Date.now()-d<48*3600e3&&Date.now()>=d-6e4};
 function renderDetail(x){const row=(k,v)=>v?`<div class="kv"><span class="k">${k}</span> : <span class="v">${escH(v)}</span></div>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><div class="kvs">${b}</div></section>`:"";
  return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${badges(x)}</div>
    <div class="bk-title">러브어바웃 예약글 작성 목록</div>
