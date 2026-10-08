@@ -391,7 +391,17 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .links .btn{padding:11px 20px;font-size:11px}
 form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .f{display:grid;gap:6px;min-width:0}
-.f.full{grid-column:1/-1}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}.hall-note{grid-column:1/-1;margin:-8px 0 0;font-size:12px;color:var(--ink-soft)}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
+.f.full{grid-column:1/-1}
+.flab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.dp{display:grid;gap:8px;border:1px solid var(--line);padding:12px;outline:none}.dp:focus{border-color:var(--rose)}
+.dp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.dp-row.m{grid-template-columns:repeat(6,1fr)}.dp-row.ap{grid-template-columns:repeat(2,1fr)}.dp-row.h{grid-template-columns:repeat(6,1fr)}.dp-row.mi{grid-template-columns:repeat(6,1fr)}
+.dp-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dp-cal .wd{font-size:11px;text-align:center;color:var(--ink-soft);padding:2px 0}.dp-cal .wd.sun{color:#e08a82}.dp-cal .wd.sat{color:#9db4d6}
+.dp button{font:inherit;font-size:13.5px;color:var(--ink);background:transparent;border:1px solid var(--line);padding:8px 0;cursor:pointer;min-width:0}
+.dp button:hover:not(:disabled){border-color:var(--ink-soft)}.dp button[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
+.dp button:disabled{opacity:.28;cursor:default}.dp-cal button{padding:7px 0}
+.pkg-note{grid-column:1/-1;margin:-4px 0 0;font-size:12.5px;color:var(--rose)}
+.dp-out{margin:2px 0 0;font-size:13px;color:var(--ink-soft)}.dp-out b{color:var(--ink);font-weight:500}
+@media (max-width:640px){.dp-row.m,.dp-row.h,.dp-row.mi{grid-template-columns:repeat(4,1fr)}}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}.hall-note{grid-column:1/-1;margin:-8px 0 0;font-size:12px;color:var(--ink-soft)}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
 .f label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
 .f input,.f select,.f textarea{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:9px 0;width:100%}
 .f textarea{min-height:110px;resize:vertical}
@@ -677,13 +687,13 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <div class="f"><label for="femail">이메일 *</label><input id="femail" type="email" inputmode="email" required placeholder="예) love@naver.com" autocomplete="email" maxlength="80"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
-        <div class="f"><label for="fdate">예식 날짜 *</label><input id="fdate" type="date" required></div>
-        <div class="f"><label for="ftime">예식 시작 시간 *</label><input id="ftime" type="time" step="600" required></div>
+        <div class="f full"><span class="flab" id="dLab">예식 날짜 *</span><input id="fdate" type="hidden"><div class="dp" id="dp" role="group" aria-labelledby="dLab" tabindex="-1"><div class="dp-row" id="dpY"></div><div class="dp-row m" id="dpM"></div><div class="dp-cal" id="dpD"></div><p class="dp-out" id="dpOut">날짜를 골라주세요.</p></div></div>
+        <div class="f full"><span class="flab" id="tLab">예식 시작 시간 *</span><input id="ftime" type="hidden"><div class="dp" id="tp" role="group" aria-labelledby="tLab" tabindex="-1"><div class="dp-row ap" id="tpA"><button type="button" data-ap="am" aria-pressed="true">오전</button><button type="button" data-ap="pm" aria-pressed="false">오후</button></div><div class="dp-row h" id="tpH"></div><div class="dp-row mi" id="tpM"></div><p class="dp-out" id="tpOut">시간을 골라주세요.</p></div></div>
         <div class="f full halls"><div class="f"><label for="fregion">지역명 *</label><input id="fregion" required placeholder="예) 천안" maxlength="15"></div><div class="f"><label for="fhall">장소명 *</label><input id="fhall" required placeholder="예) 베리컨벤션" maxlength="25"></div><div class="f"><label for="froom">홀명 *</label><input id="froom" required placeholder="예) 라벤더홀" maxlength="18"></div><p class="hall-note">홀 이름이 정해져있지 않은 호텔, 카페 등의 장소는 "웨딩홀"로 적어주세요.</p></div>
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
         <p class="pick-h">본식 스냅</p><div class="picks" id="pickSnap"></div>
-        <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div>
+        <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div><p class="pkg-note">스냅과 DVD를 함께 예약하면 패키지 할인으로 DVD에서 10,000원 할인돼요.</p>
         <p class="pick-h">스냅 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
         <p class="pick-h">영상 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
         <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
@@ -858,7 +868,7 @@ function deriveItems(x,P){const won=v=>{const n=parseInt(String(v||"").replace(/
  return out}
 function fillPrice(x,P){if(x.imported)return x;if(!(x.priceItems||[]).length)x.priceItems=deriveItems(x,P);if(!x.priceTotal)x.priceTotal=x.priceItems.reduce((s,i)=>s+(+i.price||0),0);return x}
 function payHTML(x){fillPrice(x,products);if(x.imported&&!x.priceTotal)return `<section class="pay"><h5>결제 정보</h5><p class="soft" style="font-size:13.5px;margin:10px 0 0">이전 홈페이지에서 옮겨온 예약이에요. 결제 금액은 확인 후 안내해 드릴게요.</p></section>`;const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)-(x.discount||0)-dep);const it=x.priceItems||[];
- return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
+ return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${x.discount?`<dt>할인 이벤트${x.snapProduct&&x.dvdProduct?" <small>(패키지 할인 · DVD 1만원)</small>":""}</dt><dd>- ${won0(x.discount)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
 const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
@@ -908,8 +918,8 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
  if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
- if(!d.weddingDate)return bad("예식일을 선택해 주세요.",$("#fdate"));
- if(!d.weddingTime)return bad("예식 시작 시간을 선택해 주세요.",$("#ftime"));
+ if(!d.weddingDate)return bad("예식 날짜를 골라주세요.",$("#dp"));
+ if(!d.weddingTime)return bad("예식 시작 시간을 골라주세요.",$("#tp"));
  for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","장소명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
@@ -920,7 +930,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  err.textContent="";btn.disabled=true;btn.textContent="등록하는 중…";
  try{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error(j.error||"등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
-  $("#step2").reset();pending=null;renderPicks();syncReceipt();rstep(3)}
+  $("#step2").reset();resetDT();pending=null;renderPicks();syncReceipt();rstep(3)}
  catch(x){err.textContent=x.message}
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
@@ -938,6 +948,25 @@ $("#mainNav").addEventListener("click",e=>{if(e.target.closest("a"))setMenu(fals
 document.addEventListener("click",e=>{if(!e.target.closest(".top"))setMenu(false)});
 addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
 addEventListener("hashchange",route);route();
+(()=>{const now=new Date(),T=new Date(now.getFullYear(),now.getMonth(),now.getDate());let Y=null,M=null,D=null,AP="am",H=null,MI=null;
+ const fd=$("#fdate"),ft=$("#ftime"),pad=n=>String(n).padStart(2,"0"),WD=["일","월","화","수","목","금","토"];
+ const btn=(t,a,on,dis)=>`<button type="button" ${a}${dis?" disabled":""} aria-pressed="${!!on}">${t}</button>`;
+ function drawD(){$("#dpY").innerHTML=[0,1,2].map(k=>{const y=T.getFullYear()+k;return btn(y+"년",`data-y="${y}"`,y===Y)}).join("");
+  $("#dpM").innerHTML=Array.from({length:12},(_,i)=>{const m=i+1,past=Y!==null&&new Date(Y,m,0)<T;return btn(m+"월",`data-m="${m}"`,m===M,Y===null||past)}).join("");
+  let c=WD.map((w,i)=>`<span class="wd${i===0?" sun":i===6?" sat":""}">${w}</span>`).join("");
+  if(Y!==null&&M!==null){const first=new Date(Y,M-1,1).getDay(),n=new Date(Y,M,0).getDate();c+="<span></span>".repeat(first);for(let d=1;d<=n;d++)c+=btn(d,`data-d="${d}"`,d===D,new Date(Y,M-1,d)<T)}
+  $("#dpD").innerHTML=c;const ok=Y&&M&&D;fd.value=ok?`${Y}-${pad(M)}-${pad(D)}`:"";
+  $("#dpOut").innerHTML=ok?`<b>${Y}년 ${M}월 ${D}일 (${WD[new Date(Y,M-1,D).getDay()]})</b>`:Y&&M?"일을 골라주세요.":Y?"월을 골라주세요.":"년도를 골라주세요."}
+ function drawT(){document.querySelectorAll("#tpA button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.ap===AP));
+  $("#tpH").innerHTML=(AP==="am"?[6,7,8,9,10,11]:[12,1,2,3,4,5,6,7,8,9]).map(h=>btn(h+"시",`data-h="${h}"`,h===H)).join("");
+  $("#tpM").innerHTML=[0,10,20,30,40,50].map(m=>btn(pad(m)+"분",`data-mi="${m}"`,m===MI,H===null)).join("");
+  const ok=H!==null&&MI!==null,h24=H===null?0:(AP==="pm"&&H!==12?H+12:H);ft.value=ok?`${pad(h24)}:${pad(MI)}`:"";
+  $("#tpOut").innerHTML=ok?`<b>${AP==="am"?"오전":"오후"} ${H}시${MI?" "+MI+"분":""}</b>`:H===null?"시를 골라주세요.":"분을 골라주세요."}
+ $("#dp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
+  if(b.dataset.y){Y=+b.dataset.y;if(M&&new Date(Y,M,0)<T)M=null;D=null}else if(b.dataset.m){M=+b.dataset.m;D=null}else if(b.dataset.d)D=+b.dataset.d;drawD()});
+ $("#tp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
+  if(b.dataset.ap){if(AP!==b.dataset.ap){AP=b.dataset.ap;H=null;MI=null}}else if(b.dataset.h){H=+b.dataset.h;if(MI===null)MI=0}else if(b.dataset.mi)MI=+b.dataset.mi;drawT()});
+ window.resetDT=()=>{Y=M=D=H=MI=null;AP="am";drawD();drawT()};drawD();drawT()})();
 const SEL=".mine, .mycheck";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
  const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
  const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
