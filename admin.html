@@ -209,7 +209,7 @@ async function loadBookings(){try{const j=await api({action:"list"});const P=awa
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 let page=1,openId=null;const PER=20;
-const hl=(t,q)=>{t=esc(t||"");if(!q)return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
+const hl=(t,q)=>{t=esc(t||"");return t;const e=esc(q).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return t.replace(new RegExp(e,"gi"),m=>`<mark>${m}</mark>`)};
 function detailHTML(b){const r=(k,v)=>v?`<div class="kv"><span class="k">${k}</span> : <span class="v">${esc(v)}</span></div>`:"";
  return `<article class="bk" data-id="${b.id}"><div class="info"><div class="bk-title">러브어바웃 예약글 작성 목록</div><div class="kvs">
   ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("이메일",b.email)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</div>
