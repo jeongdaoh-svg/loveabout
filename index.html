@@ -952,9 +952,9 @@ addEventListener("hashchange",route);route();
 (()=>{const now=new Date(),T=new Date(now.getFullYear(),now.getMonth(),now.getDate()),pad=n=>String(n).padStart(2,"0"),WD=["일","월","화","수","목","금","토"];
  const Y=$("#dY"),M=$("#dM"),D=$("#dD"),H=$("#tH"),MI=$("#tM"),fd=$("#fdate"),ft=$("#ftime");
  const opt=(v,t,dis)=>`<option value="${v}"${dis?" disabled":""}>${t}</option>`;
- Y.innerHTML=opt("","년도")+[0,1,2].map(k=>opt(T.getFullYear()+k,(T.getFullYear()+k)+"년")).join("");
+ Y.innerHTML=opt("","년도")+Array.from({length:2040-T.getFullYear()+1},(_,k)=>opt(T.getFullYear()+k,(T.getFullYear()+k)+"년")).join("");
  function fillM(){const y=+Y.value,keep=M.value;M.innerHTML=opt("","월")+Array.from({length:12},(_,i)=>opt(i+1,(i+1)+"월",y&&new Date(y,i+1,0)<T)).join("");if(keep&&!M.querySelector(`option[value="${keep}"]:not([disabled])`))M.value="";else M.value=keep;fillD()}
- function fillD(){const y=+Y.value,m=+M.value,keep=D.value;let h=opt("","일");if(y&&m){const n=new Date(y,m,0).getDate();for(let d=1;d<=n;d++){const dt=new Date(y,m-1,d);h+=opt(d,`${d}일 (${WD[dt.getDay()]})`,dt<T)}}D.innerHTML=h;D.value=keep&&D.querySelector(`option[value="${keep}"]:not([disabled])`)?keep:"";syncD()}
+ function fillD(){const y=+Y.value,m=+M.value,keep=D.value;let h=opt("","일");const n=y&&m?new Date(y,m,0).getDate():m?new Date(2024,m,0).getDate():31;for(let d=1;d<=n;d++){if(y&&m){const dt=new Date(y,m-1,d);h+=opt(d,`${d}일 (${WD[dt.getDay()]})`,dt<T)}else h+=opt(d,d+"일")}D.innerHTML=h;D.value=keep&&D.querySelector(`option[value="${keep}"]:not([disabled])`)?keep:"";syncD()}
  function syncD(){fd.value=Y.value&&M.value&&D.value?`${Y.value}-${pad(M.value)}-${pad(D.value)}`:""}
  H.innerHTML=opt("","시")+[10,11,12,13,14,15,16,17,18,19,20].map(h=>opt(h,(h<12?"오전 ":"오후 ")+(h>12?h-12:h)+"시")).join("");
  function fillMi(){const keep=MI.value;MI.innerHTML=opt("","분")+[0,10,20,30,40,50].map(m=>opt(m,pad(m)+"분")).join("");MI.value=keep&&MI.querySelector(`option[value="${keep}"]:not([disabled])`)?keep:(H.value?"0":"");syncT()}
