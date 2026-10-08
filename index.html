@@ -88,6 +88,7 @@ section{scroll-margin-top:70px}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
 .slide.on{opacity:1}
 .slide img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.slide.fit{overflow:hidden;background:#3b2f2d}.slide.fit img{position:absolute;inset:0}.slide.fit .bg{filter:blur(32px) brightness(.88);transform:scale(1.2)}.slide.fit .fg{object-fit:contain}@media (max-aspect-ratio:3/4){.slide.fit .fg{object-fit:cover;object-position:49% 32%}}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(40,22,20,.62))}
 .hero-in{position:absolute;inset:0;z-index:2;display:grid;align-content:end;justify-content:center;justify-items:center;text-align:center;gap:14px;padding-inline:var(--gut);padding-bottom:84px}
 .hero-in .eyebrow{color:var(--on-photo);opacity:.9;margin:0}
@@ -453,7 +454,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
 </header>
 
 <section class="hero" id="home" data-tab="home" aria-label="메인">
-  <div class="slide on"><img src="2번/img/pf/w08/03.jpg" alt="" style="object-position:49% 32.5%"></div>
+  <div class="slide on fit"><img class="bg" src="2번/img/pf/w08/03.jpg" alt="" aria-hidden="true"><img class="fg" src="2번/img/pf/w08/03.jpg" alt=""></div>
   <div class="slide"><img src="1번/img/pf/w03/16.jpg" alt="" loading="lazy" style="object-position:44% 30%"></div>
   <div class="slide"><img src="2번/img/pf/w06/02.jpg" alt="" loading="lazy" style="object-position:56% 30%"></div>
   <div class="slide"><img src="2번/img/pf/w11/07.jpg" alt="" loading="lazy"></div>
