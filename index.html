@@ -392,6 +392,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .f{display:grid;gap:6px;min-width:0}
 .f.full{grid-column:1/-1}
+.sel3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.sel3.two{grid-template-columns:1fr 1fr}.sel3 select{cursor:pointer}.f select option{background:#3b2f2d;color:#f3e9e4}
 .flab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
 .dp{display:grid;gap:8px;border:1px solid var(--line);padding:12px;outline:none}.dp:focus{border-color:var(--rose)}
 .dp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.dp-row.m{grid-template-columns:repeat(6,1fr)}.dp-row.ap{grid-template-columns:repeat(2,1fr)}.dp-row.h{grid-template-columns:repeat(6,1fr)}.dp-row.mi{grid-template-columns:repeat(6,1fr)}
@@ -687,8 +688,8 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <div class="f"><label for="femail">이메일 *</label><input id="femail" type="email" inputmode="email" required placeholder="예) love@naver.com" autocomplete="email" maxlength="80"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
-        <div class="f full"><span class="flab" id="dLab">예식 날짜 *</span><input id="fdate" type="hidden"><div class="dp" id="dp" role="group" aria-labelledby="dLab" tabindex="-1"><div class="dp-row" id="dpY"></div><div class="dp-row m" id="dpM"></div><div class="dp-cal" id="dpD"></div><p class="dp-out" id="dpOut">날짜를 골라주세요.</p></div></div>
-        <div class="f full"><span class="flab" id="tLab">예식 시작 시간 *</span><input id="ftime" type="hidden"><div class="dp" id="tp" role="group" aria-labelledby="tLab" tabindex="-1"><div class="dp-row ap" id="tpA"><button type="button" data-ap="am" aria-pressed="true">오전</button><button type="button" data-ap="pm" aria-pressed="false">오후</button></div><div class="dp-row h" id="tpH"></div><div class="dp-row mi" id="tpM"></div><p class="dp-out" id="tpOut">시간을 골라주세요.</p></div></div>
+        <div class="f full"><label for="dY">예식 날짜 *</label><input id="fdate" type="hidden"><div class="sel3"><select id="dY" aria-label="년"></select><select id="dM" aria-label="월"></select><select id="dD" aria-label="일"></select></div></div>
+        <div class="f full"><label for="tH">예식 시작 시간 *</label><input id="ftime" type="hidden"><div class="sel3 two"><select id="tH" aria-label="시"></select><select id="tM" aria-label="분"></select></div></div>
         <div class="f full halls"><div class="f"><label for="fregion">지역명 *</label><input id="fregion" required placeholder="예) 천안" maxlength="15"></div><div class="f"><label for="fhall">장소명 *</label><input id="fhall" required placeholder="예) 베리컨벤션" maxlength="25"></div><div class="f"><label for="froom">홀명 *</label><input id="froom" required placeholder="예) 라벤더홀" maxlength="18"></div><p class="hall-note">홀 이름이 정해져있지 않은 호텔, 카페 등의 장소는 "웨딩홀"로 적어주세요.</p></div>
       </fieldset>
       <fieldset class="fs"><legend>상품 선택 <small>스냅과 DVD 중 하나 이상 선택해 주세요</small></legend>
@@ -918,8 +919,8 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
  if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
- if(!d.weddingDate)return bad("예식 날짜를 골라주세요.",$("#dp"));
- if(!d.weddingTime)return bad("예식 시작 시간을 골라주세요.",$("#tp"));
+ if(!d.weddingDate)return bad("예식 날짜(년·월·일)를 골라주세요.",$(!$("#dY").value?"#dY":!$("#dM").value?"#dM":"#dD"));
+ if(!d.weddingTime)return bad("예식 시작 시간을 골라주세요.",$("#tH"));
  for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","장소명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
@@ -948,25 +949,18 @@ $("#mainNav").addEventListener("click",e=>{if(e.target.closest("a"))setMenu(fals
 document.addEventListener("click",e=>{if(!e.target.closest(".top"))setMenu(false)});
 addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
 addEventListener("hashchange",route);route();
-(()=>{const now=new Date(),T=new Date(now.getFullYear(),now.getMonth(),now.getDate());let Y=null,M=null,D=null,AP="am",H=null,MI=null;
- const fd=$("#fdate"),ft=$("#ftime"),pad=n=>String(n).padStart(2,"0"),WD=["일","월","화","수","목","금","토"];
- const btn=(t,a,on,dis)=>`<button type="button" ${a}${dis?" disabled":""} aria-pressed="${!!on}">${t}</button>`;
- function drawD(){$("#dpY").innerHTML=[0,1,2].map(k=>{const y=T.getFullYear()+k;return btn(y+"년",`data-y="${y}"`,y===Y)}).join("");
-  $("#dpM").innerHTML=Array.from({length:12},(_,i)=>{const m=i+1,past=Y!==null&&new Date(Y,m,0)<T;return btn(m+"월",`data-m="${m}"`,m===M,Y===null||past)}).join("");
-  let c=WD.map((w,i)=>`<span class="wd${i===0?" sun":i===6?" sat":""}">${w}</span>`).join("");
-  if(Y!==null&&M!==null){const first=new Date(Y,M-1,1).getDay(),n=new Date(Y,M,0).getDate();c+="<span></span>".repeat(first);for(let d=1;d<=n;d++)c+=btn(d,`data-d="${d}"`,d===D,new Date(Y,M-1,d)<T)}
-  $("#dpD").innerHTML=c;const ok=Y&&M&&D;fd.value=ok?`${Y}-${pad(M)}-${pad(D)}`:"";
-  $("#dpOut").innerHTML=ok?`<b>${Y}년 ${M}월 ${D}일 (${WD[new Date(Y,M-1,D).getDay()]})</b>`:Y&&M?"일을 골라주세요.":Y?"월을 골라주세요.":"년도를 골라주세요."}
- function drawT(){document.querySelectorAll("#tpA button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.ap===AP));
-  $("#tpH").innerHTML=(AP==="am"?[6,7,8,9,10,11]:[12,1,2,3,4,5,6,7,8,9]).map(h=>btn(h+"시",`data-h="${h}"`,h===H)).join("");
-  $("#tpM").innerHTML=[0,10,20,30,40,50].map(m=>btn(pad(m)+"분",`data-mi="${m}"`,m===MI,H===null)).join("");
-  const ok=H!==null&&MI!==null,h24=H===null?0:(AP==="pm"&&H!==12?H+12:H);ft.value=ok?`${pad(h24)}:${pad(MI)}`:"";
-  $("#tpOut").innerHTML=ok?`<b>${AP==="am"?"오전":"오후"} ${H}시${MI?" "+MI+"분":""}</b>`:H===null?"시를 골라주세요.":"분을 골라주세요."}
- $("#dp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
-  if(b.dataset.y){Y=+b.dataset.y;if(M&&new Date(Y,M,0)<T)M=null;D=null}else if(b.dataset.m){M=+b.dataset.m;D=null}else if(b.dataset.d)D=+b.dataset.d;drawD()});
- $("#tp").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;
-  if(b.dataset.ap){if(AP!==b.dataset.ap){AP=b.dataset.ap;H=null;MI=null}}else if(b.dataset.h){H=+b.dataset.h;if(MI===null)MI=0}else if(b.dataset.mi)MI=+b.dataset.mi;drawT()});
- window.resetDT=()=>{Y=M=D=H=MI=null;AP="am";drawD();drawT()};drawD();drawT()})();
+(()=>{const now=new Date(),T=new Date(now.getFullYear(),now.getMonth(),now.getDate()),pad=n=>String(n).padStart(2,"0"),WD=["일","월","화","수","목","금","토"];
+ const Y=$("#dY"),M=$("#dM"),D=$("#dD"),H=$("#tH"),MI=$("#tM"),fd=$("#fdate"),ft=$("#ftime");
+ const opt=(v,t,dis)=>`<option value="${v}"${dis?" disabled":""}>${t}</option>`;
+ Y.innerHTML=opt("","년도")+[0,1,2].map(k=>opt(T.getFullYear()+k,(T.getFullYear()+k)+"년")).join("");
+ function fillM(){const y=+Y.value,keep=M.value;M.innerHTML=opt("","월")+Array.from({length:12},(_,i)=>opt(i+1,(i+1)+"월",y&&new Date(y,i+1,0)<T)).join("");if(keep&&!M.querySelector(`option[value="${keep}"]:not([disabled])`))M.value="";else M.value=keep;fillD()}
+ function fillD(){const y=+Y.value,m=+M.value,keep=D.value;let h=opt("","일");if(y&&m){const n=new Date(y,m,0).getDate();for(let d=1;d<=n;d++){const dt=new Date(y,m-1,d);h+=opt(d,`${d}일 (${WD[dt.getDay()]})`,dt<T)}}D.innerHTML=h;D.value=keep&&D.querySelector(`option[value="${keep}"]:not([disabled])`)?keep:"";syncD()}
+ function syncD(){fd.value=Y.value&&M.value&&D.value?`${Y.value}-${pad(M.value)}-${pad(D.value)}`:""}
+ H.innerHTML=opt("","시")+[10,11,12,13,14,15,16,17,18,19,20].map(h=>opt(h,(h<12?"오전 ":"오후 ")+(h>12?h-12:h)+"시")).join("");
+ function fillMi(){const keep=MI.value;MI.innerHTML=opt("","분")+[0,10,20,30,40,50].map(m=>opt(m,pad(m)+"분")).join("");MI.value=keep&&MI.querySelector(`option[value="${keep}"]:not([disabled])`)?keep:(H.value?"0":"");syncT()}
+ function syncT(){ft.value=H.value&&MI.value!==""?`${pad(H.value)}:${pad(MI.value)}`:""}
+ Y.onchange=fillM;M.onchange=fillD;D.onchange=syncD;H.onchange=fillMi;MI.onchange=syncT;
+ window.resetDT=()=>{Y.value="";H.value="";MI.value="";fillM();fillMi()};fillM();fillMi()})();
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-kakao]");if(!a)return;
  const mob=/Android|iPhone|iPad|iPod|Mobile|KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
  if(mob){e.preventDefault();location.href=a.href;return}
