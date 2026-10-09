@@ -329,7 +329,7 @@ $("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn
   await Promise.all([worker(),worker(),worker(),worker()]);
   m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${up?` · 이미 있던 ${up}건은 이메일을 넣었어요`:""}${sk?` (${sk}건은 건너뜀)`:""}.`;bookings=[];}
  catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
-boot();
+const CJ=location.hash.match(/^#contract=(\d+):(down|send)$/);if(CJ)contractJob(+CJ[1],CJ[2]);else boot();
 // ===== 계약서 (PDF) =====
 let CSET=null;
 async function contractSettings(force){if(!CSET||force)CSET=await api({action:"contractSettings"});return CSET}
@@ -391,6 +391,12 @@ async function contractAction(b,el,mode){const m=el.querySelector(".cMsg"),btns=
   else{if(!b.email)throw new Error("고객 이메일이 없어요. 예약글 수정에서 이메일을 넣어 주세요.");m.textContent=`${b.email} 로 보내는 중…`;
    const j=await api({action:"sendContract",id:b.id,pdf:pdf.output("datauristring"),filename:fname});b.contractSentAt=j.sentAt;m.className="msg cMsg ok";m.textContent=`${j.to} 로 계약서를 보냈어요. (${fmtDT(j.sentAt)})`}}
  catch(x){m.className="msg cMsg err";m.textContent=x.message}finally{btns.forEach(x=>x.disabled=false)}}
+// 홈페이지(MY BOOKING)에서 관리자가 누른 계약서 다운/발송을 숨은 창에서 처리
+async function contractJob(id,mode){const send=(ok,msg)=>{try{parent.postMessage({laContract:1,id,ok,msg},location.origin)}catch(e){}};
+ try{if(!token)throw new Error("관리자 로그인이 필요해요.");const j=await api({action:"get",id});const b=fillPrice(j.item,await loadContent());const {pdf,fname}=await buildContract(b);
+  if(mode==="down"){pdf.save(fname);send(true,"계약서를 내려받았어요.")}
+  else{if(!b.email)throw new Error("고객 이메일이 없어요. 관리자 페이지 예약글 수정에서 이메일을 넣어 주세요.");const r=await api({action:"sendContract",id,pdf:pdf.output("datauristring"),filename:fname});send(true,`${r.to} 로 계약서를 보냈어요.`)}}
+ catch(e){send(false,e.message)}}
 // 서명판 & Resend 키 (계정 탭)
 function initContractSettings(){const cv=$("#sigPad");if(!cv||cv.dataset.on)return;cv.dataset.on=1;const ctx=cv.getContext("2d");let drawing=false,dirty=false;
  const pos=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};

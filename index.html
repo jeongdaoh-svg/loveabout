@@ -207,7 +207,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
 .badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
 .badge.ok{background:var(--rose);color:#fff}.pay dl{border-top:1px solid var(--ink);grid-template-columns:1fr auto!important;column-gap:0}.pay dt{padding-right:16px}.pay dt small{font-size:11.5px;color:var(--ink-soft)}.pay dd{text-align:right;font-variant-numeric:tabular-nums}.pay dt.sum,.pay dd.sum{font-weight:500;color:var(--ink)}.pay dt.bal,.pay dd.bal{font-weight:600;font-size:15px;color:var(--ink)}
-.badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.badge.no{border-color:var(--line);color:var(--ink-soft)}
+.badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}button.badge.admB{font:inherit;font-size:12.5px;cursor:pointer;background:transparent;border-color:var(--ink-soft);color:var(--ink)}button.badge.admB.fill{background:var(--rose);border-color:var(--rose);color:#fff}button.badge.admB:disabled{opacity:.6;cursor:wait}.admMsg{margin:6px 0 0;font-size:12.5px;text-align:right;color:var(--ink-soft)}.admMsg:empty{display:none}.admMsg.ok{color:var(--rose)}.admMsg.err{color:#e0524a}.badge.no{border-color:var(--line);color:var(--ink-soft)}
 .mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
 .mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
@@ -878,8 +878,15 @@ const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";l
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
 const lkPost=async d=>{const r=await fetch("/api/reservations",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"잠시 후 다시 시도해 주세요.");return j};
 let lkWho=null;const isPartner=c=>/^\s*(\d{6}|\d{4})[\s.\-]*[가-힣]{2,}/.test(String(c||""));const discParts=x=>{const p=[];if(x.snapProduct&&x.dvdProduct)p.push(["패키지 할인 (스냅+DVD · DVD 1만원)",10000]);if(isPartner(x.partnerCode)&&(x.snapProduct||x.dvdProduct))p.push([x.snapProduct?"짝꿍 할인 (스냅 2만원)":"짝꿍 할인 (DVD 1만원)",x.snapProduct?20000:10000]);return p};const isNew=t=>{const d=new Date(t).getTime();return d&&Date.now()-d<48*3600e3&&Date.now()>=d-6e4};
+const isAdm=()=>{try{const t=localStorage.getItem("la_admin");if(!t)return false;const p=JSON.parse(atob(t.split(".")[0].replace(/-/g,"+").replace(/_/g,"/")));return p.exp>Date.now()}catch(e){return false}};
+function bindAdm(root){root.querySelectorAll(".admB").forEach(b=>b.onclick=()=>{const id=+b.dataset.id,mode=b.dataset.cm,m=root.querySelector(".admMsg"),all=root.querySelectorAll(".admB");
+ if(mode==="send"&&!confirm("고객 이메일로 계약서를 보낼까요?"))return;all.forEach(x=>x.disabled=true);m.className="admMsg";m.textContent=mode==="send"?"계약서를 만들어 보내는 중…":"계약서를 만드는 중…";
+ const fr=document.createElement("iframe");fr.style.cssText="position:fixed;width:900px;height:700px;left:-10000px;top:0;border:0;visibility:hidden";fr.setAttribute("aria-hidden","true");
+ let done=false;const fin=(ok,msg)=>{if(done)return;done=true;removeEventListener("message",on);m.className="admMsg "+(ok?"ok":"err");m.textContent=msg;all.forEach(x=>x.disabled=false);setTimeout(()=>fr.remove(),4000)};
+ const on=e=>{if(e.origin!==location.origin||!e.data||!e.data.laContract||e.data.id!==id)return;fin(e.data.ok,e.data.msg)};addEventListener("message",on);
+ setTimeout(()=>fin(false,"시간이 너무 오래 걸려요. 관리자 페이지에서 다시 시도해 주세요."),90000);fr.src="/admin#contract="+id+":"+mode;document.body.append(fr)})}
 function renderDetail(x){const row=(k,v)=>v?`<div class="kv"><span class="k">${k}</span> : <span class="v">${escH(v)}</span></div>`:"";const sec=(t,b)=>b?`<section><h5>${t}</h5><div class="kvs">${b}</div></section>`:"";
- return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${badges(x)}</div>
+ return `<article class="mine"><div class="mine-top"><p>${fmtDate(x.createdAt)} 접수</p>${isAdm()?badges(x).replace(/<\/span>$/,`<button type="button" class="badge admB" data-cm="down" data-id="${x.id}">계약서 다운</button><button type="button" class="badge admB fill" data-cm="send" data-id="${x.id}">계약서 발송</button></span>`):badges(x)}</div>${isAdm()?'<p class="admMsg" role="status"></p>':""}
    <div class="bk-title">러브어바웃 예약글 작성 목록</div>
    ${sec("예약자 정보",row("예약자 이름",x.name)+row("예약자 연락처",x.phone)+row("배우자 이름",x.spouseName)+row("배우자 연락처",x.spousePhone)+row("이메일",x.email))}
    ${sec("예식 정보",row("예식 날짜",x.weddingDate)+row("예식 시작 시간",fmtTime(x.weddingTime))+row("예식장",x.hall))}
@@ -897,7 +904,7 @@ function renderList(items){const L=$("#myList");$("#myPosts").innerHTML="";
   f.onsubmit=async e=>{e.preventDefault();er.textContent="";if(!inp.value){er.textContent="비밀번호를 입력해 주세요.";return}
    const sb=f.querySelector("button");sb.disabled=true;
    try{const j=await lkPost({action:"lookup",id:+li.dataset.id,name:lkWho.name,phone:lkWho.phone,password:inp.value});inp.value="";
-    L.hidden=true;$("#myPosts").innerHTML=renderDetail(j.items[0]);
+    L.hidden=true;$("#myPosts").innerHTML=renderDetail(j.items[0]);bindAdm($("#myPosts"));
     $("#lkBack").onclick=()=>{$("#myPosts").innerHTML="";L.hidden=false;$("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})};
     $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
    catch(x){er.textContent=x.message}finally{sb.disabled=false}}})}
