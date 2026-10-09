@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
       const rj = await rr.json().catch(() => ({}));
       if (!rr.ok) return fail(res, 502, "메일을 보내지 못했어요: " + (rj.message || rj.error || ("Resend " + rr.status)));
       const at = new Date().toISOString();
-      await sql([["UPDATE bookings SET contract_sent_at=? WHERE id=?", [at, r.id]]]);
+      if (!b.to) await sql([["UPDATE bookings SET contract_sent_at=? WHERE id=?", [at, r.id]]]);
       return res.status(200).json({ ok: true, sentAt: at, to });
     }
     if (b.action === "changePassword") {
