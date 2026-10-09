@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
       }
       if ("paid" in f) { sets.push("paid=?"); args.push(f.paid ? 1 : 0); }
       if ("confirmed" in f) { const c = typeof f.confirmed === "number" ? Math.max(0, Math.min(2, Math.round(f.confirmed))) : (f.confirmed ? 1 : 0); sets.push("confirmed=?"); args.push(c); }
-      for (const [k, col] of [["priceTotal", "price_total"], ["discount", "discount"], ["deposit", "deposit"]]) if (k in f) {
+      for (const [k, col] of [["priceTotal", "price_total"], ["discount", "discount"], ["deposit", "deposit"], ["travelFee", "travel_fee"]]) if (k in f) {
         const n = Math.round(Number(String(f[k]).replace(/[^\d.-]/g, "")) || 0);
         if (n < 0 || n > 100000000) return fail(res, 400, "금액을 다시 확인해 주세요.");
         sets.push(col + "=?"); args.push(n);
