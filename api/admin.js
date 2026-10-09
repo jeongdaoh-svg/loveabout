@@ -98,6 +98,45 @@ module.exports = async (req, res) => {
       await sql([["INSERT INTO settings (key,value) VALUES ('content',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [s]]]);
       return res.status(200).json({ ok: true });
     }
+    const getSet = async (k) => { const [r] = await sql([["SELECT value FROM settings WHERE key=?", [k]]]); return r[0] ? r[0].value : null; };
+    const putSet = (k, v) => sql([["INSERT INTO settings (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [k, v]]]);
+    if (b.action === "contractSettings") {
+      return res.status(200).json({ signature: await getSet("signature"), hasResend: !!(await getSet("resend_key")) });
+    }
+    if (b.action === "setSignature") {
+      const v = String(b.signature || "");
+      if (v && !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(v)) return fail(res, 400, "서명 이미지를 다시 저장해 주세요.");
+      if (v.length > 400000) return fail(res, 400, "서명 이미지가 너무 커요.");
+      await putSet("signature", v);
+      return res.status(200).json({ ok: true });
+    }
+    if (b.action === "setResendKey") {
+      const k = String(b.key || "").trim();
+      if (!/^re_[A-Za-z0-9_]{10,}$/.test(k)) return fail(res, 400, "Resend API 키는 re_ 로 시작해요. 다시 확인해 주세요.");
+      await putSet("resend_key", k);
+      return res.status(200).json({ ok: true });
+    }
+    if (b.action === "sendContract") {
+      const key = await getSet("resend_key");
+      if (!key) return fail(res, 400, "Resend API 키가 아직 없어요. 계정 탭에서 먼저 저장해 주세요.");
+      const [rows] = await sql([["SELECT id, name, email, wedding_date FROM bookings WHERE id=?", [Number(b.id)]]]);
+      const r = rows[0];
+      if (!r) return fail(res, 404, "예약글을 찾을 수 없어요.");
+      const to = clip(b.to || r.email, 120);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)) return fail(res, 400, "고객 이메일 주소가 없거나 올바르지 않아요. 예약글 수정에서 이메일을 확인해 주세요.");
+      const pdf = String(b.pdf || "").replace(/^data:application\/pdf;[^,]*,/, "");
+      if (!pdf || pdf.length < 1000 || !/^[A-Za-z0-9+/=]+$/.test(pdf)) return fail(res, 400, "계약서 파일을 만들지 못했어요. 다시 눌러 주세요.");
+      const fname = clip(b.filename, 100) || "loveabout_contract.pdf";
+      const esc = (s) => String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const html = `<div style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.7;color:#3b2f2d"><p>${esc(r.name)}님, 안녕하세요. 러브어바웃이에요.</p><p>예약해 주신 본식 촬영 계약서를 첨부해 드려요.<br>선택하신 상품과 금액, 예약 약관을 한 번 더 확인해 주세요.</p><p>궁금한 점은 카카오채널 <a href="https://pf.kakao.com/_VDmxoxj">러브어바웃</a>으로 편하게 문의해 주세요.</p><p style="color:#86736e;font-size:13px">러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802<br>https://www.loveabout.co.kr</p></div>`;
+      const rr = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
+        body: JSON.stringify({ from: "러브어바웃 <contract@loveabout.co.kr>", to: [to], subject: `[러브어바웃] ${r.name}님 본식 촬영 계약서`, html, attachments: [{ filename: fname, content: pdf }] }) });
+      const rj = await rr.json().catch(() => ({}));
+      if (!rr.ok) return fail(res, 502, "메일을 보내지 못했어요: " + (rj.message || rj.error || ("Resend " + rr.status)));
+      const at = new Date().toISOString();
+      await sql([["UPDATE bookings SET contract_sent_at=? WHERE id=?", [at, r.id]]]);
+      return res.status(200).json({ ok: true, sentAt: at, to });
+    }
     if (b.action === "changePassword") {
       const p = String(b.newPassword || "");
       if (p.length < 8) return fail(res, 400, "새 비밀번호는 8자 이상으로 정해주세요.");
