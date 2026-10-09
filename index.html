@@ -401,6 +401,7 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .dp button{font:inherit;font-size:13.5px;color:var(--ink);background:transparent;border:1px solid var(--line);padding:8px 0;cursor:pointer;min-width:0}
 .dp button:hover:not(:disabled){border-color:var(--ink-soft)}.dp button[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
 .dp button:disabled{opacity:.28;cursor:default}.dp-cal button{padding:7px 0}
+.trv label{letter-spacing:.02em;font-size:13px;text-transform:none;color:var(--ink)}.trv label small{color:var(--ink-soft);font-size:12px}
 .pkg-note{grid-column:1/-1;margin:-4px 0 0;font-size:12.5px;color:var(--rose)}
 .dp-out{margin:2px 0 0;font-size:13px;color:var(--ink-soft)}.dp-out b{color:var(--ink);font-weight:500}
 @media (max-width:640px){.dp-row.m,.dp-row.h,.dp-row.mi{grid-template-columns:repeat(4,1fr)}}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}.hall-note{grid-column:1/-1;margin:-8px 0 0;font-size:12px;color:var(--ink-soft)}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
@@ -698,6 +699,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div><p class="pkg-note">스냅과 DVD를 함께 예약하면 패키지 할인으로 DVD에서 10,000원 할인돼요. 짝꿍코드를 적으면 짝꿍 할인(스냅 20,000원 · DVD만 예약 시 10,000원)도 함께 적용돼요.</p>
         <p class="pick-h">스냅 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
         <p class="pick-h">영상 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
+        <div class="f full trv"><label for="ftravel">안내받은 출장비를 적어주세요 * <small>(출장비가 없으시면 0으로 적어주세요.)</small></label><input id="ftravel" inputmode="numeric" placeholder="0" maxlength="10" autocomplete="off"></div>
         <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
       </fieldset>
       <fieldset class="fs"><legend>기타</legend>
@@ -818,7 +820,7 @@ function renderPicks(){
  syncAddons()}
 function syncAddons(){["snap","dvd"].forEach(g=>{const on=!!(document.querySelector(`#step2 input[name="${g}"]:checked`)||{}).value;
  document.querySelectorAll(`#step2 input[name="addon"][data-group="${g}"]`).forEach(i=>{i.disabled=!on;if(!on)i.checked=false;i.closest(".pick").classList.toggle("off",!on)})});calcTotal()}
-function calcTotal(){const t=[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0);$("#ptotal b").textContent=fmtWon(t)}
+function calcTotal(){const t=[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0)+(Number(($("#ftravel")||{value:""}).value.replace(/[^\d]/g,""))||0);$("#ptotal b").textContent=fmtWon(t)}
 document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest(".picks"))syncAddons()});
 renderPricing();renderPicks();
 fetch("/api/content",{cache:"no-store"}).then(r=>r.json()).then(j=>{const c=j&&j.content;if(!c)return;
@@ -870,7 +872,7 @@ function deriveItems(x,P){const won=v=>{const n=parseInt(String(v||"").replace(/
  return out}
 function fillPrice(x,P){if(x.imported)return x;if(!(x.priceItems||[]).length)x.priceItems=deriveItems(x,P);if(!x.priceTotal)x.priceTotal=x.priceItems.reduce((s,i)=>s+(+i.price||0),0);return x}
 function payHTML(x){fillPrice(x,products);if(x.imported&&!x.priceTotal)return `<section class="pay"><h5>결제 정보</h5><p class="soft" style="font-size:13.5px;margin:10px 0 0">이전 홈페이지에서 옮겨온 예약이에요. 결제 금액은 확인 후 안내해 드릴게요.</p></section>`;const dep=depAmt(x);const bal=Math.max(0,(x.priceTotal||0)+(x.travelFee||0)-(x.discount||0)-dep);const it=x.priceItems||[];
- return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}<dt class="sum">총 상품 금액</dt><dd class="sum">${won0(x.priceTotal)}</dd>${(()=>{if(!x.discount)return "";const P=discParts(x);if(P.length&&P.reduce((a,b)=>a+b[1],0)===x.discount)return P.map(([k,v])=>`<dt>${k}</dt><dd>- ${won0(v)}</dd>`).join("");return `<dt>할인 이벤트</dt><dd>- ${won0(x.discount)}</dd>`})()}${x.travelFee?`<dt>출장비</dt><dd>+ ${won0(x.travelFee)}</dd>`:""}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
+ return `<section class="pay"><h5>결제 정보</h5><dl>${it.map(i=>`<dt>${escH(i.name)}</dt><dd>${won0(i.price)}</dd>`).join("")}${x.travelFee?`<dt>출장비</dt><dd>${won0(x.travelFee)}</dd>`:""}<dt class="sum">총 상품 금액${x.travelFee?" <small>(출장비 포함)</small>":""}</dt><dd class="sum">${won0((x.priceTotal||0)+(x.travelFee||0))}</dd>${(()=>{if(!x.discount)return "";const P=discParts(x);if(P.length&&P.reduce((a,b)=>a+b[1],0)===x.discount)return P.map(([k,v])=>`<dt>${k}</dt><dd>- ${won0(v)}</dd>`).join("");return `<dt>할인 이벤트</dt><dd>- ${won0(x.discount)}</dd>`})()}<dt>${depLabel(x)}${x.paid?"":" <small>(입금 확인 전)</small>"}</dt><dd>- ${won0(dep)}</dd><dt class="bal">남은 잔금</dt><dd class="bal">${won0(bal)}</dd></dl></section>`}
 const badges=x=>`<span class="badges"><span class="badge no">예약 신청 완료</span>${x.paid?`<span class="badge">입금확인</span>`:""}${x.confirmed?`<span class="badge ok">확정 완료</span>`:""}</span>`;
 const fmtTime=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||"");if(!m)return t||"";let h=+m[1];const ap=h<12?"오전":"오후";h=h%12||12;return `${ap} ${h}시`+(m[2]!=="00"?` ${+m[2]}분`:"")};
 const withAdd=(p,g,a)=>[p,...(a||[]).filter(x=>x.startsWith(g+" · ")).map(x=>x.slice(g.length+3))].filter(Boolean).join(" + ");
@@ -913,7 +915,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
   priceTotal:[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0),
   priceItems:[...document.querySelectorAll('#step2 .picks input:checked')].filter(i=>i.value).map(i=>({name:i.name==="addon"?i.value.replace(/^(스냅|영상) · /,"$1 추가상품 · "):(i.name==="snap"?"본식 스냅 · ":"본식 DVD · ")+i.value,price:+i.dataset.price||0,k:i.name==="snap"?0:i.name==="dvd"?2:/^영상/.test(i.value)?3:1})).sort((p,q)=>p.k-q.k).map(({name,price})=>({name,price})),
   snapProduct:ck("snap"),dvdProduct:ck("dvd"),addons:[...document.querySelectorAll('#step2 input[name="addon"]:checked')].map(i=>i.value),
-  partnerCode:$("#fpartner").value.trim(),receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
+  partnerCode:$("#fpartner").value.trim(),travelFee:$("#ftravel").value.replace(/[^\d]/g,""),receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
   password:$("#fpw").value,website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
  const P=/^01[016789]-\d{3,4}-\d{4}$/;const bad=(m,el)=>{err.textContent=m;el&&el.focus()};
  if(d.name.length<2)return bad("예약자 성함을 적어주세요.",$("#fname"));
@@ -923,6 +925,7 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  if(!d.weddingDate)return bad("예식 날짜(년·월·일)를 골라주세요.",$(!$("#dY").value?"#dY":!$("#dM").value?"#dM":"#dD"));
  if(!d.weddingTime)return bad("예식 시작 시간을 골라주세요.",$("#tH"));
  for(const [id,m] of [["#fregion","예식 지역명을 적어주세요. 예) 천안"],["#fhall","장소명을 적어주세요. 예) 베리컨벤션"],["#froom","홀명을 적어주세요. 예) 라벤더홀"]])if(!$(id).value.trim())return bad(m,$(id));
+ if($("#ftravel").value.trim()==="")return bad("안내받은 출장비를 적어주세요. 없으시면 0으로 적어주세요.",$("#ftravel"));
  if(!d.snapProduct&&!d.dvdProduct)return bad("본식 스냅이나 본식 DVD 중 하나 이상 선택해 주세요.",$("#pickSnap input"));
  if(d.receiptType==="personal"&&!P.test(d.receiptNumber))return bad("현금영수증 휴대폰 번호를 010-0000-0000 형식으로 적어주세요.",rc);
  if(d.receiptType==="business"&&!/^\d{3}-\d{2}-\d{5}$/.test(d.receiptNumber))return bad("사업자번호를 000-00-00000 형식으로 적어주세요.",rc);
@@ -966,6 +969,7 @@ document.addEventListener("click",e=>{const a=e.target.closest("a[data-kakao]");
  const mob=/Android|iPhone|iPad|iPod|Mobile|KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
  if(mob){e.preventDefault();location.href=a.href;return}
  e.preventDefault();const w=window.open(a.href,"_blank");if(w){try{w.opener=null}catch(_){}}else location.href=a.href});
+(()=>{const t=$("#ftravel");if(t)t.addEventListener("input",()=>{const d=t.value.replace(/[^\d]/g,"");t.value=d?Number(d).toLocaleString("ko-KR"):"";calcTotal()})})();
 const SEL=".mine, .mycheck";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
  const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
  const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
