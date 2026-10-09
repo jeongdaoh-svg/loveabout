@@ -63,6 +63,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .bk-title{font:inherit;color:inherit;margin:0 0 3px;padding:0;border:0;background:none}
 .newN{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:5px;border-radius:50%;background:#e0524a;color:#fff;font-size:10.5px;font-weight:700;font-style:normal;line-height:1;vertical-align:2px;animation:nBlink 1s ease-in-out infinite}@keyframes nBlink{0%,100%{opacity:1}50%{opacity:.25}}
 .eOpen{margin-top:10px}.eForm{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;display:grid;gap:10px}.eH{margin:0;font-weight:500}.eGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.eGrid label{display:grid;gap:3px;font-size:12.5px;color:var(--soft)}.eGrid .w{grid-column:1/-1}.eGrid .lab{font-size:12.5px;color:var(--soft)}.chks{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px}.chk{display:flex!important;align-items:center;gap:6px;color:var(--ink)!important;font-size:13px}.chk input{width:auto!important;flex:none;margin:0;padding:0}.eOpen,.eForm{user-select:none}.eForm input,.eForm textarea,.eForm select{user-select:text}.eBtns{display:flex;gap:6px}@media (max-width:820px){.eGrid{grid-template-columns:1fr}}
+.cbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cbtns .btn{padding:9px 6px}.cMsg{margin:0 0 4px;font-size:12px;min-height:0}
 .pbox{border:1px solid var(--line);background:var(--bg);padding:10px;display:grid;gap:6px}
 .pitems{list-style:none;margin:0;padding:0;font-size:12.5px}.pitems li{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted var(--line)}
 .pbox-h{margin:0;font-size:12.5px;color:var(--soft)}
@@ -163,6 +164,20 @@ mark{background:#f6dfd6;color:inherit;padding:0 1px}
   <button class="btn fill" type="button" id="impBtn">가져오기 시작</button>
   <p class="msg" id="impMsg" role="status"></p>
  </div>
+ <div class="card" style="max-width:520px;display:grid;gap:10px;margin-top:20px">
+  <p style="margin:0;font-weight:500">계약서 서명</p>
+  <p class="soft" style="margin:0;font-size:13px">아래 칸에 마우스나 손가락으로 서명을 그리고 저장하면, 모든 계약서 마지막 페이지 서명칸에 들어가요.</p>
+  <canvas id="sigPad" width="900" height="300" style="width:100%;aspect-ratio:3/1;background:#fff;border:1px solid var(--line);touch-action:none;cursor:crosshair"></canvas>
+  <div style="display:flex;gap:6px"><button class="btn sm" type="button" id="sigClear">지우기</button><button class="btn sm fill" type="button" id="sigSave">서명 저장</button></div>
+  <p class="msg" id="sigMsg" role="status"></p><div id="sigNow"></div>
+ </div>
+ <div class="card" style="max-width:520px;display:grid;gap:10px;margin-top:20px">
+  <p style="margin:0;font-weight:500">계약서 발송 (Resend)</p>
+  <p class="soft" style="margin:0;font-size:13px">Resend에서 발급받은 API 키(re_로 시작)를 붙여넣고 저장하세요. 저장된 키는 화면에 다시 보이지 않아요. 보내는 주소: contract@loveabout.co.kr</p>
+  <input id="rsKey" type="password" autocomplete="off" placeholder="re_xxxxxxxx">
+  <button class="btn sm fill" type="button" id="rsSave" style="justify-self:start">키 저장</button>
+  <p class="msg" id="rsMsg" role="status"></p><p class="soft" id="rsNow" style="margin:0;font-size:13px"></p>
+ </div>
 </section>
 </main>
 
@@ -189,7 +204,7 @@ function go(v){$$("#nav [data-v]").forEach(b=>b.setAttribute("aria-current",b.da
  if(v==="bookings"){show("vBookings");loadBookings()}
  if(v==="products"){show("vProducts");loadContent().then(renderProducts)}
  if(v==="terms"){show("vTerms");loadContent().then(()=>{$("#tNotice").value=content.terms.notice||"";$("#tPrivacy").value=content.terms.privacy||""})}
- if(v==="account"){show("vAccount");$("#whoami").textContent="로그인한 아이디: "+me}}
+ if(v==="account"){show("vAccount");$("#whoami").textContent="로그인한 아이디: "+me;initContractSettings()}}
 
 /* 예약 관리 */
 const rtypeLabel={personal:"휴대폰",business:"사업자번호",none:"발행 안 함"};
@@ -233,7 +248,7 @@ function detailHTML(b){const r=(k,v)=>v?`<div class="kv"><span class="k">${k}</s
  return `<article class="bk" data-id="${b.id}"><div class="info"><div class="bk-title">러브어바웃 예약글 작성 목록</div><div class="kvs">
   ${r("예약자 이름",b.name)}${r("예약자 연락처",b.phone)}${r("배우자 이름",b.spouseName)}${r("배우자 연락처",b.spousePhone)}${r("이메일",b.email)}${r("예식 날짜",b.weddingDate)}${r("예식 시작 시간",fmtTime(b.weddingTime))}${r("예식장",b.hall)}${r("본식 스냅",withAdd(b.snapProduct,"스냅",b.addons))}${r("본식 DVD",withAdd(b.dvdProduct,"영상",b.addons))}${r("짝꿍코드",b.partnerCode)}${r("현금영수증",b.receiptType&&b.receiptType!=="none"?rtypeLabel[b.receiptType]+" "+b.receiptNumber:"발행 안 함")}${r("요청사항",b.message)}</div>
   <p class="pwrow">예약자 비밀번호 : ${b.password?`<code>${esc(b.password)}</code>`:` · 이 글은 이전 방식으로 저장돼서 확인할 수 없어요`}</p><p class="wrote">작성일 : ${fmtDT(b.createdAt)}</p><button type="button" class="btn sm eOpen">예약글 수정</button>${editHTML(b)}</div>
-  <div class="side"><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf lv${b.confirmLevel||(b.confirmed?1:0)}" aria-pressed="${!!b.confirmed}" title="누를 때마다 분홍 → 초록 → 해제">${(b.confirmLevel||(b.confirmed?1:0))===2?"✓✓ ":b.confirmed?"✓ ":""}예약확정</button></div>
+  <div class="side"><div class="cbtns"><button type="button" class="btn sm cDown">계약서 다운</button><button type="button" class="btn sm fill cSend">계약서 발송</button></div><p class="msg cMsg" role="status">${b.contractSentAt?`계약서 발송 완료 · ${fmtDT(b.contractSentAt)}`:""}</p><div class="tg"><button type="button" class="tPaid" aria-pressed="${!!b.paid}">${b.paid?"✓ ":""}입금확인</button><button type="button" class="tConf lv${b.confirmLevel||(b.confirmed?1:0)}" aria-pressed="${!!b.confirmed}" title="누를 때마다 분홍 → 초록 → 해제">${(b.confirmLevel||(b.confirmed?1:0))===2?"✓✓ ":b.confirmed?"✓ ":""}예약확정</button></div>
   <div class="pbox">${(()=>{const dep=(b.imported?(b.deposit||0):(b.deposit||200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0)))),depL=b.snapProduct&&b.dvdProduct?"스냅+DVD 예약금":b.dvdProduct?"DVD 예약금":"스냅 예약금",kv=(k,v,c)=>`<div class="kv${c?" "+c:""}"><span class="k">${k}</span> : <span class="v">${v}</span></div>`;
    return `<div class="ptext"><div class="pbox-h">결제 금액</div>${(b.priceItems||[]).map(i=>kv(esc(i.name),(money(i.price)||"0")+"원")).join("")}${kv("출장비",`<span class="tTrv">${money(b.travelFee||0)||"0"}</span>원`)}${kv("총 상품 금액 (출장비 포함)",`<span class="tSum">${money((b.priceTotal||0)+(b.travelFee||0))||"0"}</span>원`)}${(()=>{const P=discParts(b),ok=P.length&&P.reduce((a,c)=>a+c[1],0)===(b.discount||0);const sp=`<span class="tDis">${money(b.discount||0)||"0"}</span>원`;return ok&&P.length===1?kv(P[0][0],sp):(ok?P.map(([k,v])=>kv(k,(money(v)||"0")+"원")).join(""):"")+kv(ok?"할인 합계":"할인 이벤트",sp)})()}${kv(depL,`<span class="tDep">${money(dep)||"0"}</span>원`)}${kv("남은 잔금",`<b class="tBal">${money(Math.max(0,(b.priceTotal||0)+(b.travelFee||0)-(b.discount||0)-dep))||"0"}</b>원`,"bal")}</div>
    <details class="pedit"><summary>금액 수정</summary>
@@ -244,6 +259,7 @@ function detailHTML(b){const r=(k,v)=>v?`<div class="kv"><span class="k">${k}</s
   <label>관리자 메모<textarea class="sMemo" rows="3">${esc(b.adminMemo||"")}</textarea></label>
   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm fill sSave" type="button">저장</button><button class="btn sm danger sDel" type="button">삭제</button></div><p class="msg sMsg" role="status"></p></div></article>`}
 function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
+  el.querySelector(".cDown").onclick=()=>contractAction(bookings.find(x=>x.id===id),el,"down");el.querySelector(".cSend").onclick=()=>contractAction(bookings.find(x=>x.id===id),el,"send");
   {const F=el.querySelector(".eForm"),op=el.querySelector(".eOpen"),em=el.querySelector(".eMsg");
    op.onclick=()=>{F.hidden=!F.hidden;op.textContent=F.hidden?"예약글 수정":"수정 닫기";if(!F.hidden)F.querySelector("input").focus()};
    el.querySelector(".eCancel").onclick=()=>{F.hidden=true;op.textContent="예약글 수정"};
@@ -314,6 +330,78 @@ $("#impBtn").onclick=async()=>{const m=$("#impMsg"),f=$("#impFile").files[0],btn
   m.className="msg ok";m.textContent=`완료: ${ins}건 옮겼어요${up?` · 이미 있던 ${up}건은 이메일을 넣었어요`:""}${sk?` (${sk}건은 건너뜀)`:""}.`;bookings=[];}
  catch(x){m.className="msg err";m.textContent="중간에 멈췄어요: "+x.message+" — 다시 누르면 이어서 옮겨요."}finally{btn.disabled=false}};
 boot();
+// ===== 계약서 (PDF) =====
+let CSET=null;
+async function contractSettings(force){if(!CSET||force)CSET=await api({action:"contractSettings"});return CSET}
+function loadScript(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=()=>no(new Error("계약서 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요."));document.head.append(s)})}
+async function pdfLibs(){await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");return window.jspdf.jsPDF}
+const cWon=n=>(Number(n)||0).toLocaleString("ko-KR")+"원";
+function contractRows(b,P){const rows=[];const find=(list,n)=>(list||[]).find(p=>p.ko===n);
+ for(const it of (b.priceItems||[])){const m=/^(.*?) · (.*)$/.exec(it.name||"");const cat=m?m[1]:"상품",nm=m?m[2]:it.name;let desc="";
+  if(cat==="본식 스냅"){const p=find(P.snap,nm);desc=p&&p.items?p.items.join("\n"):""}
+  else if(cat==="본식 DVD"){const p=find(P.dvd,nm);desc=p&&p.items?p.items.join("\n"):""}
+  else{const g=cat.startsWith("영상")?"dvd":"snap";const a=(P.addons||[]).find(q=>(q.group||"snap")===g&&q.name===nm);desc=a&&a.desc?a.desc:""}
+  rows.push([cat,nm,desc,it.price])}
+ if(b.travelFee)rows.push(["출장비","안내받은 출장비","",b.travelFee]);return rows}
+function contractPages(b,P,sig){const E=s=>esc(String(s??"")).replace(/\n/g,"<br>");
+ const dep=b.imported?(b.deposit||0):(b.deposit||200000*((b.snapProduct?1:0)+(b.dvdProduct?1:0))),depL=b.snapProduct&&b.dvdProduct?"스냅+DVD 예약금":b.dvdProduct?"DVD 예약금":"스냅 예약금";
+ const parts=discParts(b),okP=parts.length&&parts.reduce((a,c)=>a+c[1],0)===(b.discount||0);
+ const sum=(b.priceTotal||0)+(b.travelFee||0),bal=Math.max(0,sum-(b.discount||0)-dep),wrote=fmtD(b.createdAt);
+ const css=`<style>.cp{width:794px;height:1123px;padding:64px 64px 56px;box-sizing:border-box;background:#fff;color:#2b2321;font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:13px;line-height:1.6;position:relative;overflow:hidden}
+ .cp h1{font-size:24px;margin:2px 0 4px;letter-spacing:.02em}.cp .eb{font-size:11px;letter-spacing:.3em;color:#b07a74}.cp .meta{font-size:12px;color:#7a6a66;margin-bottom:18px}
+ .cp h2{font-size:14px;margin:18px 0 8px;padding-bottom:5px;border-bottom:2px solid #2b2321}.cp table{width:100%;border-collapse:collapse;color:#2b2321;font-size:13px;line-height:1.6}.cp td,.cp th{border:1px solid #d9ccc6;padding:7px 9px;vertical-align:top;text-align:left}
+ .cp th{background:#f6efec;font-weight:600;white-space:nowrap}.cp .num{text-align:right;white-space:nowrap}.cp .tot td{background:#faf6f4}.cp .bal td{background:#2b2321;color:#fff;font-weight:700;font-size:14px}
+ .cp .desc{color:#5d504c;font-size:12px}.cp .terms p{margin:0 0 3px;font-size:12px;line-height:1.65;white-space:pre-wrap;word-break:keep-all}.cp .pg{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:10.5px;color:#a3958f}
+ .cp .sign{margin-top:22px;border-top:2px solid #2b2321;padding-top:14px}.cp .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px}.cp .sbox{border:1px solid #d9ccc6;padding:12px 14px;min-height:130px;position:relative}
+ .cp .sbox b{display:block;margin-bottom:6px}.cp .sbox img{position:absolute;right:14px;bottom:10px;height:70px;max-width:180px}.cp .sline{position:absolute;left:14px;right:14px;bottom:18px;border-bottom:1px solid #b9aaa4}</style>`;
+ const info=[["예약자",`${E(b.name)} · ${E(b.phone)}`],["배우자",b.spouseName?`${E(b.spouseName)}${b.spousePhone?" · "+E(b.spousePhone):""}`:"-"],["이메일",E(b.email||"-")],["예식 일시",`${E(b.weddingDate)} ${E(fmtTime(b.weddingTime))}`],["예식장",E(b.hall)],["짝꿍코드",E(b.partnerCode||"-")],["현금영수증",b.receiptType&&b.receiptType!=="none"?E(rtypeLabel[b.receiptType]+" "+b.receiptNumber):"발행 안 함"]];
+ const rows=contractRows(b,P);
+ let p1=`<div class="cp"><div class="eb">LOVE ABOUT</div><h1>본식 촬영 예약 계약서</h1><div class="meta">계약번호 LA-${b.id} · 작성일 ${wrote}</div>
+  <h2>1. 예약자 정보</h2><table>${info.map(([k,v])=>`<tr><th style="width:110px">${k}</th><td>${v}</td></tr>`).join("")}</table>
+  <h2>2. 선택 상품</h2><table><tr><th style="width:96px">구분</th><th style="width:130px">상품</th><th>구성 내용</th><th style="width:96px" class="num">금액</th></tr>
+  ${rows.map(r=>`<tr><td>${E(r[0])}</td><td>${E(r[1])}</td><td class="desc">${E(r[2]||"-")}</td><td class="num">${cWon(r[3])}</td></tr>`).join("")}
+  <tr class="tot"><td colspan="3"><b>총 상품 금액</b>${b.travelFee?" (출장비 포함)":""}</td><td class="num"><b>${cWon(sum)}</b></td></tr>
+  ${(b.discount?(okP?parts:[["할인",b.discount]]):[]).map(([k,v])=>`<tr><td colspan="3">${E(k)}</td><td class="num">- ${cWon(v)}</td></tr>`).join("")}
+  <tr><td colspan="3">${depL}${b.paid?" (입금 완료)":""}</td><td class="num">- ${cWon(dep)}</td></tr>
+  <tr class="bal"><td colspan="3">남은 잔금</td><td class="num">${cWon(bal)}</td></tr></table>
+  ${b.message?`<h2>3. 요청사항</h2><div class="desc" style="white-space:pre-wrap">${E(b.message)}</div>`:""}
+  <div class="pg">1</div></div>`;
+ const lines=String((P.terms&&P.terms.notice)||"").split(/\n/);
+ const signHTML=`<div class="sign"><b>위 선택 상품과 예약 약관에 동의하여 본 계약을 체결합니다.</b><div class="meta" style="margin:4px 0 0">계약일 ${wrote}</div>
+  <div class="sgrid"><div class="sbox"><b>예약자</b>${E(b.name)} · ${E(b.phone)}<br><span class="desc">홈페이지 예약 시 필독사항·약관 및 개인정보 처리방침 동의 (${wrote})</span></div>
+  <div class="sbox"><b>업체</b>러브어바웃 · 디포토(Dphoto)<br><span class="desc">사업자등록번호 839-27-01802</span><br>러브어바웃 대표 (서명)<div class="sline"></div>${sig?`<img src="${sig}" alt="">`:""}</div></div></div>`;
+ return {css,p1,lines,signHTML}}
+async function buildContract(b){const P=await loadContent(),S=await contractSettings(),jsPDF=await pdfLibs();
+ const {css,p1,lines,signHTML}=contractPages(b,P,S.signature);
+ const host=document.createElement("div");host.style.cssText="position:fixed;left:-12000px;top:0;z-index:-1";host.innerHTML=css+p1;document.body.append(host);
+ const pages=[host.querySelector(".cp")];
+ const newPage=(first)=>{const d=document.createElement("div");d.className="cp";d.innerHTML=`${first?'<div class="eb">LOVE ABOUT</div><h1 style="font-size:19px">러브어바웃 필독사항 및 약관동의서</h1><div class="meta">계약번호 LA-'+b.id+'</div>':""}<div class="terms"></div><div class="pg">${pages.length+1}</div>`;host.append(d);pages.push(d);return d};
+ let cur=newPage(true),box=cur.querySelector(".terms");const limit=1123-56-40;
+ const fits=el=>el.getBoundingClientRect().bottom-cur.getBoundingClientRect().top<=limit;
+ for(const ln of lines){const p=document.createElement("p");p.textContent=ln||" ";box.append(p);if(!fits(p)){p.remove();cur=newPage(false);box=cur.querySelector(".terms");box.append(p)}}
+ const sg=document.createElement("div");sg.innerHTML=signHTML;const sEl=sg.firstChild;cur.insertBefore(sEl,cur.querySelector(".pg"));if(!fits(sEl)){sEl.remove();cur=newPage(false);cur.insertBefore(sEl,cur.querySelector(".pg"))}
+ await Promise.all([...host.querySelectorAll("img")].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+ const pdf=new jsPDF({unit:"mm",format:"a4",compress:true});
+ for(let i=0;i<pages.length;i++){const c=await html2canvas(pages[i],{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});if(i)pdf.addPage();pdf.addImage(c.toDataURL("image/jpeg",0.9),"JPEG",0,0,210,297)}
+ host.remove();const fname=`러브어바웃_계약서_${(b.name||"").replace(/[^\w가-힣]/g,"")}_${(b.weddingDate||"").replace(/-/g,"")}.pdf`;return {pdf,fname}}
+async function contractAction(b,el,mode){const m=el.querySelector(".cMsg"),btns=el.querySelectorAll(".cDown,.cSend");btns.forEach(x=>x.disabled=true);m.className="msg cMsg";m.textContent="계약서를 만드는 중…";
+ try{if(b.light||!b.priceItems){const j=await api({action:"get",id:b.id});Object.assign(b,fillPrice(j.item,await loadContent()),{light:false})}
+  const {pdf,fname}=await buildContract(b);
+  if(mode==="down"){pdf.save(fname);m.className="msg cMsg ok";m.textContent="계약서를 내려받았어요."}
+  else{if(!b.email)throw new Error("고객 이메일이 없어요. 예약글 수정에서 이메일을 넣어 주세요.");m.textContent=`${b.email} 로 보내는 중…`;
+   const j=await api({action:"sendContract",id:b.id,pdf:pdf.output("datauristring"),filename:fname});b.contractSentAt=j.sentAt;m.className="msg cMsg ok";m.textContent=`${j.to} 로 계약서를 보냈어요. (${fmtDT(j.sentAt)})`}}
+ catch(x){m.className="msg cMsg err";m.textContent=x.message}finally{btns.forEach(x=>x.disabled=false)}}
+// 서명판 & Resend 키 (계정 탭)
+function initContractSettings(){const cv=$("#sigPad");if(!cv||cv.dataset.on)return;cv.dataset.on=1;const ctx=cv.getContext("2d");let drawing=false,dirty=false;
+ const pos=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+ ctx.lineWidth=3.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1d1a33";
+ cv.onpointerdown=e=>{drawing=true;dirty=true;cv.setPointerCapture(e.pointerId);const [x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y)};
+ cv.onpointermove=e=>{if(!drawing)return;const [x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke()};cv.onpointerup=cv.onpointercancel=()=>drawing=false;
+ $("#sigClear").onclick=()=>{ctx.clearRect(0,0,cv.width,cv.height);dirty=false};
+ $("#sigSave").onclick=async()=>{const m=$("#sigMsg");if(!dirty){m.className="msg err";m.textContent="서명을 먼저 그려 주세요.";return}
+  try{await api({action:"setSignature",signature:cv.toDataURL("image/png")});await contractSettings(true);m.className="msg ok";m.textContent="서명을 저장했어요. 모든 계약서에 들어가요.";showSig()}catch(x){m.className="msg err";m.textContent=x.message}};
+ $("#rsSave").onclick=async()=>{const m=$("#rsMsg");try{await api({action:"setResendKey",key:$("#rsKey").value});$("#rsKey").value="";await contractSettings(true);m.className="msg ok";m.textContent="Resend API 키를 저장했어요.";showSig()}catch(x){m.className="msg err";m.textContent=x.message}};
+ const showSig=async()=>{try{const s=await contractSettings();$("#sigNow").innerHTML=s.signature?`<img src="${s.signature}" alt="저장된 서명" style="height:60px;background:#fff;padding:4px">`:'<span class="soft">아직 저장된 서명이 없어요.</span>';$("#rsNow").textContent=s.hasResend?"저장된 키가 있어요.":"아직 저장된 키가 없어요."}catch(e){}};showSig()}
 const SEL=".bk, .btbl";document.addEventListener("copy",e=>{const s=getSelection();if(!s||s.isCollapsed||!e.clipboardData)return;const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);if(!n||!n.closest(SEL))return;
  const t=s.toString().replace(/\r/g,"").split("\n").map(l=>l.replace(/^[\s\u00a0\u3000]+|[\s\u00a0\u3000]+$/g,"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
  const h=t.split("\n").map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("<br>");
