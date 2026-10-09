@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
       const esc = (s) => String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       const html = `<div style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.7;color:#3b2f2d"><p>${esc(r.name)}님, 안녕하세요. 러브어바웃이에요.</p><p>예약해 주신 본식 촬영 계약서를 첨부해 드려요.<br>선택하신 상품과 금액, 예약 약관을 한 번 더 확인해 주세요.</p><p>궁금한 점은 카카오채널 <a href="https://pf.kakao.com/_VDmxoxj">러브어바웃</a>으로 편하게 문의해 주세요.</p><p style="color:#86736e;font-size:13px">러브어바웃 · 디포토(Dphoto) · 사업자등록번호 839-27-01802<br>https://www.loveabout.co.kr</p></div>`;
       const rr = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + key, "Content-Type": "application/json" },
-        body: JSON.stringify({ from: "러브어바웃 <contract@loveabout.co.kr>", to: [to], subject: `[러브어바웃] ${r.name}님 본식 촬영 계약서`, html, attachments: [{ filename: fname, content: pdf }] }) });
+        body: JSON.stringify({ from: "러브어바웃 <contract@loveabout.co.kr>", to: [to], reply_to: "luvaout@naver.com", subject: `[러브어바웃] ${r.name}님 본식 촬영 계약서`, html, attachments: [{ filename: fname, content: pdf }] }) });
       const rj = await rr.json().catch(() => ({}));
       if (!rr.ok) return fail(res, 502, "메일을 보내지 못했어요: " + (rj.message || rj.error || ("Resend " + rr.status)));
       const at = new Date().toISOString();
