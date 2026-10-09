@@ -69,10 +69,10 @@ module.exports = async (req, res) => {
     const { d, e, pw } = validate(b);
     if (e.length) return fail(res, 400, e.join(" "));
     const now = new Date().toISOString();
-    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,price_items,deposit,discount,email,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
+    await sql([["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,price_total,price_items,deposit,discount,travel_fee,email,agreed_notice,agreed_privacy) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1)",
       [now, d.name, d.phone, d.spouse_name, d.spouse_phone, d.wedding_date, d.wedding_time, d.hall, d.snap_product, d.dvd_product, d.addons, d.partner_code, d.receipt_type, d.receipt_number, d.message, hashPw(pw), await encrypt(pw), Math.max(0, Math.min(100000000, Math.round(Number(b.priceTotal) || 0))),
       JSON.stringify((Array.isArray(b.priceItems) ? b.priceItems : []).slice(0, 20).map((x) => ({ name: clip(x && x.name, 60), price: Math.max(0, Math.min(100000000, Math.round(Number(x && x.price) || 0))) })).filter((x) => x.name)),
-      200000 * ((d.snap_product ? 1 : 0) + (d.dvd_product ? 1 : 0)), (d.snap_product && d.dvd_product ? 10000 : 0) + (/^\s*(\d{6}|\d{4})[\s.\-]*[가-힣]{2,}/.test(d.partner_code) && (d.snap_product || d.dvd_product) ? (d.snap_product ? 20000 : 10000) : 0), d.email]]]);
+      200000 * ((d.snap_product ? 1 : 0) + (d.dvd_product ? 1 : 0)), (d.snap_product && d.dvd_product ? 10000 : 0) + (/^\s*(\d{6}|\d{4})[\s.\-]*[가-힣]{2,}/.test(d.partner_code) && (d.snap_product || d.dvd_product) ? (d.snap_product ? 20000 : 10000) : 0), Math.max(0, Math.min(10000000, Math.round(Number(String(b.travelFee ?? "").replace(/[^\d]/g, "")) || 0))), d.email]]]);
     return res.status(201).json({ ok: true });
   } catch (err) {
     return fail(res, 500, "잠시 후 다시 시도해 주세요.");
