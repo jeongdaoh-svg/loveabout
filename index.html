@@ -207,7 +207,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .mine-top p{font-size:13px;color:var(--ink-soft);margin:0}
 .badge{display:inline-block;font-size:12.5px;padding:5px 12px;border:1px solid var(--rose);color:var(--rose);white-space:nowrap}
 .badge.ok{background:var(--rose);color:#fff}.pay dl{border-top:1px solid var(--ink);grid-template-columns:1fr auto!important;column-gap:0}.pay dt{padding-right:16px}.pay dt small{font-size:11.5px;color:var(--ink-soft)}.pay dd{text-align:right;font-variant-numeric:tabular-nums}.pay dt.sum,.pay dd.sum{font-weight:500;color:var(--ink)}.pay dt.bal,.pay dd.bal{font-weight:600;font-size:15px;color:var(--ink)}
-.badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}button.badge.admB{font:inherit;font-size:12.5px;cursor:pointer;background:transparent;border-color:var(--ink-soft);color:var(--ink)}button.badge.admB.fill{background:var(--rose);border-color:var(--rose);color:#fff}button.badge.admB:disabled{opacity:.6;cursor:wait}.admMsg{margin:6px 0 0;font-size:12.5px;text-align:right;color:var(--ink-soft)}.admMsg:empty{display:none}.admMsg.ok{color:var(--rose)}.admMsg.err{color:#e0524a}.badge.no{border-color:var(--line);color:var(--ink-soft)}
+.mine-end .lkDel{margin-left:8px;border-color:#b4534b;color:#e08a82}.mine-end .lkDel:hover{background:#b4534b;color:#fff}.lkDelMsg{text-align:center}.badges{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}button.badge.admB{font:inherit;font-size:12.5px;cursor:pointer;background:transparent;border-color:var(--ink-soft);color:var(--ink)}button.badge.admB.fill{background:var(--rose);border-color:var(--rose);color:#fff}button.badge.admB:disabled{opacity:.6;cursor:wait}.admMsg{margin:6px 0 0;font-size:12.5px;text-align:right;color:var(--ink-soft)}.admMsg:empty{display:none}.admMsg.ok{color:var(--rose)}.admMsg.err{color:#e0524a}.badge.no{border-color:var(--line);color:var(--ink-soft)}
 .mine section{margin-bottom:18px}.mine h5{font-size:12px;letter-spacing:.08em;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
 .mine dl{display:grid;grid-template-columns:100px 1fr;margin:0;font-size:14px;border-top:1px solid var(--line)}
 .mine dt,.mine dd{padding:10px 0;border-bottom:1px solid var(--line);margin:0}.mine dt{color:var(--ink-soft)}.mine dd{word-break:keep-all;white-space:pre-line;overflow-wrap:anywhere}
@@ -893,7 +893,7 @@ function renderDetail(x){const row=(k,v)=>v?`<div class="kv"><span class="k">${k
    ${sec("선택 상품",row("본식 스냅",withAdd(x.snapProduct,"스냅",x.addons))+row("본식 DVD",withAdd(x.dvdProduct,"영상",x.addons)))}
    ${sec("기타",row("짝꿍코드",x.partnerCode)+row("현금영수증",x.receiptType&&x.receiptType!=="none"?rtypeLabel[x.receiptType]+" "+x.receiptNumber:"발행 안 함")+row("요청사항",x.message))}
    ${payHTML(x)}
-  </article><div class="mine-end"><button class="btn sm" type="button" id="lkBack">목록으로</button></div>`}
+  </article><div class="mine-end"><button class="btn sm" type="button" id="lkBack">목록으로</button><button class="btn sm lkDel" type="button" id="lkDel">삭제</button></div><p class="ferr lkDelMsg" id="lkDelMsg" role="alert"></p>`}
 function renderList(items){const L=$("#myList");$("#myPosts").innerHTML="";
  L.innerHTML=`<div class="ml-head"><p><b>${escH(lkWho.name)}</b>님의 예약글 ${items.length}건</p><button class="btn sm" type="button" id="lkReset">다시 찾기</button></div>
   <ul class="ml">${items.map((x,i)=>`<li data-id="${x.id}"><button type="button" class="ml-row" aria-expanded="false"><span class="ml-no">${items.length-i}</span><span class="ml-t">${escH(lkWho.name)} 본식 예약${isNew(x.createdAt)?'<i class="newN" aria-label="새 글">N</i>':""}<small>${fmtDate(x.createdAt)} 작성</small></span>${badges(x)}<span class="lock" aria-hidden="true">🔒</span></button>
@@ -903,9 +903,14 @@ function renderList(items){const L=$("#myList");$("#myPosts").innerHTML="";
   btn.onclick=()=>{const open=f.hidden;L.querySelectorAll(".ml-pw").forEach(x=>x.hidden=true);L.querySelectorAll(".ml-row").forEach(x=>x.setAttribute("aria-expanded","false"));f.hidden=!open;btn.setAttribute("aria-expanded",String(open));if(open)inp.focus()};
   f.onsubmit=async e=>{e.preventDefault();er.textContent="";if(!inp.value){er.textContent="비밀번호를 입력해 주세요.";return}
    const sb=f.querySelector("button");sb.disabled=true;
-   try{const j=await lkPost({action:"lookup",id:+li.dataset.id,name:lkWho.name,phone:lkWho.phone,password:inp.value});inp.value="";
+   try{const pwv=inp.value;const j=await lkPost({action:"lookup",id:+li.dataset.id,name:lkWho.name,phone:lkWho.phone,password:pwv});inp.value="";
     L.hidden=true;$("#myPosts").innerHTML=renderDetail(j.items[0]);bindAdm($("#myPosts"));
     $("#lkBack").onclick=()=>{$("#myPosts").innerHTML="";L.hidden=false;$("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})};
+    $("#lkDel").onclick=async()=>{if(!confirm("이 예약글을 삭제할까요?\n삭제한 글은 되돌릴 수 없어요."))return;const db=$("#lkDel"),dm=$("#lkDelMsg");db.disabled=true;dm.textContent="";
+     try{await lkPost({action:"remove",id:+li.dataset.id,name:lkWho.name,phone:lkWho.phone,password:pwv});li.remove();$("#myPosts").innerHTML="";
+      const left=L.querySelectorAll(".ml li").length;if(left){L.hidden=false;const h=L.querySelector(".ml-head p");if(h)h.innerHTML=`<b>${escH(lkWho.name)}</b>님의 예약글 ${left}건 · 예약글을 삭제했어요.`}else{L.innerHTML="";$("#lookup").hidden=false;$("#lkErr").textContent="예약글을 삭제했어요."}
+      $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
+     catch(x){dm.textContent=x.message;db.disabled=false}};
     $("#mycheck").scrollIntoView({block:"start",behavior:"smooth"})}
    catch(x){er.textContent=x.message}finally{sb.disabled=false}}})}
 $("#lookup").addEventListener("submit",async e=>{e.preventDefault();const err=$("#lkErr"),btn=$("#lkBtn");err.textContent="";
