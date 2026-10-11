@@ -58,7 +58,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--rose);outline-of
 .tg button:disabled{opacity:.6;cursor:wait}
 .chip.cnt{font:inherit;font-size:14px;padding:8px 16px;cursor:pointer;background:var(--bg)}
 .chip.cnt b{font-weight:600;margin-left:4px}
-.chip.cnt.pend b{color:var(--rose)}.chip.cnt.conf b{color:var(--ok)}
+.chip.cnt.pend b{color:var(--rose)}.chip.cnt.bkg b{color:var(--rose)}.chip.cnt.conf b{color:var(--ok)}
 .chip.cnt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .bk-title{font:inherit;color:inherit;margin:0 0 3px;padding:0;border:0;background:none}
 .newN{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:5px;border-radius:50%;background:#e0524a;color:#fff;font-size:10.5px;font-weight:700;font-style:normal;line-height:1;vertical-align:2px;animation:nBlink 1s ease-in-out infinite}@keyframes nBlink{0%,100%{opacity:1}50%{opacity:.25}}
@@ -124,7 +124,7 @@ mark{background:#f6dfd6;color:inherit;padding:0 1px}
 
 <section id="vBookings" hidden>
  <h1>예약 관리</h1>
- <form class="bar" id="qForm" role="search"><input id="q" type="search" placeholder="예약자 이름 검색" aria-label="이름 검색"><button class="btn sm fill" type="submit">검색</button><select id="fStatus" aria-label="상태"><option value="">전체</option><option value="pending">접수</option><option value="confirmed">예약확정</option></select><button class="btn sm" id="reload" type="button">새로고침</button></form>
+ <form class="bar" id="qForm" role="search"><input id="q" type="search" placeholder="예약자 이름 검색" aria-label="이름 검색"><button class="btn sm fill" type="submit">검색</button><select id="fStatus" aria-label="상태"><option value="">전체</option><option value="pending">접수</option><option value="booking">예약중</option><option value="confirmed">예약확정</option></select><button class="btn sm" id="reload" type="button">새로고침</button></form>
  <div class="chips" id="counts"></div>
  <p class="soft" id="qInfo"></p>
  <div class="tbl-wrap"><table class="btbl"><thead><tr><th class="c-no">번호</th><th>제목</th><th class="c-who">작성자</th><th class="c-date">작성일</th><th class="c-st">상태</th></tr></thead><tbody id="bkList"><tr><td colspan="5" class="empty">불러오는 중이에요.</td></tr></tbody></table></div>
@@ -283,8 +283,8 @@ function bindDetail(el){const id=+el.dataset.id,m=el.querySelector(".sMsg");
 const isPartner=c=>/^\s*(\d{6}|\d{4})[\s.\-]*[가-힣]{2,}/.test(String(c||""));const discParts=x=>{const p=[];if(x.snapProduct&&x.dvdProduct)p.push(["패키지 할인 (스냅+DVD · DVD 1만원)",10000]);if(isPartner(x.partnerCode)&&(x.snapProduct||x.dvdProduct))p.push([x.snapProduct?"짝꿍 할인 (스냅 2만원)":"짝꿍 할인 (DVD 1만원)",x.snapProduct?20000:10000]);return p};
 const isNew=t=>{const d=new Date(t).getTime();return d&&Date.now()-d<48*3600e3&&Date.now()>=d-6e4};
 function renderBookings(){const q=$("#q").value.trim(),f=$("#fStatus").value,ql=q.toLowerCase();
- const list=bookings.filter(b=>(!f||(f==="confirmed"?b.confirmed:!b.confirmed))&&(!q||String(b.name||"").toLowerCase().includes(ql)));
- $("#counts").innerHTML=`<button type="button" class="chip cnt pend${$("#fStatus").value==="pending"?" on":""}" data-f="pending">접수 <b>${bookings.filter(b=>!b.confirmed).length}</b></button><button type="button" class="chip cnt conf${$("#fStatus").value==="confirmed"?" on":""}" data-f="confirmed">예약확정 <b>${bookings.filter(b=>b.confirmed).length}</b></button>`;
+ const lvOf=b=>b.confirmLevel||(b.confirmed?1:0),fLv={pending:0,booking:1,confirmed:2};const list=bookings.filter(b=>(!f||lvOf(b)===fLv[f])&&(!q||String(b.name||"").toLowerCase().includes(ql)));
+ $("#counts").innerHTML=`<button type="button" class="chip cnt pend${$("#fStatus").value==="pending"?" on":""}" data-f="pending">접수 <b>${bookings.filter(b=>lvOf(b)===0).length}</b></button><button type="button" class="chip cnt bkg${$("#fStatus").value==="booking"?" on":""}" data-f="booking">예약중 <b>${bookings.filter(b=>lvOf(b)===1).length}</b></button><button type="button" class="chip cnt conf${$("#fStatus").value==="confirmed"?" on":""}" data-f="confirmed">예약확정 <b>${bookings.filter(b=>lvOf(b)===2).length}</b></button>`;
  $$("#counts .cnt").forEach(c=>c.onclick=()=>{const fs=$("#fStatus");fs.value=fs.value===c.dataset.f?"":c.dataset.f;page=1;openId=null;renderBookings()});
  $("#qInfo").textContent=q||f?`검색 결과 ${list.length}건`+(q?` · "${q}"`:"")+(f?` · ${$("#fStatus").selectedOptions[0].text}`:""):"";
  const pages=Math.max(1,Math.ceil(list.length/PER));if(page>pages)page=pages;const slice=list.slice((page-1)*PER,page*PER);
