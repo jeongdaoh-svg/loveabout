@@ -2,6 +2,7 @@
 // (공개 목록 없음 — 관리자 화면에서만 열람)
 // POST {action:"create",...}   → 예약글 작성
 // POST {action:"lookup",name,phone,password} → 본인 글 조회
+// POST {action:"remove",id,name,phone,password} → 본인 글 삭제
 const { sql, ensure, hashPw, checkPw, encrypt, clip, PHONE, BIZ, body, fail } = require("./_db.js");
 
 const toFull = (r) => ({
@@ -65,6 +66,14 @@ module.exports = async (req, res) => {
       const mine = rows.filter((r) => checkPw(pw, r.pw_hash));
       if (!mine.length) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "비밀번호가 맞지 않아요. 예약할 때 정한 비밀번호를 다시 확인해 주세요."); }
       return res.status(200).json({ items: mine.map(toFull) });
+    }
+    if (b.action === "remove") {
+      const name = clip(b.name, 20), phone = clip(b.phone, 13), pw = String(b.password || ""), id = Number(b.id) || 0;
+      if (!id || !name || !PHONE.test(phone) || !pw) return fail(res, 400, "성함, 연락처, 비밀번호를 모두 적어주세요.");
+      const [rows] = await sql([["SELECT id, pw_hash FROM bookings WHERE id=? AND name=? AND phone=?", [id, name, phone]]]);
+      if (!rows.length || !checkPw(pw, rows[0].pw_hash)) { await new Promise((r) => setTimeout(r, 600)); return fail(res, 404, "비밀번호가 맞지 않아 삭제하지 못했어요."); }
+      await sql([["DELETE FROM bookings WHERE id=?", [id]]]);
+      return res.status(200).json({ ok: true });
     }
     const { d, e, pw } = validate(b);
     if (e.length) return fail(res, 400, e.join(" "));
