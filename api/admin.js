@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
         const no = Number(x.legacyNo) || 0;
         if (no && seen.has(no) && x.email) { upd.push(["UPDATE bookings SET email=? WHERE legacy_no=? AND imported=1", [clip(x.email, 80), no]]); continue; }
         if (!no || seen.has(no)) continue; seen.add(no);
-        const pw = String(x.password || "1234").slice(0, 30), ph = hashPw(pw), pe = await encrypt(pw);
+        const pw = String(require("crypto").randomInt(0, 1000000)).padStart(6, "0"), ph = hashPw(pw), pe = await encrypt(pw);
         st.push(["INSERT INTO bookings (created_at,name,phone,spouse_name,spouse_phone,wedding_date,wedding_time,hall,snap_product,dvd_product,addons,partner_code,receipt_type,receipt_number,message,pw_hash,pw_enc,agreed_notice,agreed_privacy,status,admin_memo,deposit,price_total,price_items,imported,legacy_no,email) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,1,'접수',?,0,0,'[]',1,?,?)",
           [clip(x.createdAt, 30) || new Date().toISOString(), clip(x.name, 20), clip(x.phone, 13), clip(x.spouseName, 20), clip(x.spousePhone, 13), clip(x.weddingDate, 20), clip(x.weddingTime, 20), clip(x.hall, 60), clip(x.snapProduct, 60), clip(x.dvdProduct, 60),
            JSON.stringify((Array.isArray(x.addons) ? x.addons : []).slice(0, 10).map((a) => clip(a, 60))), clip(x.partnerCode, 30), ["personal", "business"].includes(x.receiptType) ? x.receiptType : "none", clip(x.receiptNumber, 13), clip(x.message, 1500), ph, pe, String(x.adminMemo || "").slice(0, 20000), no, clip(x.email, 80)]]);
@@ -85,6 +85,16 @@ module.exports = async (req, res) => {
       const all = st.concat(upd);
       for (let i = 0; i < all.length; i += 100) await sql(all.slice(i, i + 100));
       return res.status(200).json({ ok: true, inserted: st.length, updated: upd.length, skipped: items2.length - st.length - upd.length });
+    }
+    if (b.action === "rotatePasswords") {
+      // 기준 글(cutoffId)과 그 이전에 작성된 글들의 비밀번호를 무작위 6자리 숫자로 바꿔요. 한 번에 60건씩, afterId 다음부터.
+      const [cr] = await sql([["SELECT created_at FROM bookings WHERE id=?", [Number(b.cutoffId)]]]);
+      if (!cr.length) return fail(res, 404, "기준 예약글을 찾을 수 없어요.");
+      const [rows] = await sql([["SELECT id FROM bookings WHERE created_at <= ? AND id > ? ORDER BY id LIMIT 60", [cr[0].created_at, Number(b.afterId) || 0]]]);
+      const st = [];
+      for (const r of rows) { const pw = String(require("crypto").randomInt(0, 1000000)).padStart(6, "0"); st.push(["UPDATE bookings SET pw_hash=?, pw_enc=? WHERE id=?", [hashPw(pw), await encrypt(pw), r.id]]); }
+      if (st.length) await sql(st);
+      return res.status(200).json({ ok: true, n: st.length, lastId: rows.length ? Number(rows[rows.length - 1].id) : Number(b.afterId) || 0, done: rows.length < 60, cutoff: cr[0].created_at });
     }
     if (b.action === "delete") {
       await sql([["DELETE FROM bookings WHERE id=?", [Number(b.id)]]]);
