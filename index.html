@@ -344,7 +344,7 @@ form.rpanel{grid-template-columns:1fr 1fr;gap:20px 24px}
 .btn.kakao{background:transparent;color:var(--ink);border-color:currentColor}.btn.kakao:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .note{margin-top:28px;font-size:13px;color:var(--ink-soft);text-align:center}
 
-.pgroup{display:grid;gap:22px;margin-bottom:56px}
+.pgroup{display:grid;gap:22px;margin-bottom:56px}.ptabs{display:flex;justify-content:center;gap:8px;margin:0 auto 40px}.ptabs button{font:inherit;font-size:14.5px;padding:10px 26px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;letter-spacing:.02em}.ptabs button[aria-selected="true"]{border-color:var(--rose);background:var(--rose);color:#fff}.evt{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:960px;margin:0 auto}.evt-card{border:1px solid var(--line);padding:30px 28px;background:var(--bg)}.evt-card .eyebrow{margin:0 0 6px}.evt-card h3{font-family:var(--ko-serif);font-weight:400;font-size:22px;margin:0 0 14px}.evt-amt{margin:0;font-size:16px}.evt-amt b{color:var(--rose);font-weight:600;white-space:nowrap}.evt-card{word-break:keep-all}.evt-amt small{color:var(--ink-soft);font-size:13px}.evt-sub{margin:4px 0 16px;font-size:13.5px;color:var(--ink-soft)}.evt-card ul{margin:0;padding:14px 0 0 18px;border-top:1px solid var(--line);display:grid;gap:7px;font-size:14px;line-height:1.6}.evt-tip{text-align:center;margin:26px auto 0;font-size:13.5px;color:var(--ink-soft);max-width:640px}@media (max-width:760px){.evt{grid-template-columns:1fr}.evt-card{padding:24px 20px}.ptabs{margin-bottom:28px}.ptabs button{padding:9px 20px}}
 .pg-title{font-family:var(--ko-serif);font-weight:400;font-size:22px;text-align:center;display:grid;gap:2px}
 .pg-title .eyebrow{margin:0}
 .cards.c4{grid-template-columns:repeat(4,1fr)}.cards.c3{grid-template-columns:repeat(3,1fr);max-width:960px;margin:0 auto;width:100%}
@@ -526,10 +526,28 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <h2 class="h-en">Pricing</h2>
       <p class="soft">본식 스냅과 본식 DVD 상품 구성이에요.</p>
     </div>
+    <div class="ptabs" role="tablist" aria-label="상품 안내"><button type="button" role="tab" id="ptab-main" aria-controls="ppanel-main" aria-selected="true">상품 안내</button><button type="button" role="tab" id="ptab-event" aria-controls="ppanel-event" aria-selected="false">할인 이벤트</button></div>
+    <div id="ppanel-main" role="tabpanel" aria-labelledby="ptab-main">
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">Snap</span>본식 스냅</h3><div class="cards c4" id="cards-snap"></div></div>
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">DVD</span>본식 DVD</h3><div class="cards c3" id="cards-dvd"></div></div>
     <div class="pgroup"><h3 class="pg-title"><span class="eyebrow">Options</span>추가상품</h3><div class="addl" id="addl"></div></div>
     <p class="note">모든 상품은 신부대기실부터 본식까지 촬영해요. 일정과 옵션은 편하게 문의해 주세요.</p>
+    </div>
+    <div id="ppanel-event" role="tabpanel" aria-labelledby="ptab-event" hidden>
+     <div class="evt">
+      <article class="evt-card"><span class="eyebrow">Event 01</span><h3>짝꿍 할인</h3>
+       <p class="evt-amt">예약 시 짝꿍코드를 적어주시면 <b>20,000원 할인</b></p>
+       <p class="evt-sub">서브 스냅 · DVD만 예약하시면 10,000원 할인</p>
+       <ul><li>짝꿍코드는 <b>예식날짜 + 성함</b>이에요. 예) 261219이선호</li><li>예약 시 1회만 적용돼요.</li><li>예식 전 주 주말까지 입력된 짝꿍코드까지만 적용돼요.</li><li>짝꿍코드를 사용하신 분들의 정보 리스트업은 신부님께서 직접 해주셔야 해요.</li></ul>
+      </article>
+      <article class="evt-card"><span class="eyebrow">Event 02</span><h3>예약 후기 할인</h3>
+       <p class="evt-amt">예약 후기 작성 건당 <b>10,000원 할인</b> <small>(최대 2건)</small></p>
+       <p class="evt-sub">메인 스냅 없이 서브 스냅 · DVD만 예약하시면 1건 10,000원까지</p>
+       <ul><li>예약 후 2주 안에 작성해 주시면 적용돼요.</li><li>블로그, 카페 등에 예약 후기를 남겨주세요.</li></ul>
+      </article>
+     </div>
+     <p class="evt-tip">카페에 후기를 쓰시면서 짝꿍 활동도 함께 하시면 더 가성비 있게 진행하실 수 있어요. :)</p>
+    </div>
     <div class="consult-cta"><a class="btn kakao" href="https://pf.kakao.com/_VDmxoxj" data-kakao target="_blank" rel="noopener">카카오채널로 상담하기</a></div>
   </div>
 </section>
@@ -951,9 +969,12 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
  catch(x){err.textContent=x.message}
  finally{btn.disabled=false;btn.textContent="예약 글 등록"}});
 
+// pricing tabs
+function pTab(w){["main","event"].forEach(k=>{const on=k===w;$("#ptab-"+k).setAttribute("aria-selected",String(on));$("#ppanel-"+k).hidden=!on})}
+$("#ptab-main").onclick=()=>pTab("main");$("#ptab-event").onclick=()=>pTab("event");
 // tabs
 const TABS=["home","about","portfolio","film","products","contact","notice","reservation","mybooking"];
-function route(){let t=(location.hash||"#home").slice(1);if(t==="about"||t==="notice"||t==="guide"||t==="faq")t="home";if(!TABS.includes(t))t="home";
+function route(){let t=(location.hash||"#home").slice(1);if(t==="event"){t="products";setTimeout(()=>pTab("event"))}else if(t==="products")pTab("main");if(t==="about"||t==="notice"||t==="guide"||t==="faq")t="home";if(!TABS.includes(t))t="home";
  document.querySelectorAll("[data-tab]").forEach(el=>el.hidden=!el.dataset.tab.split(" ").includes(t));
  document.querySelectorAll(".nav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+t?"page":"false"));
  const na=document.querySelector('.nav a[aria-current="page"]'),nv=document.querySelector(".nav");if(na&&nv&&!nv.classList.contains("open")&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=na.offsetLeft-nv.clientWidth/2+na.offsetWidth/2;
