@@ -28,7 +28,8 @@ function validate(b) {
   if (!b.agreeNotice || !b.agreePrivacy) e.push("필독사항과 개인정보 처리방침에 동의해 주세요.");
   if (d.name.length < 2) e.push("예약자 성함을 적어주세요.");
   if (!PHONE.test(d.phone)) e.push("예약자 연락처를 010-0000-0000 형식으로 적어주세요.");
-  if (d.spouse_phone && !PHONE.test(d.spouse_phone)) e.push("배우자 연락처를 010-0000-0000 형식으로 적어주세요.");
+  if (d.spouse_name.length < 2) e.push("배우자 이름을 적어주세요.");
+  if (!PHONE.test(d.spouse_phone)) e.push("배우자 연락처를 010-0000-0000 형식으로 적어주세요.");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) e.push("이메일 주소를 정확히 적어주세요. 예) love@naver.com");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(d.wedding_date)) e.push("예식일을 선택해 주세요.");
   if (!d.wedding_time) e.push("예식 시작 시간을 선택해 주세요.");
