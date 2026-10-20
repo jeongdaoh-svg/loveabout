@@ -401,7 +401,7 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .dp button{font:inherit;font-size:13.5px;color:var(--ink);background:transparent;border:1px solid var(--line);padding:8px 0;cursor:pointer;min-width:0}
 .dp button:hover:not(:disabled){border-color:var(--ink-soft)}.dp button[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
 .dp button:disabled{opacity:.28;cursor:default}.dp-cal button{padding:7px 0}
-.trv label{letter-spacing:.02em;font-size:13px;text-transform:none;color:var(--ink)}.trv label small{color:var(--ink-soft);font-size:12px}
+.trv label{letter-spacing:.02em;font-size:13px;text-transform:none;color:var(--ink)}.trv label small{color:var(--ink-soft);font-size:12px}.trv-n{margin:8px 0 0;font-size:13px;color:var(--ink-soft)}.trv-n b{color:var(--ink)}
 .pkg-note{grid-column:1/-1;margin:-4px 0 0;font-size:12.5px;color:var(--rose)}
 .dp-out{margin:2px 0 0;font-size:13px;color:var(--ink-soft)}.dp-out b{color:var(--ink);font-weight:500}
 @media (max-width:640px){.dp-row.m,.dp-row.h,.dp-row.mi{grid-template-columns:repeat(4,1fr)}}.f.halls{grid-template-columns:1fr 1.4fr 1fr;gap:18px 24px}.hall-note{grid-column:1/-1;margin:-8px 0 0;font-size:12px;color:var(--ink-soft)}@media (max-width:640px){.f.halls{grid-template-columns:1fr}}
@@ -704,8 +704,8 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
       <fieldset class="fs"><legend>예약자 정보</legend>
         <div class="f"><label for="fname">예약자 이름 *</label><input id="fname" required placeholder="예) 홍길동" autocomplete="name" maxlength="20"></div>
         <div class="f"><label for="fphone">예약자 연락처 *</label><input id="fphone" class="ph" type="tel" inputmode="numeric" required placeholder="010-0000-0000" maxlength="13"></div>
-        <div class="f"><label for="fsname">배우자 이름</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
-        <div class="f"><label for="fsphone">배우자 연락처</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
+        <div class="f"><label for="fsname">배우자 이름 *</label><input id="fsname" placeholder="예) 김영희" maxlength="20"></div>
+        <div class="f"><label for="fsphone">배우자 연락처 *</label><input id="fsphone" class="ph" type="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13"></div>
         <div class="f"><label for="femail">이메일 *</label><input id="femail" type="email" inputmode="email" required placeholder="예) love@naver.com" autocomplete="email" maxlength="80"></div>
       </fieldset>
       <fieldset class="fs"><legend>예식 정보</legend>
@@ -718,7 +718,7 @@ footer .base{padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-
         <p class="pick-h">본식 DVD</p><div class="picks" id="pickDvd"></div><p class="pkg-note">스냅과 DVD를 함께 예약하면 패키지 할인으로 DVD에서 10,000원 할인돼요. 짝꿍코드를 적으면 짝꿍 할인(스냅 20,000원 · DVD만 예약 시 10,000원)도 함께 적용돼요.</p>
         <p class="pick-h">스냅 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 스냅을 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddSnap"></div>
         <p class="pick-h">영상 추가상품 선택 <small>여러 개 선택할 수 있어요 · 본식 DVD를 고르면 선택할 수 있어요</small></p><div class="picks" id="pickAddDvd"></div>
-        <div class="f full trv"><label for="ftravel">안내받은 출장비를 적어주세요 * <small>(출장비가 없으시면 0으로 적어주세요.)</small></label><input id="ftravel" inputmode="numeric" placeholder="0" maxlength="10" autocomplete="off"></div>
+        <div class="f full trv"><label for="ftravel">안내받은 출장비(1인 기준)를 적어주세요 * <small>(작가 인원수에 맞춰 자동으로 계산돼요 · 출장비가 없으시면 0으로 적어주세요.)</small></label><input id="ftravel" inputmode="numeric" placeholder="0" maxlength="10" autocomplete="off"><p class="trv-n" id="ftrvNote" hidden></p></div>
         <p class="total" id="ptotal">선택한 상품 합계 <b>0원</b></p>
       </fieldset>
       <fieldset class="fs"><legend>기타</legend>
@@ -829,18 +829,21 @@ function renderPricing(){[["snap","#cards-snap"],["dvd","#cards-dvd"]].forEach((
  const ad=products.addons||[];$("#addl").innerHTML=[["snap","스냅 추가상품"],["dvd","영상 추가상품"]].map(([g,t])=>{const l=ad.filter(p=>(p.group||"snap")===g);return l.length?`<div><h4>${t}</h4><ul>${l.map(p=>`<li><span>${escA(p.name)}${p.desc?`<small>${escA(p.desc)}</small>`:""}</span><b>${escA(p.price)}원</b></li>`).join("")}</ul></div>`:""}).join("")}
 let pending=null;
 function renderPicks(){
- const card=(type,name,v,title,price,items)=>`<label class="pick"><input type="${type}" name="${name}" value="${escA(v)}" data-price="${won(price)}"><span class="pk"><b>${escA(title)}</b><span class="pp">${price?escA(String(price).includes("원")?price:price+"원"):""}</span>${items&&items.length?`<ul>${items.map(i=>`<li>${escA(i)}</li>`).join("")}</ul>`:""}</span></label>`;
+ const card=(type,name,v,title,price,items,crew)=>`<label class="pick"><input type="${type}" name="${name}" value="${escA(v)}" data-price="${won(price)}" data-crew="${crew||0}"><span class="pk"><b>${escA(title)}</b><span class="pp">${price?escA(String(price).includes("원")?price:price+"원"):""}</span>${items&&items.length?`<ul>${items.map(i=>`<li>${escA(i)}</li>`).join("")}</ul>`:""}</span></label>`;
  const none=name=>`<label class="pick none"><input type="radio" name="${name}" value="" data-price="0" checked><span class="pk">선택 안 함</span></label>`;
- $("#pickSnap").innerHTML=(products.snap||[]).map(p=>card("radio","snap",p.ko,p.ko,p.price,p.items)).join("")+none("snap");
- $("#pickDvd").innerHTML=(products.dvd||[]).map(p=>card("radio","dvd",p.ko,p.ko,p.price,p.items)).join("")+none("dvd");
+ $("#pickSnap").innerHTML=(products.snap||[]).map(p=>card("radio","snap",p.ko,p.ko,p.price,p.items,crewOf(p.items))).join("")+none("snap");
+ $("#pickDvd").innerHTML=(products.dvd||[]).map(p=>card("radio","dvd",p.ko,p.ko,p.price,p.items,crewOf(p.items))).join("")+none("dvd");
  const ad=products.addons||[],GL={snap:"스냅",dvd:"영상"};
  [["snap","#pickAddSnap"],["dvd","#pickAddDvd"]].forEach(([g,el])=>{const l=ad.filter(p=>(p.group||"snap")===g);
-  $(el).innerHTML=l.length?l.map(p=>card("checkbox","addon",GL[g]+" · "+p.name,p.name,p.price,p.desc?[p.desc]:[]).replace('<input ',`<input data-group="${g}" `)).join(""):`<p class="soft" style="font-size:13px;grid-column:1/-1">추가 상품은 상담할 때 안내해 드려요.</p>`});
+  $(el).innerHTML=l.length?l.map(p=>card("checkbox","addon",GL[g]+" · "+p.name,p.name,p.price,p.desc?[p.desc]:[],/서브\s*(촬영|작가)|작가\s*추가|인원\s*추가|촬영\s*인원/.test(p.name)?1:0).replace('<input ',`<input data-group="${g}" `)).join(""):`<p class="soft" style="font-size:13px;grid-column:1/-1">추가 상품은 상담할 때 안내해 드려요.</p>`});
  if(pending){const i=[...document.querySelectorAll(`#step2 input[name="${pending.k}"]`)].find(x=>x.value===pending.v);if(i)i.checked=true}
  syncAddons()}
 function syncAddons(){["snap","dvd"].forEach(g=>{const on=!!(document.querySelector(`#step2 input[name="${g}"]:checked`)||{}).value;
  document.querySelectorAll(`#step2 input[name="addon"][data-group="${g}"]`).forEach(i=>{i.disabled=!on;if(!on)i.checked=false;i.closest(".pick").classList.toggle("off",!on)})});calcTotal()}
-function calcTotal(){const t=[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0)+(Number(($("#ftravel")||{value:""}).value.replace(/[^\d]/g,""))||0);$("#ptotal b").textContent=fmtWon(t)}
+function crewOf(items){const m=String((items||[]).join(" ")).match(/(\d+)\s*인/);return m?Math.max(1,Math.min(9,+m[1])):1}
+function crewCount(){return [...document.querySelectorAll('#step2 .picks input:checked')].filter(i=>i.value).reduce((s,i)=>s+(+i.dataset.crew||0),0)}
+function travelTotal(){const u=Number(($("#ftravel")||{value:""}).value.replace(/[^\d]/g,""))||0,c=crewCount();return {u,c,t:u*Math.max(c,1)}}
+function calcTotal(){const T=travelTotal(),t=[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0)+T.t;$("#ptotal b").textContent=fmtWon(t);const n=$("#ftrvNote");if(n){n.hidden=!(T.u&&T.c);n.innerHTML=T.u&&T.c?`출장비 ${fmtWon(T.u)} × 작가 ${T.c}명 = <b>${fmtWon(T.t)}</b>`:""}}
 document.addEventListener("change",e=>{if(e.target.closest&&e.target.closest(".picks"))syncAddons()});
 renderPricing();renderPicks();
 fetch("/api/content",{cache:"no-store"}).then(r=>r.json()).then(j=>{const c=j&&j.content;if(!c)return;
@@ -947,12 +950,13 @@ $("#step2").addEventListener("submit",async e=>{e.preventDefault();const err=$("
   priceTotal:[...document.querySelectorAll('#step2 .picks input:checked')].reduce((s,i)=>s+(+i.dataset.price||0),0),
   priceItems:[...document.querySelectorAll('#step2 .picks input:checked')].filter(i=>i.value).map(i=>({name:i.name==="addon"?i.value.replace(/^(스냅|영상) · /,"$1 추가상품 · "):(i.name==="snap"?"본식 스냅 · ":"본식 DVD · ")+i.value,price:+i.dataset.price||0,k:i.name==="snap"?0:i.name==="dvd"?2:/^영상/.test(i.value)?3:1})).sort((p,q)=>p.k-q.k).map(({name,price})=>({name,price})),
   snapProduct:ck("snap"),dvdProduct:ck("dvd"),addons:[...document.querySelectorAll('#step2 input[name="addon"]:checked')].map(i=>i.value),
-  partnerCode:$("#fpartner").value.trim(),travelFee:$("#ftravel").value.replace(/[^\d]/g,""),receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
+  partnerCode:$("#fpartner").value.trim(),travelFee:travelTotal().t,receiptType:rtype(),receiptNumber:rc.value.trim(),message:$("#fmsg").value.trim(),
   password:$("#fpw").value,website:$("#fweb").value,agreeNotice:agN.checked,agreePrivacy:agP.checked};
  const P=/^01[016789]-\d{3,4}-\d{4}$/;const bad=(m,el)=>{err.textContent=m;el&&el.focus()};
  if(d.name.length<2)return bad("예약자 성함을 적어주세요.",$("#fname"));
  if(!P.test(d.phone))return bad("예약자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fphone"));
- if(d.spousePhone&&!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
+ if(d.spouseName.length<2)return bad("배우자 이름을 적어주세요.",$("#fsname"));
+ if(!P.test(d.spousePhone))return bad("배우자 연락처를 010-0000-0000 형식으로 적어주세요.",$("#fsphone"));
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email))return bad("이메일 주소를 정확히 적어주세요. 예) love@naver.com",$("#femail"));
  if(!d.weddingDate)return bad("예식 날짜(년·월·일)를 골라주세요.",$(!$("#dY").value?"#dY":!$("#dM").value?"#dM":"#dD"));
  if(!d.weddingTime)return bad("예식 시작 시간을 골라주세요.",$("#tH"));
